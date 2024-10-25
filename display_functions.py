@@ -37,12 +37,29 @@ class user_button :
 
         # Check if the mouse is over the button. This will create the button hover effect
         if self.button_rect.collidepoint(pygame.mouse.get_pos()):
-            pygame.draw.rect(self.button_surface, (127, 255, 212), (1, 1, 148, 48))
+            pygame.draw.rect(
+                self.button_surface, 
+                (127, 255, 212), 
+                (1, 1, self.x_width-2, self.y_height-2))
         else:
-            pygame.draw.rect(self.button_surface, (0, 0, 0), (0, 0, 150, 50))
-            pygame.draw.rect(self.button_surface, (255, 255, 255), (1, 1, 148, 48))
-            pygame.draw.rect(self.button_surface, (0, 0, 0), (1, 1, 148, 1), 2)
-            pygame.draw.rect(self.button_surface, (0, 100, 0), (1, 48, 148, 10), 2)
+            pygame.draw.rect(
+                self.button_surface, 
+                (0, 0, 0), 
+                (0, 0, self.x_width, self.y_height))
+            pygame.draw.rect(
+                self.button_surface, 
+                (255, 255, 255), 
+                (1, 1, self.x_width-2, self.y_height-2))
+            pygame.draw.rect(
+                self.button_surface,
+                (0, 0, 0), 
+                (1, 1, self.x_width-2, 1), 
+                2)
+            pygame.draw.rect(
+                self.button_surface, 
+                (0, 100, 0), 
+                (1, self.y_height-2, self.x_width-2, 10), 
+                2)
         #__________________________________________________________________________
         
         #__________________________________________________________________________

@@ -12,7 +12,9 @@ window_size = (400, 400)
 screen = pygame.display.set_mode(window_size)
 pygame.display.set_caption('Display test n°3')
 
-start_button = dis_fun.user_button("Start", 125, 125, 150, 50)
+start_button = dis_fun.user_button("Start", 25, 125, 100, 50)
+pause_button = dis_fun.user_button("Pause", 150, 125, 100, 50)
+stop_button = dis_fun.user_button("Stop", 275, 125, 100, 50)
 
 # Start the main loop
 while True:
@@ -34,6 +36,8 @@ while True:
 
         # Check for the mouse button down event
         start_button.check_event(event)
+        pause_button.check_event(event)
+        stop_button.check_event(event)
 
         #______________________________________________________________________
 
@@ -41,6 +45,8 @@ while True:
     #__________________________________________________________________________
 
     start_button.show(screen)
+    pause_button.show(screen)
+    stop_button.show(screen)
 
     #__________________________________________________________________________
 

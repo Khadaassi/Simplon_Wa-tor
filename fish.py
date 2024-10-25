@@ -14,9 +14,11 @@ class Fish():
 
     """
 
-    def __init__(self, reproduction_age: int):
+    def __init__(self, reproduction_age: int, has_moved: bool):
         self.age = 0
         self.reproduction_age = reproduction_age
+        self.direction = ""
+        self.has_moved = has_moved
 
     def reproduce(self):
         """

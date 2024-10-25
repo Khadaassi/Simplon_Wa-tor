@@ -8,30 +8,15 @@ class Fish():
         The age of the fish in years.
 
     Methods
-    -------   
-    swim(direction: str)
-        Simulates the fish swimming a specified direction.
-        
+    --------  
     reproduce()
         Returns a new Fish instance if the fish is of reproductive age.
 
     """
-    reproduction_age = 3
 
-    def __init__(self, age: int, size: int = 1):
-        self.age = age
-        self.size = size
-
-    # def swim(self, x, y, direction: str):
-    #     """
-    #     Simulates the fish swimming a specified direction.
-        
-    #     Parameters
-    #     ----------
-    #     direction : 
-    #         The direction where the fish will swim.
-    #     """
-    #     pass
+    def __init__(self, reproduction_age: int):
+        self.age = 0
+        self.reproduction_age = reproduction_age
 
     def reproduce(self):
         """
@@ -42,9 +27,9 @@ class Fish():
         Fish or None
             A new Fish instance if the fish can reproduce, otherwise None.
         """
-        if self.age >= Fish.reproduction_age:
-            new_fish = Fish(age=0, size=1)
+        self.age += 1
+        if self.age >= self.reproduction_age:
             self.age = 0 
-            return new_fish
+            return True
         else:
-            return None
+            return False

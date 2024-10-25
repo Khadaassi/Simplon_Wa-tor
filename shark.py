@@ -5,27 +5,16 @@ class Shark(Fish):
     A class to represent a shark in a water ecosystem that inherites of Fish class.
     Methods
     -------
-    swim(direction: int)
-        Simulates the shark swimming a specified direction.
     reproduce()
         Returns a new Shark instance if the shark is of reproductive age.
     eat(prey: 'Fish')
         Simulates the shark eating a fish.
     """
 
-    def __init__(self, age: int, size: float):
-        super().__init__(age, size)
+    def __init__(self, reproduction_age: int):
+        super().__init__(reproduction_age)
 
-    def swim(self, direction: int):
-        """
-        Simulates the shark swimming a specified distance.
-        
-        Parameters
-        ----------
-        direction : int
-            The distance that the shark will swim.
-        """
-        pass
+
 
     def reproduce(self):
         """
@@ -33,7 +22,7 @@ class Shark(Fish):
         """
         pass
 
-    def eat(self, prey: 'Fish'):
+    def eat(self):
         """
         Simulates the shark eating a fish.
         
@@ -43,3 +32,4 @@ class Shark(Fish):
             The fish that the shark will eat.
         """
         pass
+#energie shark 

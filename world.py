@@ -3,6 +3,13 @@ import os
 import time
 clear = lambda: os.system("clear")
 
+class TempFish:
+    
+    def __init__(self) -> None:
+        self.has_moved = False
+    
+    def __str__(self) -> str:
+        return "O"
 
 class World:
     
@@ -55,7 +62,7 @@ class World:
         #Place the fishes randomly
         while fishes > 0:
             x, y = self.get_empty_grid_space()
-            self.grid[x][y] = "O"            
+            self.grid[x][y] = TempFish()            
             fishes -= 1
         
         #Place the sharks randomly
@@ -68,28 +75,68 @@ class World:
         #Move everything
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
-                direction = self.get_direction(x, y)
-                if direction == "":
+                
+                #skip water tiles
+                if self.grid[x][y] == "~":
                     continue
+                
+                #Skip fishes that have already moved
+                if self.grid[x][y].has_moved:
+                    continue
+                
+                #TODO: Check if fish already moved, if yes pass.
+                #if isinstance(self.grid[x][y], fish):
+                    #continue
+                
+                self.grid[x][y].has_moved = True
+                
+                #Get the availlable directions for current entity    
+                direction = self.get_direction(x, y)
+                
+                #If no legal movement, continue the loop
+                if direction == "":
+                    print("No direction")
+                    continue
+                
+                #Get one direction randomly among all availlable direction
                 direction = direction[randint(0, len(direction)-1)]
+                
+                
                 if direction == "N":
                     self.grid[x-1][y] = self.grid[x][y]
                     self.grid[x][y] = "~"
+                if direction == "D":
+                    self.grid[len(self.grid)-1][y] = self.grid[x][y]
+                    self.grid[x][y] = "~"                
+              
                 if direction == "S":
                     self.grid[x+1][y] = self.grid[x][y]
                     self.grid[x][y] = "~"
+                if direction == "U":
+                    self.grid[0][y] = self.grid[x][y]
+                    self.grid[x][y] = "~"
+                              
                 if direction == "W":
                     self.grid[x][y-1] = self.grid[x][y]
                     self.grid[x][y] = "~"
+                if direction == "R":
+                    self.grid[x][len(self.grid[x])-1] = self.grid[x][y]
+                    self.grid[x][y] = "~"
+                
                 if direction == "E":
                     self.grid[x][y+1] = self.grid[x][y]
                     self.grid[x][y] = "~"
+                if direction == "L":
+                    self.grid[x][0] = self.grid[x][y]
+                    self.grid[x][y] = "~"
         
-        self.print_grid()
+        #Reset fishes movement
+        for x in self.grid:
+            for y in x:
+                if isinstance(y, TempFish):
+                    y.has_moved = False
         
-        
-                
-                 
+        self.print_grid()    
         
     def get_empty_grid_space(self) -> int:
         """
@@ -120,48 +167,85 @@ class World:
     
     
     def get_direction(self, x: int, y: int) -> str:
+        """
+        Return all possible movement for the fish :
+        N = North
+        D = Down (from top edge to bottom edge)
+        S = South
+        U = Up (from bottom edge to top edge)
+        W = West
+        R = Right (from left edge to right edge)
+        E = East
+        L = Left (from right edge to left edge)
+        
+        [Args]\n
+        x, y = current coordinate of fish
+        """
+        
         outcomes = ""
         fish = True
-        
-        if fish:
-            #TODO: gérer les bords
+                
+        if fish:            
+                     
             #Check for North availlable
-            if x == 0 or x == len(self.grid)-1 or y == len(self.grid[0])-1 or y == 0:
-                return ""
-            if self.grid[x-1][y] == "~":
+            if x == 0 and self.grid[len(self.grid)-1][y] == "~":
+                outcomes += "D"            
+            elif x == 0:
+                pass
+            elif self.grid[x-1][y] == "~":
                 outcomes += "N"
+            
             #Check for South availlable
-            if self.grid[x+1][y] == "~":
+            if x == (len(self.grid) - 1) and self.grid[0][y] == "~":
+                outcomes += "U"    
+            elif x == (len(self.grid) - 1):
+                pass      
+            elif self.grid[x+1][y] == "~":
                 outcomes += "S"
+            
             #Check for West availlable
-            if self.grid[x][y-1] == "~":
+            if y == 0 and self.grid[x][len(self.grid[y])-1] == "~":
+                outcomes += "R"     
+            elif y == 0:
+                pass
+            elif self.grid[x][y-1] == "~":
                 outcomes += "W"
+            
             #check for East availlabke
-            if self.grid[x][y+1] == "~":
+            if y == (len(self.grid[x]) - 1) and self.grid[x][0] == "~":
+                outcomes += "L"  
+            elif y == (len(self.grid[x]) - 1):
+                pass
+            elif self.grid[x][y+1] == "~":
                 outcomes += "E"
         else:
             pass
-        
+        print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
         return outcomes
                      
         
     
     
-my_world = World((2, 0), 3, (5, 5), 10, 10, 5, 5)
+my_world = World((30, 0), 1, (20, 10), 10, 10, 5, 5)
 my_world.populate_world()
-max_loop = 5
+max_loop = 10
 current_loop = 0
 compteur = 0
 start_t = time.time()
 my_world.print_grid()
 clear()
+print("current loop : ", current_loop)
+my_world.print_grid()
+
 while current_loop < max_loop: 
+    
     if time.time() - start_t >= my_world.chronos_length:        
         start_t = time.time()
         current_loop += 1
         clear()
         print("current loop : ", current_loop)
         my_world.update_world()
+        
 
 print("END OF SIMULATION")
     

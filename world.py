@@ -71,6 +71,7 @@ class World:
                 direction = self.get_direction(x, y)
                 if direction == "":
                     continue
+                direction = direction[randint(0, len(direction)-1)]
                 if direction == "N":
                     self.grid[x-1][y] = self.grid[x][y]
                     self.grid[x][y] = "~"
@@ -146,18 +147,21 @@ class World:
         
     
     
-my_world = World((2, 0), 5, (5, 5), 10, 10, 5, 5)
+my_world = World((2, 0), 3, (5, 5), 10, 10, 5, 5)
 my_world.populate_world()
-max_loop = 10
+max_loop = 5
 current_loop = 0
 compteur = 0
 start_t = time.time()
+my_world.print_grid()
+clear()
 while current_loop < max_loop: 
-    if time.time() - start_t >= my_world.chronos_length:
-        
+    if time.time() - start_t >= my_world.chronos_length:        
         start_t = time.time()
         current_loop += 1
         clear()
         print("current loop : ", current_loop)
         my_world.update_world()
+
+print("END OF SIMULATION")
     

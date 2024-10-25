@@ -9,30 +9,42 @@ class Fish():
 
     Methods
     -------   
-    swim(distance: float)
-        Simulates the fish swimming a specified distance in meters, potentially affecting its health or energy.
+    swim(direction: str)
+        Simulates the fish swimming a specified direction.
         
-    reproduce(partner: 'Fish')
+    reproduce()
         Returns a new Fish instance if the fish is of reproductive age.
 
     """
-    def __init__(self, age: int, size: float):
-        self.age = age
-        self.size = 1
+    reproduction_age = 3
 
-    def swim(self, distance: float):
-        """
-        Simulates the fish swimming a specified distance.
+    def __init__(self, age: int, size: int = 1):
+        self.age = age
+        self.size = size
+
+    # def swim(self, x, y, direction: str):
+    #     """
+    #     Simulates the fish swimming a specified direction.
         
-        Parameters
-        ----------
-        distance : float
-            The distance that the fish will swim.
-        """
-        pass
+    #     Parameters
+    #     ----------
+    #     direction : 
+    #         The direction where the fish will swim.
+    #     """
+    #     pass
 
     def reproduce(self):
         """
-        Returns a new Fish instance if the Fish is of reproductive age.
+        Returns a new Fish instance if the fish is of reproductive age.
+
+        Returns
+        -------
+        Fish or None
+            A new Fish instance if the fish can reproduce, otherwise None.
         """
-        pass
+        if self.age >= Fish.reproduction_age:
+            new_fish = Fish(age=0, size=1)
+            self.age = 0 
+            return new_fish
+        else:
+            return None

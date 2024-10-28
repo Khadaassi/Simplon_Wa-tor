@@ -1,26 +1,28 @@
-from fish import Fish 
-from fish import Shark
-from world import World
 import os
 import time
 import matplotlib.pyplot as plt
+from fish import Fish 
+from fish import Shark
+from world import World
 
 clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 
 def main():
-
+    """
+    Main function to run the simulation
+    """
     world = World((40, 20), 0.5, (20,10), 3, 3, 2, 2)
     world.populate_world()
     current_iteration = 0
-    start_t = time.time()
-    fish_population = []
-    shark_population = []
-    iterations = []
+    start_t = time.time() # Start time
+    fish_population = [] # List to store fish population
+    shark_population = [] # List to store shark population
+    iterations = [] # List to store iterations
     counter = 0
 
     print("Initial World State:")
     world.print_grid()
-    time.sleep(1)
+    time.sleep(1) # Sleep for 1 second
     clear()
 
     while True: 
@@ -37,6 +39,8 @@ def main():
             iterations.append(current_iteration)
         if world.fish_population == 0 or world.shark_population == 0 or counter == 80:
             break
+
+# Plotting the population changes of fish and sharks over time
 
     plt.figure(figsize=(10, 6))
     plt.plot(iterations, fish_population, label='Fish Population', color='blue')

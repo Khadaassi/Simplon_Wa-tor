@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from fish import Fish 
 from fish import Shark
 from world import World
+from WaTorDisplay import WaTorDisplay
 
 clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -20,8 +21,16 @@ def main():
     iterations = [] # List to store iterations
     counter = 0
 
+    
     print("Initial World State:")
     world.print_grid()
+
+    #________________________
+    # NCA {
+    display = WaTorDisplay(None)
+    display.update_view(world)
+    # }
+    
     time.sleep(1) # Sleep for 1 second
     clear()
 
@@ -32,7 +41,14 @@ def main():
             current_iteration += 1
             clear()
             print("Current iteration : ", current_iteration)
+
+            #________________________
+            # NCA {
             world.update_world()
+            display.update_view(world)
+            # }
+        
+            world.print_grid()
             print(f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population}")
             fish_population.append(world.fish_population)
             shark_population.append(world.shark_population)
@@ -50,6 +66,8 @@ def main():
     plt.title('Population Changes of Fish and Sharks Over Time')
     plt.legend()
     plt.show()
+
+    
 
 if __name__ == "__main__":
     main()

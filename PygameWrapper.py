@@ -23,6 +23,16 @@ class PygameWrapper:
 
         self.shark_image = UserImage("Shark_image_1.png")
         self.fish_image = UserImage("Fish_image_1.png")
+        self.running = False
+        self.screen = None
+
+        # perhaps that clock is never used 
+        # since the while True has been removed
+        self.clock = None
+
+        self.stop_button = None
+        self.start_button = None
+        self.pause_button = None
 
     def get_tab(self) :
         return self.tab
@@ -48,81 +58,88 @@ class PygameWrapper:
             self.y_cell_length = (self.table_heigth)//self.len_tab_y
 
             self.shark_image.define_dimensions(self.x_cell_length, self.y_cell_length)
-            self.fish_image.define_dimensions(self.x_cell_length, self.y_cell_length)
+            self.fish_image.define_dimensions(self.x_cell_length, self.y_cell_length)           
 
     def show(self) :
-        # pygame setup
-        pygame.init()
-     
-        screen = pygame.display.set_mode((self.window_width, self.window_heigth))
-        clock = pygame.time.Clock()
-        running = True
+        if not self.running :
+            # pygame setup
+            pygame.init()
         
-        start_button = UserButton("Start", 
-            self.window_width-3*(self.buttons_height+2*self.border_length) , 
-            self.window_heigth- self.buttons_height-self.border_length, 
-            self.buttons_length, 
-            self.buttons_height)
-        pause_button = UserButton("Pause", 
-            self.window_width-2*(self.buttons_height+2*self.border_length) , 
-            self.window_heigth- self.buttons_height-self.border_length, 
-            self.buttons_length, 
-            self.buttons_height)
-        stop_button = UserButton("Stop", 
-            self.window_width-(self.buttons_height+2*self.border_length), 
-            self.window_heigth- self.buttons_height-self.border_length, 
-            self.buttons_length, 
-            self.buttons_height)
+            self.screen = pygame.display.set_mode((self.window_width, self.window_heigth))
+            self.clock = pygame.time.Clock()
+            self.running = True
 
-        while running:
-            # poll for events
-            # pygame.QUIT event means the user clicked X to close your window
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+            self.start_button = UserButton("Start", 
+                self.window_width-3*(self.buttons_height+2*self.border_length) , 
+                self.window_heigth- self.buttons_height-self.border_length, 
+                self.buttons_length, 
+                self.buttons_height)
+            self.pause_button = UserButton("Pause", 
+                self.window_width-2*(self.buttons_height+2*self.border_length) , 
+                self.window_heigth- self.buttons_height-self.border_length, 
+                self.buttons_length, 
+                self.buttons_height)
+            self.stop_button = UserButton("Stop", 
+                self.window_width-(self.buttons_height+2*self.border_length), 
+                self.window_heigth- self.buttons_height-self.border_length, 
+                self.buttons_length, 
+                self.buttons_height)
+            
+        #______________________________________________________________________
+        # here started the old while true
+    
+        # poll for events
+        # pygame.QUIT event means the user clicked X to close your window
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
 
-                # Check for the mouse button down event
-                start_button.check_event(event)
-                pause_button.check_event(event)
-                stop_button.check_event(event)
+            # Check for the mouse button down event
+            self.start_button.check_event(event)
+            self.pause_button.check_event(event)
+            self.stop_button.check_event(event)
 
-            # fill the screen with a color to wipe away anything from last frame
-            screen.fill("purple")
+        # fill the screen with a color to wipe away anything from last frame
+        self.screen.fill("purple")
 
-            white_color = (255,255,255)
-            black_color = (0,0,0)
+        white_color = (0,0,170)
+        black_color = (50,20,150)
 
-            # RENDER YOUR GAME HERE
-            for y_index in range(0,self.len_tab_y):
-                for x_index in range(0,self.len_tab_x):
-                    case_color = white_color if (x_index+y_index)%2==0 else black_color
-                    position_x = self.border_length + x_index*self.x_cell_length
-                    position_y = self.border_length + y_index*self.y_cell_length
-                        
-                    pygame.draw.rect(screen,case_color,[position_x,position_y,self.x_cell_length,self.y_cell_length])
-
-            tab = self.get_tab()
-            for y_index in range(self.len_tab_y) :
-                for x_index in range(self.len_tab_x) :
-                    if tab[y_index][x_index] == '~' :
-                         continue
+        # RENDER YOUR GAME HERE
+        for y_index in range(0,self.len_tab_y):
+            for x_index in range(0,self.len_tab_x):
+                case_color = white_color if (x_index+y_index)%2==0 else black_color
+                position_x = self.border_length + x_index*self.x_cell_length
+                position_y = self.border_length + y_index*self.y_cell_length
                     
-                    obj = tab[y_index][x_index]
-                    image = cast(UserImage, obj)
-                    
-                    x_image = self.border_length + x_index * self.x_cell_length
-                    y_image = self.border_length + y_index * self.y_cell_length
+                pygame.draw.rect(self.screen,case_color,[position_x,position_y,self.x_cell_length,self.y_cell_length])
 
-                    screen.blit(image.resized, (x_image,y_image))
+        tab = self.get_tab()
+        for y_index in range(self.len_tab_y) :
+            for x_index in range(self.len_tab_x) :
+                if tab[y_index][x_index] == '~' :
+                        continue
+                
+                obj = tab[y_index][x_index]
+                image = cast(UserImage, obj)
+                
+                x_image = self.border_length + x_index * self.x_cell_length
+                y_image = self.border_length + y_index * self.y_cell_length
+
+                self.screen.blit(image.resized, (x_image,y_image))
 
 
-            start_button.show(screen)
-            pause_button.show(screen)
-            stop_button.show(screen)
+        self.start_button.show(self.screen)
+        self.pause_button.show(self.screen)
+        self.stop_button.show(self.screen)
 
-            # flip() the display to put your work on screen
-            pygame.display.flip()
+        # flip() the display to put your work on screen
+        pygame.display.flip()
 
-            clock.tick(60)  # limits FPS to 60
+        self.clock.tick(60)  # limits FPS to 60
 
-        pygame.quit()
+        #______________________________________________________________________
+        # here stopped the old while true
+
+        if not self.running : 
+            pygame.quit()

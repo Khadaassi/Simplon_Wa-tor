@@ -7,13 +7,13 @@ class Shark(Fish):
     -------
     reproduce()
         Returns a new Shark instance if the shark is of reproductive age.
-    eat(prey: 'Fish')
+    eat()
         Simulates the shark eating a fish.
     """
 
     def __init__(self, reproduction_age: int):
         super().__init__(reproduction_age)
-
+        pass
 
 
     def reproduce(self):
@@ -26,10 +26,6 @@ class Shark(Fish):
         """
         Simulates the shark eating a fish.
         
-        Parameters
-        ----------
-        prey : Fish
-            The fish that the shark will eat.
         """
         pass
 #energie shark 

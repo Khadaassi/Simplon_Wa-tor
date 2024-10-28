@@ -8,7 +8,7 @@ clear = lambda: os.system("clear")
 class World:
     
     def __init__(self, s_pop: tuple[int, int], chro_len: int, world_size: tuple[int, int], fish_repro_time: int, shark_repro_time: int,\
-        shark_energy: int, shark_energy_gain: int) -> None:
+        shark_energy: int, shark_energy_gain: int, shark_energy_depletion_rate = 1) -> None:
         """
         [Args]\n
         s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
@@ -29,6 +29,7 @@ class World:
         self.current_shark_population = self.starting_population[1] #The current amount of sharks in the world
         self.shark_energy = shark_energy #The starting energy of a shark.  
         self.shark_energy_gained_by_eating = shark_energy_gain #The amount of energy a shark gains when eating a fish
+        self.shark_energy_depletion_rate = shark_energy_depletion_rate #The amount of energy lost when a shark moves. 1 by default.
         
         self.next_move_will_eat = False
         
@@ -84,9 +85,12 @@ class World:
                 if self.grid[x][y].has_moved:
                     continue
                 
+                #Set parameters for next entity
                 self.next_move_will_eat = False
                 isShark = isinstance(self.grid[x][y], Shark)              
-                self.grid[x][y].has_moved = True
+                self.grid[x][y].has_moved = True                
+                will_reproduce = self.grid[x][y].reproduce() #TODO : Modify fish so age isn't reduce to 0 when not moving     
+                will_die = False          
                 
                 #Get the availlable directions for current entity    
                 direction = self.get_shark_directions(x, y) if isShark else self.get_fish_direction(x, y)
@@ -97,39 +101,55 @@ class World:
                     continue
                 
                 #Get one direction randomly among all availlable direction
-                direction = direction[randint(0, len(direction)-1)]
+                direction = direction[randint(0, len(direction)-1)]                
                 
+                #If Shark will eat a fish, it gains energy
                 if self.next_move_will_eat:
-                        self.grid[x][y].eat(self.shark_energy_gained_by_eating)
+                        self.grid[x][y].eat(self.shark_energy_gained_by_eating)                
                 
+                #Sharks lose energy when moving.
+                if isShark:
+                    if not self.grid[x][y].energy_management(self.shark_energy_depletion_rate):
+                        self.grid[x][y] = False
+                        will_die = True
+                        print("DEBUG : A shark just died.")
+                
+                #Move entity to new cell depending on direction
+                
+                #North/Up block
                 if direction == "N":                    
-                    self.grid[x-1][y] = self.grid[x][y]
-                    self.grid[x][y] = False
+                    self.grid[x-1][y] = self.grid[x][y] if not will_die else False               
                 if direction == "D":
-                    self.grid[len(self.grid)-1][y] = self.grid[x][y]
-                    self.grid[x][y] = False                
-              
+                    self.grid[len(self.grid)-1][y] = self.grid[x][y] if not will_die else False  
+                                    
+                #South/Down block
                 if direction == "S":
-                    self.grid[x+1][y] = self.grid[x][y]
-                    self.grid[x][y] = False
+                    self.grid[x+1][y] = self.grid[x][y] if not will_die else False                     
                 if direction == "U":
-                    self.grid[0][y] = self.grid[x][y]
-                    self.grid[x][y] = False
-                              
+                    self.grid[0][y] = self.grid[x][y] if not will_die else False  
+                    
+                #West/Right block             
                 if direction == "W":
-                    self.grid[x][y-1] = self.grid[x][y]
-                    self.grid[x][y] = False
+                    self.grid[x][y-1] = self.grid[x][y] if not will_die else False                      
                 if direction == "R":
-                    self.grid[x][len(self.grid[x])-1] = self.grid[x][y]
-                    self.grid[x][y] = False
-                
+                    self.grid[x][len(self.grid[x])-1] = self.grid[x][y] if not will_die else False  
+                    
+                #East/Left block
                 if direction == "E":
-                    self.grid[x][y+1] = self.grid[x][y]
-                    self.grid[x][y] = False
+                    self.grid[x][y+1] = self.grid[x][y] if not will_die else False                      
                 if direction == "L":
-                    self.grid[x][0] = self.grid[x][y]
-                    self.grid[x][y] = False
-        
+                    self.grid[x][0] = self.grid[x][y] if not will_die else False  
+                
+                #Check for leaving tile behavior
+                #If reproducing, left a new entity of same type. Else, leaves water.
+                if will_reproduce:
+                    if isShark:
+                        self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy)
+                    else:
+                        self.grid[x][y] = Fish(self.fish_reproduction_time)
+                else:
+                    self.grid[x][y] = False               
+                        
         #Reset fishes movement
         for x in self.grid:
             for y in x:
@@ -151,7 +171,6 @@ class World:
             if self.grid[x][y] == False:
                 found_suitable_space = True
         return x, y
-    
 
     def print_grid(self) -> None: 
         """
@@ -173,7 +192,6 @@ class World:
             line += " |"
             print(line)
     
-    
     def get_shark_directions(self, x: int, y: int) -> str:
         """
         Return all possible movement for the shark :
@@ -190,7 +208,6 @@ class World:
         x, y = current coordinate of fish
         """
         
-        print(f"DEBUG : {self.grid[x][y]}")
         outcomes = ""               
         
         #Check first for availlable fishes      
@@ -283,13 +300,13 @@ class World:
         elif self.grid[x][y+1] == False:
             outcomes += "E"
      
-        print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
+        # print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
         return outcomes
                      
         
     
     
-my_world = World((10, 3), 1, (5, 5), 10, 10, 5, 5)
+my_world = World((10, 3), 1, (20, 10), 3, 5, 3, 5)
 my_world.populate_world()
 max_loop = 10
 current_loop = 0

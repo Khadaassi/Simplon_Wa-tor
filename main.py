@@ -33,11 +33,12 @@ def main():
             clear()
             print("Current iteration : ", current_iteration)
             world.update_world()
+            world.print_grid()
             print(f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population}")
             fish_population.append(world.fish_population)
             shark_population.append(world.shark_population)
             iterations.append(current_iteration)
-        if world.fish_population == 0 or world.shark_population == 0 or counter == 5000:
+        if world.fish_population == 0 or world.shark_population == 0 or counter == 25:
             break
 
 # Plotting the population changes of fish and sharks over time

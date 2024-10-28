@@ -2,8 +2,6 @@ from fish import Fish
 from fish import Shark
 from random import randint
 import os
-import time
-clear = lambda: os.system("clear")
 
 class World:
     
@@ -19,6 +17,7 @@ class World:
         shark_energy = starting energy of a newly created shark (also its maximum, if needed)
         shark_energy_gain = amount of energy a shark gains when eating a fish"""
         
+        #World parameters block
         self.starting_population = s_pop #The initial ratio of fish to shark. starting_population[0] = fishes, starting_population[1] = sharks
         self.chronos_length = chro_len #The amount of iterations of the loop necessary before the next chronos start
         self.size = world_size #The size of the world (= the size of the grid)
@@ -31,6 +30,7 @@ class World:
         self.shark_energy_gained_by_eating = shark_energy_gain #The amount of energy a shark gains when eating a fish
         self.shark_energy_depletion_rate = shark_energy_depletion_rate #The amount of energy lost when a shark moves. 1 by default.
         
+        #Internal logic block
         self.next_move_will_eat = False
         
         #Stats block
@@ -73,6 +73,10 @@ class World:
             sharks -= 1  
         
     def update_world(self) -> None:
+        """
+        Update the world state and the state of every entity in the grid. (Movement, reproduction, death)
+        """
+        
         #Move everything
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
@@ -89,7 +93,7 @@ class World:
                 self.next_move_will_eat = False
                 isShark = isinstance(self.grid[x][y], Shark)              
                 self.grid[x][y].has_moved = True                
-                will_reproduce = self.grid[x][y].reproduce() #TODO : Modify fish so age isn't reduce to 0 when not moving     
+                will_reproduce = self.grid[x][y].reproduce()   
                 will_die = False          
                 
                 #Get the availlable directions for current entity    
@@ -112,10 +116,8 @@ class World:
                     if not self.grid[x][y].energy_management(self.shark_energy_depletion_rate):
                         self.grid[x][y] = False
                         will_die = True
-                        print("DEBUG : A shark just died.")
                 
-                #Move entity to new cell depending on direction
-                
+                #Move entity to new cell depending on direction                
                 #North/Up block
                 if direction == "N":                    
                     self.grid[x-1][y] = self.grid[x][y] if not will_die else False               
@@ -194,7 +196,9 @@ class World:
     
     def get_shark_directions(self, x: int, y: int) -> str:
         """
-        Return all possible movement for the shark :
+        Return all possible movement for the shark base only on the presence of fishes in its move radius. 
+        If no fishes exist in this radius, acts like a normal fish instead.
+        Possible directions are :
         N = North
         D = Down (from top edge to bottom edge)
         S = South
@@ -205,12 +209,11 @@ class World:
         L = Left (from right edge to left edge)
         
         [Args]\n
-        x, y = current coordinate of fish
+        x, y = current coordinate of shark
         """
-        
+                
         outcomes = ""               
         
-        #Check first for availlable fishes      
         #Check for North availlable
         if x == 0 and not isinstance(self.grid[len(self.grid)-1][y], Fish) and not isinstance(self.grid[len(self.grid)-1][y], Shark):
             outcomes += "D"            
@@ -302,32 +305,5 @@ class World:
      
         # print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
         return outcomes
-                     
-        
-    
-    
-my_world = World((10, 3), 1, (20, 10), 3, 5, 3, 5)
-my_world.populate_world()
-max_loop = 10
-current_loop = 0
-compteur = 0
-start_t = time.time()
-my_world.print_grid()
-clear()
-print("current loop : ", current_loop)
-my_world.print_grid()
-print(f"Fish pop : {my_world.fish_population} ; Shark pop : {my_world.shark_population}")
 
-while current_loop < max_loop: 
-    
-    if time.time() - start_t >= my_world.chronos_length:        
-        start_t = time.time()
-        current_loop += 1
-        clear()
-        print("current loop : ", current_loop)
-        my_world.update_world()
-        print(f"Fish pop : {my_world.fish_population} ; Shark pop : {my_world.shark_population}")
-        
-
-print("END OF SIMULATION")
     

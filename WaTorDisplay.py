@@ -1,3 +1,5 @@
+from PygameWrapper import PygameWrapper
+
 class WaTorDisplay:
     """
         Management of the pygame interface
@@ -11,6 +13,7 @@ class WaTorDisplay:
                 app_object.stop()
         """
         self.mainObject = app_object
+        self.pygameWrapper = PygameWrapper()
 
     def update_view(self, world):
         """

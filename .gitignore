@@ -1,2 +1,65 @@
-.venv
+# Fichiers de configuration système
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails de macOS
+._*
+
+# Stockage des fichiers temporaires macOS
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.Dokumente
+.fseventsd
+
+# Linux
+*~
+.nfs*
+
+# Environnements virtuels Python
 __pycache__/
+*.py[cod]
+*$py.class
+env/
+venv/
+ENV/
+.venv/
+.pytest_cache/
+.coverage
+
+# Caches et configurations spécifiques à Python
+*.egg-info/
+.eggs/
+*.egg
+.installed.cfg
+*.pyo
+*.pyd
+*.pdb
+*.stackdump
+
+# Logs et bases de données temporaires
+*.log
+*.sqlite3
+
+# Fichiers de test et sorties temporaires
+htmlcov/
+.tox/
+.pytest_cache/
+.coverage
+
+# Exclusions pour les outils de construction Python
+build/
+dist/
+*.egg-info/
+.cache/
+*.manifest
+*.spec
+
+# Configuration d’éditeur et d’IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace

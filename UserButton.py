@@ -2,8 +2,9 @@ import pygame
 
 class UserButton :
 
-    def __init__(self, name, x_position, y_position, x_width, y_height):
+    def __init__(self, name:str, callback_function, x_position:int, y_position:int, x_width:int, y_height:int):
         self.name = name
+        self.callback_function = callback_function
         self.x_position = x_position
         self.y_position = y_position
         self.x_width = x_width
@@ -31,8 +32,8 @@ class UserButton :
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Call the on_mouse_button_down() function
             if self.button_rect.collidepoint(event.pos):
-                print(f"Button {self.name} clicked from a function !")
-
+                self.callback_function(self.name)
+ 
     def show(self, screen: pygame.Surface):
 
         # Check if the mouse is over the button. This will create the button hover effect

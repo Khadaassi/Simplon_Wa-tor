@@ -1,12 +1,22 @@
 from PygameWrapper import PygameWrapper
 from world import World
 from fish import Fish, Shark
+from CommandBuilder import *
+from enum import Enum
 
-class WaTorDisplay:
+class DisplayState(Enum) :
+    WAIT  = 0
+    PLAY  = 1
+    PAUSE = 2
+    STOP  = 3
+    OUT   = 4
+
+class WaTorDisplay(CommandObserver):
     """
         Management of the pygame interface
     """
-    def __init__(self, app_object):
+
+    def __init__(self, app_object = None):
         """
             When instanciated, the object starts a pygame
             needs a app_object which have got three methods : 
@@ -15,7 +25,19 @@ class WaTorDisplay:
                 app_object.stop()
         """
         self.mainObject = app_object
-        self.pygameWrapper = PygameWrapper()
+        self.pygameWrapper = PygameWrapper(CommandBuilder(self))
+        self.state = DisplayState.WAIT
+
+    def on_user_command(self, command : str):
+        #print(f"Button {command} clicked from a function !")
+        if command == "Start" : self.state = DisplayState.PLAY
+        elif command == "Pause": 
+            if self.state == DisplayState.PLAY : self.state = DisplayState.PAUSE
+            elif self.state == DisplayState.PAUSE : self.state = DisplayState.PLAY
+            else : pass    
+        elif command == "Stop": self.state = DisplayState.STOP
+        elif command == "Quit": self.state = DisplayState.OUT
+        else : self.state = DisplayState.OUT
 
     def update_view(self, world : World):
         """
@@ -47,4 +69,4 @@ class WaTorDisplay:
 
 
         self.pygameWrapper.set_tab(image_tab)
-        self.pygameWrapper.show()
+        self.pygameWrapper.draw()

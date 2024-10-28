@@ -2,24 +2,27 @@ import pygame
 from UserButton import UserButton
 from UserImage import UserImage
 from typing import cast
+from CommandBuilder import *
 
 class PygameWrapper:
-    def __init__(self):
+
+    def __init__(self, command_builder: CommandBuilder):
         self.tab = []
-        self.window_width = 100
-        self.window_heigth = 100
+        self.command_builder = command_builder
+        self.window_width = 1000 #defaut value
+        self.window_heigth = 700 #defaut value
 
         #borders & buttons dimensions
-        self.border_length= 50
-        self.buttons_height=50
-        self.buttons_length=100
-        self.len_tab_x=0
-        self.len_tab_y=0
+        self.border_length = 25
+        self.buttons_height = 50
+        self.buttons_width = 75
+        self.len_tab_x = 0
+        self.len_tab_y = 0
 
-        self.table_width =0 
-        self.table_height =0 
-        self.x_cell_length =0
-        self.y_cell_length =0
+        self.table_width = 0 
+        self.table_height = 0 
+        self.x_cell_length = 0
+        self.y_cell_length = 0
 
         self.shark_image = UserImage("Shark_image_1.png")
         self.fish_image = UserImage("Fish_image_1.png")
@@ -30,9 +33,7 @@ class PygameWrapper:
         # since the while True has been removed
         self.clock = None
 
-        self.stop_button = None
-        self.start_button = None
-        self.pause_button = None
+        self.buttons = []
 
     def get_tab(self) :
         return self.tab
@@ -44,46 +45,46 @@ class PygameWrapper:
             return
         
         if self.len_tab_x != len(self.tab[0]) :
-            # format width = len(x) / heigth = len(y)
-            self.len_tab_x = len(self.tab[0])
-            self.len_tab_y = len(self.tab)
+            self.initialize_controls()
+            
+    def initialize_controls(self) : 
+        # format width = len(x) / heigth = len(y)
+        self.len_tab_x = len(self.tab[0])
+        self.len_tab_y = len(self.tab)
 
-            self.table_width = self.len_tab_x * self.border_length
-            self.table_heigth = self.len_tab_y* self.border_length
+        self.table_width = self.window_width - 2 * self.border_length
+        self.table_heigth = self.window_heigth - self.buttons_height - 3 * self.border_length
 
-            self.window_width = self.table_width + 2 * self.border_length
-            self.window_heigth = self.table_heigth + self.buttons_height + 3 * self.border_length
+        self.x_cell_length = (self.table_width)//self.len_tab_x
+        self.y_cell_length = (self.table_heigth)//self.len_tab_y
 
-            self.x_cell_length = (self.table_width)//self.len_tab_x
-            self.y_cell_length = (self.table_heigth)//self.len_tab_y
+        self.shark_image.define_dimensions(self.x_cell_length, self.y_cell_length)
+        self.fish_image.define_dimensions(self.x_cell_length, self.y_cell_length)     
 
-            self.shark_image.define_dimensions(self.x_cell_length, self.y_cell_length)
-            self.fish_image.define_dimensions(self.x_cell_length, self.y_cell_length)           
+    def initialize_screen(self) :   
+        # pygame setup
+        pygame.init()
+    
+        self.screen = pygame.display.set_mode((self.window_width, self.window_heigth))
+        self.clock = pygame.time.Clock()
+        self.running = True
 
-    def show(self) :
+        # Buttons need to be created after the creation of the screen
+         
+        self.commands = ["Start", "Pause", "Stop"] 
+        callback_function = self.command_builder.command_callback()
+        count = 3
+        for command in reversed(self.commands):
+            self.buttons.append(UserButton(command, callback_function,
+                self.window_width - count*(self.buttons_width+self.border_length), 
+                self.window_heigth - self.buttons_height-self.border_length, 
+                self.buttons_width, 
+                self.buttons_height))
+            count+=1
+
+    def draw(self) :
         if not self.running :
-            # pygame setup
-            pygame.init()
-        
-            self.screen = pygame.display.set_mode((self.window_width, self.window_heigth))
-            self.clock = pygame.time.Clock()
-            self.running = True
-
-            self.start_button = UserButton("Start", 
-                self.window_width-3*(self.buttons_height+2*self.border_length) , 
-                self.window_heigth- self.buttons_height-self.border_length, 
-                self.buttons_length, 
-                self.buttons_height)
-            self.pause_button = UserButton("Pause", 
-                self.window_width-2*(self.buttons_height+2*self.border_length) , 
-                self.window_heigth- self.buttons_height-self.border_length, 
-                self.buttons_length, 
-                self.buttons_height)
-            self.stop_button = UserButton("Stop", 
-                self.window_width-(self.buttons_height+2*self.border_length), 
-                self.window_heigth- self.buttons_height-self.border_length, 
-                self.buttons_length, 
-                self.buttons_height)
+            self.initialize_screen()  # first time only
             
         #______________________________________________________________________
         # here started the old while true
@@ -95,30 +96,25 @@ class PygameWrapper:
                 self.running = False
 
             # Check for the mouse button down event
-            self.start_button.check_event(event)
-            self.pause_button.check_event(event)
-            self.stop_button.check_event(event)
+            for button in self.buttons :
+                button.check_event(event)
 
         # fill the screen with a color to wipe away anything from last frame
-        self.screen.fill("purple")
+        self.screen.fill("darkgreen")
 
-        white_color = (0,0,170)
-        black_color = (50,20,150)
-
-        # RENDER YOUR GAME HERE
-        for y_index in range(0,self.len_tab_y):
-            for x_index in range(0,self.len_tab_x):
-                case_color = white_color if (x_index+y_index)%2==0 else black_color
-                position_x = self.border_length + x_index*self.x_cell_length
-                position_y = self.border_length + y_index*self.y_cell_length
-                    
-                pygame.draw.rect(self.screen,case_color,[position_x,position_y,self.x_cell_length,self.y_cell_length])
-
+        # RENDER YOUR GAME HERE   
         tab = self.get_tab()
         for y_index in range(self.len_tab_y) :
             for x_index in range(self.len_tab_x) :
+                
+                position_x = self.border_length + x_index*self.x_cell_length
+                position_y = self.border_length + y_index*self.y_cell_length
+                    
+                case_color = UserImage.light_color if (x_index+y_index)%2==0 else UserImage.dark_color
+                pygame.draw.rect(self.screen,case_color,[position_x,position_y,self.x_cell_length,self.y_cell_length])
+
                 if tab[y_index][x_index] == '~' :
-                        continue
+                    continue
                 
                 obj = tab[y_index][x_index]
                 image = cast(UserImage, obj)
@@ -128,10 +124,9 @@ class PygameWrapper:
 
                 self.screen.blit(image.resized, (x_image,y_image))
 
+        for button in self.buttons :
+            button.show(self.screen)
 
-        self.start_button.show(self.screen)
-        self.pause_button.show(self.screen)
-        self.stop_button.show(self.screen)
 
         # flip() the display to put your work on screen
         pygame.display.flip()
@@ -142,4 +137,5 @@ class PygameWrapper:
         # here stopped the old while true
 
         if not self.running : 
+            self.command_builder.command_callback()("Quit")
             pygame.quit()

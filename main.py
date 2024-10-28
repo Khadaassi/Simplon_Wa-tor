@@ -11,7 +11,7 @@ def main():
     """
     Main function to run the simulation
     """
-    world = World((40, 20), 0.5, (20,10), 3, 3, 2, 2)
+    world = World((500, 200), 0.001, (40,30), 3, 3, 2, 2)
     world.populate_world()
     current_iteration = 0
     start_t = time.time() # Start time
@@ -19,6 +19,7 @@ def main():
     shark_population = [] # List to store shark population
     iterations = [] # List to store iterations
     counter = 0
+    print_counter = 0
 
     print("Initial World State:")
     world.print_grid()
@@ -27,17 +28,21 @@ def main():
 
     while True: 
         if time.time() - start_t >= world.chronos_length: 
-            counter += 1       
+            counter += 1
+            print_counter += 1       
             start_t = time.time()
             current_iteration += 1
-            clear()
-            print("Current iteration : ", current_iteration)
             world.update_world()
-            print(f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population}")
+            if print_counter == 100:
+                clear()
+                print("Current iteration : ", current_iteration)
+                print_counter = 0
+                world.print_grid()
+                print(f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population}")
             fish_population.append(world.fish_population)
             shark_population.append(world.shark_population)
             iterations.append(current_iteration)
-        if world.fish_population == 0 or world.shark_population == 0 or counter == 80:
+        if world.fish_population == 0 or world.shark_population == 0 or counter == 10000:
             break
 
 # Plotting the population changes of fish and sharks over time

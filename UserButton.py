@@ -1,6 +1,6 @@
 import pygame
 
-class user_button :
+class UserButton :
 
     def __init__(self, name, x_position, y_position, x_width, y_height):
         self.name = name

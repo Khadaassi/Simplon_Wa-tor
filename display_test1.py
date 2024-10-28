@@ -1,6 +1,7 @@
 # Example file showing a basic pygame "game loop"
 import pygame
-import display_functions as dis_fun
+from UserButton import UserButton
+from UserImage import UserImage
 
 # pygame setup
 pygame.init()
@@ -29,30 +30,30 @@ y_cell_length = (table_heigth)//y_length
 
 x_test_image = 8
 y_test_image = 4
-shark_image = pygame.image.load("Shark_image_1.png")
-proportions = shark_image.get_width() / shark_image.get_height()
-
-min_size = min(x_cell_length, y_cell_length)
-shark_width = min_size
-shark_height = int(min_size/proportions)
-
-shark_image_resized = pygame.transform.scale( shark_image, [shark_width, shark_height])
-
+shark_image = UserImage("Shark_image_1.png")
+shark_image.define_dimensions(x_cell_length, y_cell_length)
 shark_image_x = border_length + (x_test_image-1) * x_cell_length
 shark_image_y = border_length + (y_test_image-1) * y_cell_length
 
+x_test_image_2 = 3
+y_test_image_2 = 1
+fish_image = UserImage("Fish_image_1.png")
+fish_image.define_dimensions(x_cell_length, y_cell_length)
+fish_image_x = border_length + (x_test_image_2-1) * x_cell_length
+fish_image_y = border_length + (y_test_image_2-1) * y_cell_length
 
-start_button = dis_fun.user_button("Start", 
+
+start_button = UserButton("Start", 
     window_width-3*(buttons_height+2*border_length) , 
     window_heigth- buttons_height-border_length, 
     buttons_length, 
     buttons_height)
-pause_button = dis_fun.user_button("Pause", 
+pause_button = UserButton("Pause", 
     window_width-2*(buttons_height+2*border_length) , 
     window_heigth- buttons_height-border_length, 
     buttons_length, 
     buttons_height)
-stop_button = dis_fun.user_button("Stop", 
+stop_button = UserButton("Stop", 
     window_width-(buttons_height+2*border_length), 
     window_heigth- buttons_height-border_length, 
     buttons_length, 
@@ -87,10 +88,12 @@ while running:
                 
             pygame.draw.rect(screen,case_color,[position_x,position_y,x_cell_length,y_cell_length])
 
-    screen.blit(shark_image_resized, 
+    screen.blit(shark_image.resized, 
                 (shark_image_x,shark_image_y))
-     
-                # [position_x,position_y,500, 500])
+    
+    screen.blit(fish_image.resized, 
+                (fish_image_x, fish_image_y))
+
 
     start_button.show(screen)
     pause_button.show(screen)

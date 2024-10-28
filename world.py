@@ -22,7 +22,7 @@ class World:
         world_size = a tuple of int defining the world dimension as follow [width, height]
         fish_repro_time = the amount of chronos a fish needs to reproduce
         shark_repro_time = the amount of chronos a shark needs to reproduce
-        shark_energy = starting energy of a newly created shark
+        shark_energy = starting energy of a newly created shark (also its maximum, if needed)
         shark_energy_gain = amount of energy a shark gains when eating a fish"""
         
         self.starting_population = s_pop #The initial ratio of fish to shark. starting_population[0] = fishes, starting_population[1] = sharks
@@ -30,7 +30,7 @@ class World:
         self.size = world_size #The size of the world (= the size of the grid)
         self.fish_reproduction_time = fish_repro_time #The amount of chronos a fish needs to stay alive before producing a new fish
         self.shark_reproduction_time = shark_repro_time #The amount of chronos a fish needs to stay alive before producing a new shark
-        self.grid = [] #The actual world. A list of lists holding, fish, sharks or FALSE(water) to simulate a grid view.
+        self.grid = [] #The actual world. A list of lists holding, fishes, sharks or FALSE (water) to simulate a grid view.
         self.current_fish_population = self.starting_population[0] #The current amount of fishes in the world
         self.current_shark_population = self.starting_population[1] #The current amount of sharks in the world
         self.shark_energy = shark_energy #The starting energy of a shark.  

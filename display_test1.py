@@ -27,6 +27,21 @@ y_length = 9 # tableau de 9 cases
 x_cell_length= (table_width)//x_length
 y_cell_length = (table_heigth)//y_length
 
+x_test_image = 8
+y_test_image = 4
+shark_image = pygame.image.load("Shark_image_1.png")
+proportions = shark_image.get_width() / shark_image.get_height()
+
+min_size = min(x_cell_length, y_cell_length)
+shark_width = min_size
+shark_height = int(min_size/proportions)
+
+shark_image_resized = pygame.transform.scale( shark_image, [shark_width, shark_height])
+
+shark_image_x = border_length + (x_test_image-1) * x_cell_length
+shark_image_y = border_length + (y_test_image-1) * y_cell_length
+
+
 start_button = dis_fun.user_button("Start", 
     window_width-3*(buttons_height+2*border_length) , 
     window_heigth- buttons_height-border_length, 
@@ -42,6 +57,8 @@ stop_button = dis_fun.user_button("Stop",
     window_heigth- buttons_height-border_length, 
     buttons_length, 
     buttons_height)
+
+
 
 while running:
     # poll for events
@@ -65,10 +82,15 @@ while running:
     for x_index in range(0,x_length):
         for y_index in range(0,y_length):
             case_color = white_color if (x_index+y_index)%2==0 else black_color
-            position_x = 50 + x_index*x_cell_length
-            position_y = 50 + y_index*y_cell_length
+            position_x = border_length + x_index*x_cell_length
+            position_y = border_length + y_index*y_cell_length
                 
             pygame.draw.rect(screen,case_color,[position_x,position_y,x_cell_length,y_cell_length])
+
+    screen.blit(shark_image_resized, 
+                (shark_image_x,shark_image_y))
+     
+                # [position_x,position_y,500, 500])
 
     start_button.show(screen)
     pause_button.show(screen)

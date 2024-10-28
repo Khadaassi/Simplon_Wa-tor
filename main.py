@@ -1,7 +1,6 @@
 import os
 import time
-import matplotlib.pyplot as plt
-from fish import Fish 
+from plot import plot_population 
 from fish import Shark
 from world import World
 
@@ -46,15 +45,7 @@ def main():
             break
 
 # Plotting the population changes of fish and sharks over time
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(iterations, fish_population, label='Fish Population', color='blue')
-    plt.plot(iterations, shark_population, label='Shark Population', color='red')
-    plt.xlabel('Iteration')
-    plt.ylabel('Population')
-    plt.title('Population Changes of Fish and Sharks Over Time')
-    plt.legend()
-    plt.show()
+    plot_population(iterations, fish_population, shark_population) 
 
 if __name__ == "__main__":
     main()

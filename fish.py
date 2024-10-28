@@ -19,12 +19,15 @@ class Fish():
         Returns a new Fish instance if the fish is of reproductive age.
     """
 
-    def __init__(self, reproduction_age: int, has_moved: bool):
+    def __init__(self, reproduction_age: int):
         self.age = 0
         self.reproduction_age = reproduction_age
         self.direction = "" # for later
-        self.has_moved = has_moved
+        self.has_moved = False
 
+    def __str__(self) -> str:
+        return "FISH"
+    
     def reproduce(self):
         """
         Returns a new Fish instance if the fish is of reproductive age.
@@ -69,7 +72,9 @@ class Shark(Fish):
         self.max_energy = self.energy
         pass
 
-
+    def __str__(self) -> str:
+        return "SHARK"
+    
     def eat(self, energy: int):
         """
         Simulates the shark eating a fish.

@@ -1,15 +1,9 @@
+from fish import Fish
+from fish import Shark
 from random import randint
 import os
 import time
 clear = lambda: os.system("clear")
-
-class TempFish:
-    
-    def __init__(self) -> None:
-        self.has_moved = False
-    
-    def __str__(self) -> str:
-        return "O"
 
 class World:
     
@@ -36,6 +30,12 @@ class World:
         self.shark_energy = shark_energy #The starting energy of a shark.  
         self.shark_energy_gained_by_eating = shark_energy_gain #The amount of energy a shark gains when eating a fish
         
+        self.next_move_will_eat = False
+        
+        #Stats block
+        self.fish_population = self.starting_population[0]
+        self.shark_population = self.starting_population[1]
+        
         #Cannot create a world smaller than total starting population
         if (sum(self.starting_population)) > self.size[0]*self.size[1]:
             raise ValueError("Total population too big : try increasing world size or reducing populations")
@@ -57,18 +57,18 @@ class World:
         for x in range(0, self.size[1]):
             self.grid.append([])
             for y in range(0, self.size[0]):
-                self.grid[x].append("~")            
+                self.grid[x].append(False)            
         
         #Place the fishes randomly
         while fishes > 0:
             x, y = self.get_empty_grid_space()
-            self.grid[x][y] = TempFish()            
+            self.grid[x][y] = Fish(self.fish_reproduction_time)            
             fishes -= 1
         
         #Place the sharks randomly
         while sharks > 0:
             x, y = self.get_empty_grid_space()
-            self.grid[x][y] = "X"            
+            self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy)            
             sharks -= 1  
         
     def update_world(self) -> None:
@@ -77,21 +77,19 @@ class World:
             for y in range(0, len(self.grid[x])):
                 
                 #skip water tiles
-                if self.grid[x][y] == "~":
+                if self.grid[x][y] == False:
                     continue
                 
                 #Skip fishes that have already moved
                 if self.grid[x][y].has_moved:
                     continue
                 
-                #TODO: Check if fish already moved, if yes pass.
-                #if isinstance(self.grid[x][y], fish):
-                    #continue
-                
+                self.next_move_will_eat = False
+                isShark = isinstance(self.grid[x][y], Shark)              
                 self.grid[x][y].has_moved = True
                 
                 #Get the availlable directions for current entity    
-                direction = self.get_direction(x, y)
+                direction = self.get_shark_directions(x, y) if isShark else self.get_fish_direction(x, y)
                 
                 #If no legal movement, continue the loop
                 if direction == "":
@@ -101,39 +99,41 @@ class World:
                 #Get one direction randomly among all availlable direction
                 direction = direction[randint(0, len(direction)-1)]
                 
+                if self.next_move_will_eat:
+                        self.grid[x][y].eat(self.shark_energy_gained_by_eating)
                 
-                if direction == "N":
+                if direction == "N":                    
                     self.grid[x-1][y] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
                 if direction == "D":
                     self.grid[len(self.grid)-1][y] = self.grid[x][y]
-                    self.grid[x][y] = "~"                
+                    self.grid[x][y] = False                
               
                 if direction == "S":
                     self.grid[x+1][y] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
                 if direction == "U":
                     self.grid[0][y] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
                               
                 if direction == "W":
                     self.grid[x][y-1] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
                 if direction == "R":
                     self.grid[x][len(self.grid[x])-1] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
                 
                 if direction == "E":
                     self.grid[x][y+1] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
                 if direction == "L":
                     self.grid[x][0] = self.grid[x][y]
-                    self.grid[x][y] = "~"
+                    self.grid[x][y] = False
         
         #Reset fishes movement
         for x in self.grid:
             for y in x:
-                if isinstance(y, TempFish):
+                if y:
                     y.has_moved = False
         
         self.print_grid()    
@@ -148,25 +148,92 @@ class World:
         while not found_suitable_space:
             x = randint(0, self.size[1]-1)
             y = randint(0, self.size[0]-1)
-            if self.grid[x][y] == "~":
+            if self.grid[x][y] == False:
                 found_suitable_space = True
         return x, y
-
     
 
     def print_grid(self) -> None: 
         """
         Print the state of the world in the console.
-        """       
+        """   
+        self.fish_population = 0
+        self.shark_population = 0    
         for x in self.grid:
             line = "| "
             for y in x:
-                line += f"[{y}]"
+                if isinstance(y, Shark):
+                    line += f"[X]"
+                    self.shark_population += 1
+                elif isinstance(y,Fish):
+                    line += f"[O]"
+                    self.fish_population += 1
+                else:
+                    line += f"[~]"                
             line += " |"
             print(line)
     
     
-    def get_direction(self, x: int, y: int) -> str:
+    def get_shark_directions(self, x: int, y: int) -> str:
+        """
+        Return all possible movement for the shark :
+        N = North
+        D = Down (from top edge to bottom edge)
+        S = South
+        U = Up (from bottom edge to top edge)
+        W = West
+        R = Right (from left edge to right edge)
+        E = East
+        L = Left (from right edge to left edge)
+        
+        [Args]\n
+        x, y = current coordinate of fish
+        """
+        
+        print(f"DEBUG : {self.grid[x][y]}")
+        outcomes = ""               
+        
+        #Check first for availlable fishes      
+        #Check for North availlable
+        if x == 0 and not isinstance(self.grid[len(self.grid)-1][y], Fish) and not isinstance(self.grid[len(self.grid)-1][y], Shark):
+            outcomes += "D"            
+        elif x == 0:
+            pass
+        elif isinstance(self.grid[x-1][y], Fish) and not isinstance(self.grid[x-1][y], Shark):
+            outcomes += "N"
+            
+        #Check for South availlable
+        if x == (len(self.grid) - 1) and isinstance(self.grid[0][y], Fish) and not isinstance(self.grid[0][y], Shark):
+            outcomes += "U"    
+        elif x == (len(self.grid) - 1):
+            pass      
+        elif isinstance(self.grid[x+1][y], Fish) and not isinstance(self.grid[x+1][y], Shark):
+            outcomes += "S"
+            
+        #Check for West availlable
+        if y == 0 and isinstance(self.grid[x][len(self.grid[y])-1], Fish) and not isinstance(self.grid[x][len(self.grid[y])-1], Shark):
+            outcomes += "R"     
+        elif y == 0:
+            pass
+        elif isinstance(self.grid[x][y-1], Fish) and not isinstance(self.grid[x][y-1], Shark):
+            outcomes += "W"
+            
+        #check for East availlabke
+        if y == (len(self.grid[x]) - 1) and isinstance(self.grid[x][0], Fish) and not isinstance(self.grid[x][0], Shark):
+            outcomes += "L"  
+        elif y == (len(self.grid[x]) - 1):
+            pass
+        elif isinstance(self.grid[x][y+1], Fish) and not isinstance(self.grid[x][y+1], Shark):
+            outcomes += "E"
+        
+        if outcomes != "":
+            self.next_move_will_eat = True
+            return outcomes
+
+        #If no fish availlable, return normal fish behavior
+        return self.get_fish_direction(x, y)
+    
+    def get_fish_direction(self, x: int, y: int) -> str:
         """
         Return all possible movement for the fish :
         N = North
@@ -182,51 +249,47 @@ class World:
         x, y = current coordinate of fish
         """
         
-        outcomes = ""
-        fish = True
-                
-        if fish:            
+        outcomes = ""               
                      
-            #Check for North availlable
-            if x == 0 and self.grid[len(self.grid)-1][y] == "~":
-                outcomes += "D"            
-            elif x == 0:
-                pass
-            elif self.grid[x-1][y] == "~":
-                outcomes += "N"
-            
-            #Check for South availlable
-            if x == (len(self.grid) - 1) and self.grid[0][y] == "~":
-                outcomes += "U"    
-            elif x == (len(self.grid) - 1):
-                pass      
-            elif self.grid[x+1][y] == "~":
-                outcomes += "S"
-            
-            #Check for West availlable
-            if y == 0 and self.grid[x][len(self.grid[y])-1] == "~":
-                outcomes += "R"     
-            elif y == 0:
-                pass
-            elif self.grid[x][y-1] == "~":
-                outcomes += "W"
-            
-            #check for East availlabke
-            if y == (len(self.grid[x]) - 1) and self.grid[x][0] == "~":
-                outcomes += "L"  
-            elif y == (len(self.grid[x]) - 1):
-                pass
-            elif self.grid[x][y+1] == "~":
-                outcomes += "E"
-        else:
+        #Check for North availlable
+        if x == 0 and self.grid[len(self.grid)-1][y] == False:
+            outcomes += "D"            
+        elif x == 0:
             pass
+        elif self.grid[x-1][y] == False:
+            outcomes += "N"
+            
+        #Check for South availlable
+        if x == (len(self.grid) - 1) and self.grid[0][y] == False:
+            outcomes += "U"    
+        elif x == (len(self.grid) - 1):
+            pass      
+        elif self.grid[x+1][y] == False:
+            outcomes += "S"
+            
+        #Check for West availlable
+        if y == 0 and self.grid[x][len(self.grid[y])-1] == False:
+            outcomes += "R"     
+        elif y == 0:
+            pass
+        elif self.grid[x][y-1] == False:
+            outcomes += "W"
+            
+        #check for East availlabke
+        if y == (len(self.grid[x]) - 1) and self.grid[x][0] == False:
+            outcomes += "L"  
+        elif y == (len(self.grid[x]) - 1):
+            pass
+        elif self.grid[x][y+1] == False:
+            outcomes += "E"
+     
         print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
         return outcomes
                      
         
     
     
-my_world = World((30, 0), 1, (20, 10), 10, 10, 5, 5)
+my_world = World((10, 3), 1, (5, 5), 10, 10, 5, 5)
 my_world.populate_world()
 max_loop = 10
 current_loop = 0
@@ -236,6 +299,7 @@ my_world.print_grid()
 clear()
 print("current loop : ", current_loop)
 my_world.print_grid()
+print(f"Fish pop : {my_world.fish_population} ; Shark pop : {my_world.shark_population}")
 
 while current_loop < max_loop: 
     
@@ -245,6 +309,7 @@ while current_loop < max_loop:
         clear()
         print("current loop : ", current_loop)
         my_world.update_world()
+        print(f"Fish pop : {my_world.fish_population} ; Shark pop : {my_world.shark_population}")
         
 
 print("END OF SIMULATION")

@@ -101,7 +101,6 @@ class World:
                 
                 #If no legal movement, continue the loop
                 if direction == "":
-                    print("No direction")
                     continue
                 
                 #Get one direction randomly among all availlable direction
@@ -156,9 +155,8 @@ class World:
         for x in self.grid:
             for y in x:
                 if y:
-                    y.has_moved = False
-        
-        self.print_grid()    
+                    y.has_moved = False        
+          
         
     def get_empty_grid_space(self) -> int:
         """
@@ -184,13 +182,13 @@ class World:
             line = "| "
             for y in x:
                 if isinstance(y, Shark):
-                    line += f"[X]"
+                    line += f"[\033[31mX\033[0m]"
                     self.shark_population += 1
                 elif isinstance(y,Fish):
-                    line += f"[O]"
+                    line += f"[\033[33mO\033[0m]"
                     self.fish_population += 1
                 else:
-                    line += f"[~]"                
+                    line += f"[\033[34m~\033[0m]"                
             line += " |"
             print(line)
     

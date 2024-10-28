@@ -1,4 +1,4 @@
-class display:
+class WaTorDisplay:
     """
         Management of the pygame interface
     """

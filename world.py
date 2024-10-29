@@ -9,7 +9,7 @@ import os
 class World:
     
     def __init__(self, s_pop: tuple[int, int], chro_len: int, world_size: tuple[int, int], fish_repro_time: int, shark_repro_time: int,\
-        shark_energy: int, shark_energy_gain: int, shark_energy_depletion_rate = 1) -> None:
+        shark_energy: int, shark_energy_gain: int, allow_megalodons: bool = True, megalodon_evolution_threshold: int = 5, shark_energy_depletion_rate: int = 1) -> None:
         """
         [Args]\n
         s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
@@ -18,7 +18,8 @@ class World:
         fish_repro_time = the amount of chronos a fish needs to reproduce
         shark_repro_time = the amount of chronos a shark needs to reproduce
         shark_energy = starting energy of a newly created shark (also its maximum, if needed)
-        shark_energy_gain = amount of energy a shark gains when eating a fish"""
+        shark_energy_gain = amount of energy a shark gains when eating a fish
+        allow_megalodons = if False, sharks will never evolve to Megalodons"""
         
         #World parameters block
         self.starting_population = s_pop #The initial ratio of fish to shark. starting_population[0] = fishes, starting_population[1] = sharks
@@ -39,6 +40,10 @@ class World:
         # Stats block
         self.fish_population = self.starting_population[0]
         self.shark_population = self.starting_population[1]
+        self.megalodon_population = 0
+        
+        #DEBUG block
+        self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.
         
         #Cannot create a world smaller than total starting population
         if (sum(self.starting_population)) > self.size[0]*self.size[1]:
@@ -56,6 +61,7 @@ class World:
         # Get buffer values for fishes and sharks
         fishes = self.starting_population[0]
         sharks = self.starting_population[1]
+        mega = self.megalodon_starting_population
         
         #Fill the grid with water
         for x in range(0, self.size[1]):
@@ -72,8 +78,13 @@ class World:
         # Place the sharks randomly
         while sharks > 0:
             x, y = self.get_empty_grid_space()
-            self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy)            
+            self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)            
             sharks -= 1  
+        
+        while mega > 0:
+            x, y = self.get_empty_grid_space()
+            self.grid[x][y] = Megalodon(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)            
+            mega -= 1 
         
     def update_world(self) -> None:
         """
@@ -88,13 +99,14 @@ class World:
                 if self.grid[x][y] == False:
                     continue
                 
-                #Skip fishes that have already moved
-                if self.grid[x][y].has_moved:
+                #Skip fishes that have already moved or ar Megalodon tails
+                if self.grid[x][y].has_moved or isinstance(self.grid[x][y], Megalodon_Tail):
                     continue
 
                 # Set parameters for next entity
                 self.next_move_will_eat = False
-                isShark = isinstance(self.grid[x][y], Shark)              
+                isMegalodon = isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
+                isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
                 will_die = False          
@@ -111,7 +123,10 @@ class World:
 
                 # If Shark will eat a fish, it gains energy
                 if self.next_move_will_eat:
-                        self.grid[x][y].eat(self.shark_energy_gained_by_eating)                
+                        self.grid[x][y].eat(self.shark_energy_gained_by_eating)    
+                        if isShark and self.enable_megalodons:
+                            if self.grid[x][y].check_for_evolution() :
+                                self.grid[x][y] = Megalodon(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)       
                 
                 #Sharks lose energy when moving.
                 if isShark:
@@ -120,6 +135,22 @@ class World:
                     ):
                         self.grid[x][y] = False
                         will_die = True
+                
+                if isMegalodon:
+                    #Remove old tail. If newly evolved, skip this check.
+                    if self.grid[x][y].skip_first_tail_check:
+                        self.grid[x][y].skip_first_tail_check = False
+                    else:
+                        self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False                     
+                    #Megalodons lose energy when moving.
+                    if not self.grid[x][y].energy_management(self.shark_energy_depletion_rate):
+                        self.grid[x][y] = False
+                        will_die = True
+                    else:
+                        #If they don't die, save current pos as new tail pos and set direction
+                        self.grid[x][y].current_direction = direction
+                        #Save new tail position
+                        self.grid[x][y].tail_pos = (x, y)     
                 
                 #Move entity to new cell depending on direction                
                 #North/Up block
@@ -154,7 +185,7 @@ class World:
                 #If reproducing, left a new entity of same type. Else, leaves water.
                 if will_reproduce:
                     if isShark:
-                        self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy)
+                        self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)
                     else:
                         self.grid[x][y] = Fish(self.fish_reproduction_time)
                 else:
@@ -186,6 +217,7 @@ class World:
         """
         self.fish_population = 0
         self.shark_population = 0    
+        self.megalodon_population = 0
         for x in self.grid:
             line = "| "
             for y in x:
@@ -203,6 +235,65 @@ class World:
                     line += f"[\033[34m~\033[0m]"
             line += " |"
             print(line)
+    
+    def get_megalodons_directions(self, x: int, y: int) -> str:
+        """
+        Return all possible movement for the Megalodon based only on the presence of sharks in its move radius. 
+        If no sharks exist in this radius, acts like a normal fish instead.
+        Possible directions are :
+        N = North
+        D = Down (from top edge to bottom edge)
+        S = South
+        U = Up (from bottom edge to top edge)
+        W = West
+        R = Right (from left edge to right edge)
+        E = East
+        L = Left (from right edge to left edge)
+        
+        [Args]\n
+        x, y = current coordinate of Megalodon
+        """
+                
+        outcomes = ""               
+        
+        #Check for North availlable
+        if x == 0 and self.check_for_only_shark_in_tile(len(self.grid)-1, y):
+            outcomes += "D"            
+        elif x == 0:
+            pass
+        elif self.check_for_only_shark_in_tile(x-1, y):
+            outcomes += "N"
+            
+        #Check for South availlable
+        if x == (len(self.grid) - 1) and self.check_for_only_shark_in_tile(0, y):
+            outcomes += "U"    
+        elif x == (len(self.grid) - 1):
+            pass      
+        elif self.check_for_only_shark_in_tile(x+1, y):
+            outcomes += "S"
+            
+        #Check for West availlable
+        if y == 0 and self.check_for_only_shark_in_tile(x, len(self.grid[y])-1):
+            outcomes += "R"     
+        elif y == 0:
+            pass
+        elif self.check_for_only_shark_in_tile(x, y-1):
+            outcomes += "W"
+            
+        #check for East availlabke
+        if y == (len(self.grid[x]) - 1) and self.check_for_only_shark_in_tile(x, 0):
+            outcomes += "L"  
+        elif y == (len(self.grid[x]) - 1):
+            pass
+        elif self.check_for_only_shark_in_tile(x, y+1):
+            outcomes += "E"
+        
+        if outcomes != "":
+            self.next_move_will_eat = True
+            return outcomes
+
+        #If no shark availlable, return normal fish behavior
+        return self.get_fish_direction(x, y)
     
     def get_shark_directions(self, x: int, y: int) -> str:
         """
@@ -253,7 +344,7 @@ class World:
             outcomes += "L"  
         elif y == (len(self.grid[x]) - 1):
             pass
-        elif isinstance(self.grid[x][y+1], Fish) and not isinstance(self.grid[x][y+1], Shark):
+        elif self.check_for_only_fish_in_tile(x, y+1):
             outcomes += "E"
 
         if outcomes != "":
@@ -316,4 +407,13 @@ class World:
         # print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
         return outcomes
 
+    def check_for_only_shark_in_tile(self, x: int, y: int) -> bool:
+        return isinstance(self.grid[x][y], Shark) and not\
+            isinstance(self.grid[x][y], Megalodon)
+            #not isinstance(self.grid[x][y], Fish) 
+            
+    def check_for_only_fish_in_tile(self, x: int, y: int) -> bool:
+        return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\
+            isinstance(self.grid[x][y], Megalodon)
+        
     

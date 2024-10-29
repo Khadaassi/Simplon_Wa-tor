@@ -2,13 +2,12 @@ import pygame
 from UserButton import UserButton
 from UserImage import UserImage
 from typing import cast
-from CommandBuilder import *
 
 class PygameWrapper:
 
-    def __init__(self, command_builder: CommandBuilder):
+    def __init__(self, callback_function):
         self.tab = []
-        self.command_builder = command_builder
+        self.callback_function = callback_function
         self.window_width = 1000 #defaut value
         self.window_heigth = 700 #defaut value
 
@@ -72,10 +71,9 @@ class PygameWrapper:
         # Buttons need to be created after the creation of the screen
          
         self.commands = ["Start", "Pause", "Stop"] 
-        callback_function = self.command_builder.command_callback()
         count = 3
         for command in reversed(self.commands):
-            self.buttons.append(UserButton(command, callback_function,
+            self.buttons.append(UserButton(command, self.callback_function,
                 self.window_width - count*(self.buttons_width+self.border_length), 
                 self.window_heigth - self.buttons_height-self.border_length, 
                 self.buttons_width, 
@@ -100,7 +98,7 @@ class PygameWrapper:
                 button.check_event(event)
 
         # fill the screen with a color to wipe away anything from last frame
-        self.screen.fill("darkgreen")
+        self.screen.fill((100,100,100))
 
         # RENDER YOUR GAME HERE   
         tab = self.get_tab()
@@ -137,5 +135,5 @@ class PygameWrapper:
         # here stopped the old while true
 
         if not self.running : 
-            self.command_builder.command_callback()("Quit")
+            self.callback_function("Quit")
             pygame.quit()

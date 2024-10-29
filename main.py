@@ -66,6 +66,7 @@ def main():
             break
 
         
+    while display.state != DisplayState.OUT : display.update_view(world)
 
 # Plotting the population changes of fish and sharks over time
 
@@ -76,9 +77,11 @@ def main():
     plt.ylabel('Population')
     plt.title('Population Changes of Fish and Sharks Over Time')
     plt.legend()
-    plt.show()
+    plt.savefig('my_plot.png')  # Save as PNG file
 
-    while display.state != DisplayState.OUT : display.update_view(world)
+    #plt.show( )
+
+   
 
 
 

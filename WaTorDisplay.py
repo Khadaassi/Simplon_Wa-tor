@@ -1,7 +1,6 @@
 from PygameWrapper import PygameWrapper
 from world import World
 from fish import Fish, Shark
-from CommandBuilder import *
 from enum import Enum
 
 class DisplayState(Enum) :
@@ -11,7 +10,7 @@ class DisplayState(Enum) :
     STOP  = 3
     OUT   = 4
 
-class WaTorDisplay(CommandObserver):
+class WaTorDisplay():
     """
         Management of the pygame interface
     """
@@ -25,7 +24,7 @@ class WaTorDisplay(CommandObserver):
                 app_object.stop()
         """
         self.mainObject = app_object
-        self.pygameWrapper = PygameWrapper(CommandBuilder(self))
+        self.pygameWrapper = PygameWrapper(self.on_user_command)
         self.state = DisplayState.WAIT
 
     def on_user_command(self, command : str):

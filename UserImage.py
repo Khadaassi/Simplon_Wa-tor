@@ -5,16 +5,11 @@ class UserImage:
     light_color = (0, 0, 170)
     dark_color = (50, 20, 150)
 
-
-class UserImage:
-    light_color = (0, 0, 170)
-    dark_color = (50, 20, 150)
-
     def __init__(
         self,
         png_filename: str,
-        light_background_color: pygame.Color = UserImage.light_color,
-        dark_background_color: pygame.Color = UserImage.dark_color,
+        light_background_color: pygame.Color = light_color,
+        dark_background_color: pygame.Color = dark_color,
     ):
 
         self.image = pygame.image.load(png_filename)

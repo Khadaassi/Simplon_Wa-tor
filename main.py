@@ -1,6 +1,7 @@
 import os
 import time
-from plot import plot_population
+
+# from plot import plot_population
 from fish import Shark
 from world import World
 from WaTorDisplay import *
@@ -14,7 +15,7 @@ def main():
     Main function to run the simulation
     """
 
-    world = World((500, 200), 0.001, (40, 30), 3, 3, 2, 2)
+    world = World((500, 200), 0.1, (40, 30), 3, 3, 2, 2)
     world.populate_world()
     current_iteration = 0
     start_t = time.time()  # Start time
@@ -63,7 +64,7 @@ def main():
 
             break
 
-    plot_population(iterations, fish_population, shark_population)
+    # plot_population(iterations, fish_population, shark_population)
     while display.state != DisplayState.OUT:
         display.update_view(world)
 

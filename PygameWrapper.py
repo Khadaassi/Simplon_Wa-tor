@@ -24,8 +24,8 @@ class PygameWrapper:
         self.x_cell_length = 0
         self.y_cell_length = 0
 
-        self.shark_image = UserImage("Shark_image_1.png")
-        self.fish_image = UserImage("Fish_image_1.png")
+        self.shark_image = UserImage("Shark_image_1.png", "red", "darkred")
+        self.fish_image = UserImage("Fish_image_1.png", "green", "darkgreen")
         self.running = False
         self.screen = None
 
@@ -117,11 +117,18 @@ class PygameWrapper:
                 position_x = self.border_length + x_index * self.x_cell_length
                 position_y = self.border_length + y_index * self.y_cell_length
 
-                case_color = (
-                    UserImage.light_color
-                    if (x_index + y_index) % 2 == 0
-                    else UserImage.dark_color
-                )
+                even_case = (x_index + y_index) % 2 == 0
+
+                if tab[y_index][x_index] == "~":
+                    case_color = UserImage.light_color if even_case else UserImage.dark_color
+                else:
+                    obj = tab[y_index][x_index]
+                    image = cast(UserImage, obj)
+                    case_color = image.light_background_color if even_case else image.dark_background_color
+                    
+                    x_image = self.border_length + x_index * self.x_cell_length
+                    y_image = self.border_length + y_index * self.y_cell_length
+
                 pygame.draw.rect(
                     self.screen,
                     case_color,
@@ -130,12 +137,6 @@ class PygameWrapper:
 
                 if tab[y_index][x_index] == "~":
                     continue
-
-                obj = tab[y_index][x_index]
-                image = cast(UserImage, obj)
-
-                x_image = self.border_length + x_index * self.x_cell_length
-                y_image = self.border_length + y_index * self.y_cell_length
 
                 self.screen.blit(image.resized, (x_image, y_image))
 

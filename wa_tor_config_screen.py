@@ -1,4 +1,4 @@
-class ConfigScreen :
+class WaTorConfigScreen :
     def __init__(self):
         self.config = {}
 

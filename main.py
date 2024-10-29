@@ -4,8 +4,8 @@ import time
 # from plot import plot_population
 from fish import Shark
 from world import World
-from WaTorDisplay import WaTorDisplay
-from DisplayState import DisplayState
+from wa_tor_display import WaTorDisplay
+from wa_tor_display_state import WaTorDisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
 
@@ -14,7 +14,7 @@ def main():
     Main function to run the simulation
     """
 
-    world = World((500, 200), 0.1, (40, 30), 3, 3, 2, 2)
+    world = World((50, 20), 0.5, (20, 10), 3, 3, 2, 2)
     world.populate_world()
     current_iteration = 0
     start_t = time.time()  # Start time
@@ -34,10 +34,10 @@ def main():
     clear()
 
     while True:
-        if display.state == DisplayState.STOP:
+        if display.state == WaTorDisplayState.STOP:
             break
 
-        if display.state != DisplayState.PLAY or display.state == DisplayState.PAUSE:
+        if display.state == WaTorDisplayState.WAIT or display.state == WaTorDisplayState.PAUSE:
             display.update_view(world)
             continue
 
@@ -60,12 +60,10 @@ def main():
             iterations.append(current_iteration)
 
         if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
-
             break
 
     # plot_population(iterations, fish_population, shark_population)
-    while display.state != DisplayState.OUT:
-        display.update_view(world)
+    while display.state != WaTorDisplayState.OUT: display.update_view(world)
 
 
 if __name__ == "__main__":

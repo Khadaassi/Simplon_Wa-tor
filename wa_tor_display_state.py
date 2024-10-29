@@ -1,6 +1,7 @@
+# standard imports
 from enum import Enum
 
-class DisplayState(Enum):
+class WaTorDisplayState(Enum):
     # CONF = 0
     WAIT = 1
     PLAY = 2

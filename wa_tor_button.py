@@ -1,10 +1,14 @@
+# pygame imports
 import pygame
-import DisplayState
+
+# pygame imports
+import wa_tor_display_state
 
 
-class UserButton:
+class WaTorButton:
 
-    def __init__(self, command_key : DisplayState, command_text: str,  callback_function, button_rect : pygame.Rect):
+    
+    def __init__(self, command_key : wa_tor_display_state, command_text: str,  callback_function, button_rect : pygame.Rect):
         
         self.command_key = command_key
         self.text = command_text
@@ -26,10 +30,7 @@ class UserButton:
         self.text_rect = self.text_render.get_rect(
             center=(
                 self.button_surface.get_width() / 2,
-                self.button_surface.get_height() / 2,
-            )
-        )
-
+                self.button_surface.get_height() / 2))
 
     def check_event(self, event):
         # Check for the mouse button down event
@@ -38,34 +39,28 @@ class UserButton:
             if self.button_rect.collidepoint(event.pos):
                 self.callback_function(self.command_key)
 
-    def show(self, screen: pygame.Surface):
+    def draw(self, screen: pygame.Surface):
 
         # Check if the mouse is over the button. This will create the button hover effect
         if self.button_rect.collidepoint(pygame.mouse.get_pos()):
-            pygame.draw.rect(
-                self.button_surface,
-                (127, 255, 212),
-                (1, 1, self.button_rect.width - 2, self.button_rect.height - 2),
-            )
+            pygame.draw.rect( self.button_surface, 
+                (127, 255, 212), 
+                (1, 1, self.button_rect.width - 2, self.button_rect.height - 2))
         else:
-            pygame.draw.rect(
-                self.button_surface, (0, 0, 0), (0, 0, self.button_rect.width, self.button_rect.height)
-            )
-            pygame.draw.rect(
-                self.button_surface,
-                (255, 255, 255),
-                (1, 1, self.button_rect.width - 2, self.button_rect.height - 2),
-            )
-            pygame.draw.rect(
-                self.button_surface, (0, 0, 0), (1, 1, self.button_rect.width - 2, 1), 2
-            )
-            pygame.draw.rect(
-                self.button_surface,
-                (0, 100, 0),
-                (1, self.button_rect.height - 2, self.button_rect.width - 2, 10),
-                2,
-            )
-        # __________________________________________________________________________
+            pygame.draw.rect( self.button_surface, 
+                (0, 0, 0), 
+                (0, 0, self.button_rect.width, self.button_rect.height))
+            pygame.draw.rect( self.button_surface, 
+                (255, 255, 255), 
+                (1, 1, self.button_rect.width - 2, self.button_rect.height - 2))
+            pygame.draw.rect( self.button_surface,
+                (0, 0, 0), 
+                (1, 1, self.button_rect.width - 2, 1), 
+                2)
+            pygame.draw.rect( self.button_surface, 
+                (0, 100, 0), 
+                (1, self.button_rect.height - 2, self.button_rect.width - 2, 10), 
+                2)
 
         # __________________________________________________________________________
         # Show the button text

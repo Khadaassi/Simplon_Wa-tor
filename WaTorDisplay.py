@@ -1,51 +1,61 @@
 from PygameWrapper import PygameWrapper
 from world import World
 from fish import Fish, Shark
-from enum import Enum
-
-
-class DisplayState(Enum):
-    WAIT = 0
-    PLAY = 1
-    PAUSE = 2
-    STOP = 3
-    OUT = 4
-
+from DisplayState import DisplayState
 
 class WaTorDisplay:
     """
-    Management of the pygame interface
+    A class to manage the pygame interface 
+     and the user interaction.
+
+    Attributes
+    ----------
+    state : DisplayState
+        the actual state of all views.
+    user_data : dict
+        all the informations provided by the user
+
+    Methods
+    -------
+    update_view()
+        Update the data on the sreen
+
+    on_user_command()
+        set state variable 
+        and possibly set the informations provided by the user
+    
     """
 
-    def __init__(self, app_object=None):
-        """
-        When instanciated, the object starts a pygame
-        needs a app_object which have got three methods :
-            app_object.start()
-            app_object.pause()
-            app_object.stop()
-        """
-        self.mainObject = app_object
-        self.pygameWrapper = PygameWrapper(self.on_user_command)
+    def __init__(self):
         self.state = DisplayState.WAIT
+        self.pygameWrapper = PygameWrapper(self.on_user_command)
+        self.user_data = {}   
 
-    def on_user_command(self, command: str):
-        # print(f"Button {command} clicked from a function !")
-        if command == "Start":
+    def on_user_command(self, command: DisplayState , command_data: dict =None):
+        """
+        update WatorDisplay instance variable : state
+        optionally uses command_data object if provided
+        """
+        if command == DisplayState.PLAY: 
             self.state = DisplayState.PLAY
-        elif command == "Pause":
-            if self.state == DisplayState.PLAY:
-                self.state = DisplayState.PAUSE
-            elif self.state == DisplayState.PAUSE:
-                self.state = DisplayState.PLAY
-            else:
-                pass
-        elif command == "Stop":
+
+        elif command == DisplayState.PAUSE: 
+            if self.state == DisplayState.PLAY: self.state = DisplayState.PAUSE
+            elif self.state == DisplayState.PAUSE: self.state = DisplayState.PLAY
+            else: pass
+
+        elif command == DisplayState.STOP:
             self.state = DisplayState.STOP
-        elif command == "Quit":
+
+        elif command == DisplayState.OUT:
             self.state = DisplayState.OUT
+
         else:
             self.state = DisplayState.OUT
+
+        if command_data != None :
+            self.user_data = command_data
+
 
     def update_view(self, world: World):
         """

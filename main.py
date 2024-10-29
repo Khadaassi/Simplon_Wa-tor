@@ -4,11 +4,10 @@ import time
 # from plot import plot_population
 from fish import Shark
 from world import World
-from WaTorDisplay import *
-
+from WaTorDisplay import WaTorDisplay
+from DisplayState import DisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
-
 
 def main():
     """

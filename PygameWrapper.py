@@ -1,8 +1,10 @@
 import pygame
+from pygame.surface import Surface
 from UserButton import UserButton
 from UserImage import UserImage
 from typing import cast
-
+from DisplayState import DisplayState
+from PlayScreen import PlayScreen
 
 class PygameWrapper:
 
@@ -16,21 +18,13 @@ class PygameWrapper:
         self.border_length = 25
         self.buttons_height = 50
         self.buttons_width = 75
-        self.len_tab_x = 0
-        self.len_tab_y = 0
 
-        self.table_width = 0
-        self.table_height = 0
-        self.x_cell_length = 0
-        self.y_cell_length = 0
+        self.play_screen = PlayScreen(self, 0,0,0,0,0,0)
 
-        self.shark_image = UserImage("Shark_image_1.png", "red", "darkred")
-        self.fish_image = UserImage("Fish_image_1.png", "green", "darkgreen")
+        self.screen_background_color = (100, 100, 100)
+        
         self.running = False
         self.screen = None
-
-        # perhaps that clock is never used
-        # since the while True has been removed
         self.clock = None
 
         self.buttons = []
@@ -48,7 +42,10 @@ class PygameWrapper:
             self.initialize_controls()
 
     def initialize_controls(self):
-        # format width = len(x) / heigth = len(y)
+        #______________________________________________________________________
+        # about format informations :
+        #    len_tab_x = width corresponds to the number of columns in the matrix 
+        #    len_tab_y = height corresponds to the number of lines in the matrix 
         self.len_tab_x = len(self.tab[0])
         self.len_tab_y = len(self.tab)
 
@@ -67,90 +64,44 @@ class PygameWrapper:
         # pygame setup
         pygame.init()
 
+        #______________________________________________________________________
+        # start the window on screen
         self.screen = pygame.display.set_mode((self.window_width, self.window_heigth))
+
+        #______________________________________________________________________
+        # The clock will be used used 
+        # each time the tick(60) function will be called 
         self.clock = pygame.time.Clock()
         self.running = True
 
+        #______________________________________________________________________
         # Buttons need to be created after the creation of the screen
 
-        self.commands = ["Start", "Pause", "Stop"]
+        self.commands = {
+            DisplayState.PLAY: "Start",
+            DisplayState.PAUSE: "Pause", 
+            DisplayState.STOP: "Stop"}
         count = 3
-        for command in reversed(self.commands):
+        for command_key, command_text in reversed(self.commands.items()):
             self.buttons.append(
-                UserButton(
-                    command,
-                    self.callback_function,
-                    self.window_width
-                    - count * (self.buttons_width + self.border_length),
-                    self.window_heigth - self.buttons_height - self.border_length,
-                    self.buttons_width,
-                    self.buttons_height,
+                UserButton( command_key, command_text, self.callback_function,
+                    pygame.Rect(
+                        self.window_width - count * (self.buttons_width + self.border_length),
+                        self.window_heigth - self.buttons_height - self.border_length,
+                        self.buttons_width,
+                        self.buttons_height
+                    )
                 )
             )
             count += 1
 
-    def draw(self):
+    def draw(self, screen_surface: Surface, clock, callback_function, display_state : DisplayState = DisplayState.WAIT):
         if not self.running:
             self.initialize_screen()  # first time only
 
-        # ______________________________________________________________________
+        # _____________________________________________________________________
         # here started the old while true
+        if display_state == DisplayState.WAIT :
+            self.play_screen.draw()
 
-        # poll for events
-        # pygame.QUIT event means the user clicked X to close your window
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-
-            # Check for the mouse button down event
-            for button in self.buttons:
-                button.check_event(event)
-
-        # fill the screen with a color to wipe away anything from last frame
-        self.screen.fill((100, 100, 100))
-
-        # RENDER YOUR GAME HERE
-        tab = self.get_tab()
-        for y_index in range(self.len_tab_y):
-            for x_index in range(self.len_tab_x):
-
-                position_x = self.border_length + x_index * self.x_cell_length
-                position_y = self.border_length + y_index * self.y_cell_length
-
-                even_case = (x_index + y_index) % 2 == 0
-
-                if tab[y_index][x_index] == "~":
-                    case_color = UserImage.light_color if even_case else UserImage.dark_color
-                else:
-                    obj = tab[y_index][x_index]
-                    image = cast(UserImage, obj)
-                    case_color = image.light_background_color if even_case else image.dark_background_color
-                    
-                    x_image = self.border_length + x_index * self.x_cell_length
-                    y_image = self.border_length + y_index * self.y_cell_length
-
-                pygame.draw.rect(
-                    self.screen,
-                    case_color,
-                    [position_x, position_y, self.x_cell_length, self.y_cell_length],
-                )
-
-                if tab[y_index][x_index] == "~":
-                    continue
-
-                self.screen.blit(image.resized, (x_image, y_image))
-
-        for button in self.buttons:
-            button.show(self.screen)
-
-        # flip() the display to put your work on screen
-        pygame.display.flip()
-
-        self.clock.tick(60)  # limits FPS to 60
-
-        # ______________________________________________________________________
-        # here stopped the old while true
-
-        if not self.running:
-            self.callback_function("Quit")
-            pygame.quit()
+        

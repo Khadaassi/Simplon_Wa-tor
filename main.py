@@ -51,10 +51,9 @@ def main():
 
         if time.time() - start_t >= world.chronos_length:
             counter += 1
-            print_counter += 1
             start_t = time.time()
             current_iteration += 1
-
+            
             clear()
             print("Current iteration : ", current_iteration)
             world.update_world()

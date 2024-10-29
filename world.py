@@ -3,7 +3,6 @@ from fish import Shark
 from fish import Megalodon
 from fish import Megalodon_Tail
 from random import randint
-import os
 
 
 class World:
@@ -82,6 +81,8 @@ class World:
             self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)            
             sharks -= 1  
         
+        #Place the megalodons randomly
+        #DEPRECATED : Megalodons shouldn't be manually placed during world generation. They should only appear from evolving sharks.
         while mega > 0:
             x, y = self.get_empty_grid_space()
             self.grid[x][y] = Megalodon(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)            
@@ -125,6 +126,7 @@ class World:
                 # If Shark will eat a fish, it gains energy
                 if self.next_move_will_eat:
                         self.grid[x][y].eat(self.shark_energy_gained_by_eating)    
+                        #If Megaladons can appear, check if current shark can evolve
                         if isShark and self.enable_megalodons:
                             if self.grid[x][y].check_for_evolution() :
                                 self.grid[x][y] = Megalodon(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)       
@@ -298,7 +300,7 @@ class World:
     
     def get_shark_directions(self, x: int, y: int) -> str:
         """
-        Return all possible movement for the shark base only on the presence of fishes in its move radius.
+        Return all possible movement for the shark based only on the presence of fishes in its move radius. 
         If no fishes exist in this radius, acts like a normal fish instead.
         Possible directions are :
         N = North
@@ -404,14 +406,12 @@ class World:
             pass
         elif self.grid[x][y + 1] == False:
             outcomes += "E"
-
-        # print(f"DEBUG : current coordinates : {x},{y} ; Availlable moves : {outcomes}")
+     
         return outcomes
 
     def check_for_only_shark_in_tile(self, x: int, y: int) -> bool:
         return isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon)
-            #not isinstance(self.grid[x][y], Fish) 
             
     def check_for_only_fish_in_tile(self, x: int, y: int) -> bool:
         return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\

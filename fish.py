@@ -144,4 +144,4 @@ class Megalodon_Tail(Megalodon):
             return "-"
     
     def __str__(self) -> str:
-        return "TAIL"
+        return "TAIL" 

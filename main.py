@@ -20,7 +20,7 @@ def main():
     Main function to run the simulation
     """
 
-    world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
+    world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], True, config[10])
     
     world.populate_world()
     current_iteration = 0

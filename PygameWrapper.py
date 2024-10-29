@@ -24,8 +24,8 @@ class PygameWrapper:
         self.x_cell_length = 0
         self.y_cell_length = 0
 
-        self.shark_image = UserImage("Shark_image_1.png")
-        self.fish_image = UserImage("Fish_image_1.png")
+        self.shark_image = UserImage("images/Shark_image_1.png")
+        self.fish_image = UserImage("images/Fish_image_1.png")
         self.running = False
         self.screen = None
 

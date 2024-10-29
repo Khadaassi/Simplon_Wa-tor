@@ -33,7 +33,8 @@ class World:
         self.shark_energy = shark_energy #The starting energy of a shark.  
         self.shark_energy_gained_by_eating = shark_energy_gain #The amount of energy a shark gains when eating a fish
         self.shark_energy_depletion_rate = shark_energy_depletion_rate #The amount of energy lost when a shark moves. 1 by default.
-        
+        self.enable_megalodons = allow_megalodons #If True, sharks can evolve into Megalodons
+        self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of energy a shark needs to evolve into a Megalodon
         #Internal logic block
         self.next_move_will_eat = False
 

@@ -4,7 +4,6 @@ from fish import Megalodon
 from fish import Megalodon_Tail
 from random import randint
 
-
 class World:
     
     def __init__(self, s_pop: tuple[int, int], chro_len: int, world_size: tuple[int, int], fish_repro_time: int, shark_repro_time: int,\
@@ -32,12 +31,13 @@ class World:
         self.shark_energy = shark_energy #The starting energy of a shark.  
         self.shark_energy_gained_by_eating = shark_energy_gain #The amount of energy a shark gains when eating a fish
         self.shark_energy_depletion_rate = shark_energy_depletion_rate #The amount of energy lost when a shark moves. 1 by default.
-        self.enable_megalodons = allow_megalodons #If True, sharks can evolve into Megalodons
-        self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of energy a shark needs to evolve into a Megalodon
+        self.enable_megalodons = allow_megalodons #if False, Megalodons generation will be disabled.
+        self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of Fish a shark needs to eat before evolving to a Megalodon
+        
         #Internal logic block
         self.next_move_will_eat = False
-
-        # Stats block
+        
+        #Stats block
         self.fish_population = self.starting_population[0]
         self.shark_population = self.starting_population[1]
         self.megalodon_population = 0
@@ -54,11 +54,11 @@ class World:
         """
         Populate the first state of the world by placing fishes and sharks randomly in the grid.
         """
-
-        # Reset the grid
-        self.grid = []
-
-        # Get buffer values for fishes and sharks
+        
+        #Reset the grid
+        self.grid = [] 
+        
+        #Get buffer values for fishes and sharks
         fishes = self.starting_population[0]
         sharks = self.starting_population[1]
         mega = self.megalodon_starting_population
@@ -67,15 +67,15 @@ class World:
         for x in range(0, self.size[1]):
             self.grid.append([])
             for y in range(0, self.size[0]):
-                self.grid[x].append(False)
-
-        # Place the fishes randomly
+                self.grid[x].append(False)            
+        
+        #Place the fishes randomly
         while fishes > 0:
             x, y = self.get_empty_grid_space()
-            self.grid[x][y] = Fish(self.fish_reproduction_time)
+            self.grid[x][y] = Fish(self.fish_reproduction_time)            
             fishes -= 1
-
-        # Place the sharks randomly
+        
+        #Place the sharks randomly
         while sharks > 0:
             x, y = self.get_empty_grid_space()
             self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)            
@@ -92,38 +92,40 @@ class World:
         """
         Update the world state and the state of every entity in the grid. (Movement, reproduction, death)
         """
-
-        # Move everything
+        
+        #Move everything
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
-
-                # skip water tiles
+                
+                #skip water tiles
                 if self.grid[x][y] == False:
                     continue
                 
                 #Skip fishes that have already moved or ar Megalodon tails
                 if self.grid[x][y].has_moved or isinstance(self.grid[x][y], Megalodon_Tail):
                     continue
-
-                # Set parameters for next entity
+                
+                #Set parameters for next entity
                 self.next_move_will_eat = False
                 isMegalodon = isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
                 isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
-                will_die = False          
+                will_die = False   
+                will_evolve = False       
                 
                 #Get the availlable directions for current entity    
-                direction = self.get_shark_directions(x, y) if isShark else self.get_fish_direction(x, y)
+                direction = self.get_shark_directions(x, y) if isShark else self.get_megalodons_directions(x, y) if isMegalodon \
+                    else self.get_fish_direction(x, y)
                 
                 #If no legal movement, continue the loop
                 if direction == "":
                     continue
-
-                # Get one direction randomly among all availlable direction
-                direction = direction[randint(0, len(direction) - 1)]
-
-                # If Shark will eat a fish, it gains energy
+                
+                #Get one direction randomly among all availlable direction
+                direction = direction[randint(0, len(direction)-1)]                
+                
+                #If Shark will eat a fish, it gains energy
                 if self.next_move_will_eat:
                         self.grid[x][y].eat(self.shark_energy_gained_by_eating)    
                         #If Megaladons can appear, check if current shark can evolve
@@ -133,9 +135,7 @@ class World:
                 
                 #Sharks lose energy when moving.
                 if isShark:
-                    if not self.grid[x][y].energy_management(
-                        self.shark_energy_depletion_rate
-                    ):
+                    if not self.grid[x][y].energy_management(self.shark_energy_depletion_rate):
                         self.grid[x][y] = False
                         will_die = True
                 
@@ -160,64 +160,65 @@ class World:
                 if direction == "N":                    
                     self.grid[x-1][y] = self.grid[x][y] if not will_die else False               
                 if direction == "D":
-                    self.grid[len(self.grid) - 1][y] = (
-                        self.grid[x][y] if not will_die else False
-                    )
-
-                # South/Down block
+                    self.grid[len(self.grid)-1][y] = self.grid[x][y] if not will_die else False  
+                                    
+                #South/Down block
                 if direction == "S":
-                    self.grid[x + 1][y] = self.grid[x][y] if not will_die else False
+                    self.grid[x+1][y] = self.grid[x][y] if not will_die else False                     
                 if direction == "U":
-                    self.grid[0][y] = self.grid[x][y] if not will_die else False
-
-                # West/Right block
+                    self.grid[0][y] = self.grid[x][y] if not will_die else False  
+                    
+                #West/Right block             
                 if direction == "W":
-                    self.grid[x][y - 1] = self.grid[x][y] if not will_die else False
+                    self.grid[x][y-1] = self.grid[x][y] if not will_die else False                      
                 if direction == "R":
-                    self.grid[x][len(self.grid[x]) - 1] = (
-                        self.grid[x][y] if not will_die else False
-                    )
-
-                # East/Left block
+                    self.grid[x][len(self.grid[x])-1] = self.grid[x][y] if not will_die else False  
+                    
+                #East/Left block
                 if direction == "E":
-                    self.grid[x][y + 1] = self.grid[x][y] if not will_die else False
+                    self.grid[x][y+1] = self.grid[x][y] if not will_die else False                      
                 if direction == "L":
                     self.grid[x][0] = self.grid[x][y] if not will_die else False  
                 
                 #Check for leaving tile behavior
                 #If reproducing, left a new entity of same type. Else, leaves water.
-                if will_reproduce:
+                if isMegalodon:
+                    #Move tail if the Megalodon didn't die
+                    if not will_die:
+                        self.grid[x][y] = Megalodon_Tail(direction)                                       
+                elif will_reproduce:
                     if isShark:
                         self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)
                     else:
                         self.grid[x][y] = Fish(self.fish_reproduction_time)
                 else:
-                    self.grid[x][y] = False
-
-        # Reset fishes movement
+                    self.grid[x][y] = False               
+                        
+        #Reset fishes movement
         for x in self.grid:
             for y in x:
                 if y:
-                    y.has_moved = False
-
+                    y.has_moved = False        
+          
+        
     def get_empty_grid_space(self) -> int:
         """
         Return the coordinates of a random empty space in the grid as two int x and y.
         """
-
-        # Loop through random coordinates until one water tile is found
+        
+        #Loop through random coordinates until one water tile is found
         found_suitable_space = False
         while not found_suitable_space:
-            x = randint(0, self.size[1] - 1)
-            y = randint(0, self.size[0] - 1)
+            x = randint(0, self.size[1]-1)
+            y = randint(0, self.size[0]-1)
             if self.grid[x][y] == False:
                 found_suitable_space = True
         return x, y
 
-    def print_grid(self) -> None:
+    def print_grid(self) -> None: 
         """
         Print the state of the world in the console.
-        """
+        """   
         self.fish_population = 0
         self.shark_population = 0    
         self.megalodon_population = 0
@@ -231,11 +232,11 @@ class World:
                 elif isinstance(y, Shark):
                     line += f"[\033[31mX\033[0m]"
                     self.shark_population += 1
-                elif isinstance(y, Fish):
+                elif isinstance(y,Fish):
                     line += f"[\033[33mO\033[0m]"
                     self.fish_population += 1
                 else:
-                    line += f"[\033[34m~\033[0m]"
+                    line += f"[\033[34m~\033[0m]"                
             line += " |"
             print(line)
     
@@ -311,7 +312,7 @@ class World:
         R = Right (from left edge to right edge)
         E = East
         L = Left (from right edge to left edge)
-
+        
         [Args]\n
         x, y = current coordinate of shark
         """
@@ -319,44 +320,44 @@ class World:
         outcomes = ""               
         
         #Check for North availlable
-        if x == 0 and not isinstance(self.grid[len(self.grid)-1][y], Fish) and not isinstance(self.grid[len(self.grid)-1][y], Shark):
+        if x == 0 and self.check_for_only_fish_in_tile(len(self.grid)-1, y):
             outcomes += "D"            
         elif x == 0:
             pass
-        elif isinstance(self.grid[x-1][y], Fish) and not isinstance(self.grid[x-1][y], Shark):
+        elif self.check_for_only_fish_in_tile(x-1, y):
             outcomes += "N"
             
         #Check for South availlable
-        if x == (len(self.grid) - 1) and isinstance(self.grid[0][y], Fish) and not isinstance(self.grid[0][y], Shark):
+        if x == (len(self.grid) - 1) and self.check_for_only_fish_in_tile(0, y):
             outcomes += "U"    
         elif x == (len(self.grid) - 1):
             pass      
-        elif isinstance(self.grid[x+1][y], Fish) and not isinstance(self.grid[x+1][y], Shark):
+        elif self.check_for_only_fish_in_tile(x+1, y):
             outcomes += "S"
             
         #Check for West availlable
-        if y == 0 and isinstance(self.grid[x][len(self.grid[y])-1], Fish) and not isinstance(self.grid[x][len(self.grid[y])-1], Shark):
+        if y == 0 and self.check_for_only_fish_in_tile(x, len(self.grid[y])-1):
             outcomes += "R"     
         elif y == 0:
             pass
-        elif isinstance(self.grid[x][y-1], Fish) and not isinstance(self.grid[x][y-1], Shark):
+        elif self.check_for_only_fish_in_tile(x, y-1):
             outcomes += "W"
             
         #check for East availlabke
-        if y == (len(self.grid[x]) - 1) and isinstance(self.grid[x][0], Fish) and not isinstance(self.grid[x][0], Shark):
+        if y == (len(self.grid[x]) - 1) and self.check_for_only_fish_in_tile(x, 0):
             outcomes += "L"  
         elif y == (len(self.grid[x]) - 1):
             pass
         elif self.check_for_only_fish_in_tile(x, y+1):
             outcomes += "E"
-
+        
         if outcomes != "":
             self.next_move_will_eat = True
             return outcomes
 
-        # If no fish availlable, return normal fish behavior
+        #If no fish availlable, return normal fish behavior
         return self.get_fish_direction(x, y)
-
+    
     def get_fish_direction(self, x: int, y: int) -> str:
         """
         Return all possible movement for the fish :
@@ -368,43 +369,43 @@ class World:
         R = Right (from left edge to right edge)
         E = East
         L = Left (from right edge to left edge)
-
+        
         [Args]\n
         x, y = current coordinate of fish
         """
-
-        outcomes = ""
-
-        # Check for North availlable
-        if x == 0 and self.grid[len(self.grid) - 1][y] == False:
-            outcomes += "D"
+        
+        outcomes = ""               
+                     
+        #Check for North availlable
+        if x == 0 and self.grid[len(self.grid)-1][y] == False:
+            outcomes += "D"            
         elif x == 0:
             pass
-        elif self.grid[x - 1][y] == False:
+        elif self.grid[x-1][y] == False:
             outcomes += "N"
-
-        # Check for South availlable
+            
+        #Check for South availlable
         if x == (len(self.grid) - 1) and self.grid[0][y] == False:
-            outcomes += "U"
+            outcomes += "U"    
         elif x == (len(self.grid) - 1):
-            pass
-        elif self.grid[x + 1][y] == False:
+            pass      
+        elif self.grid[x+1][y] == False:
             outcomes += "S"
-
-        # Check for West availlable
-        if y == 0 and self.grid[x][len(self.grid[y]) - 1] == False:
-            outcomes += "R"
+            
+        #Check for West availlable
+        if y == 0 and self.grid[x][len(self.grid[y])-1] == False:
+            outcomes += "R"     
         elif y == 0:
             pass
-        elif self.grid[x][y - 1] == False:
+        elif self.grid[x][y-1] == False:
             outcomes += "W"
-
-        # check for East availlabke
+            
+        #check for East availlabke
         if y == (len(self.grid[x]) - 1) and self.grid[x][0] == False:
-            outcomes += "L"
+            outcomes += "L"  
         elif y == (len(self.grid[x]) - 1):
             pass
-        elif self.grid[x][y + 1] == False:
+        elif self.grid[x][y+1] == False:
             outcomes += "E"
      
         return outcomes
@@ -416,5 +417,3 @@ class World:
     def check_for_only_fish_in_tile(self, x: int, y: int) -> bool:
         return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon)
-        
-    

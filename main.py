@@ -67,7 +67,7 @@ def main():
             megalodon_population.append(world.megalodon_population)
             iterations.append(current_iteration)
 
-        if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
+        if world.fish_population == 0 or world.shark_population == 0 or counter == 1000:
 
             break
 

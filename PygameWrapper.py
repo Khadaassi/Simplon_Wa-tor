@@ -1,8 +1,14 @@
+
+# standard imports
+from typing import cast
+
+# pygame imports
 import pygame
 from pygame.surface import Surface
+
+# Wa-Tor imports
 from UserButton import UserButton
 from UserImage import UserImage
-from typing import cast
 from DisplayState import DisplayState
 from PlayScreen import PlayScreen
 

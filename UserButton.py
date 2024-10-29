@@ -12,6 +12,7 @@ class UserButton:
 
         self.button_rect = button_rect
 
+        # _____________________________________________________________________
         # Create a surface for the button
         self.button_surface = pygame.Surface((self.button_rect.width, self.button_rect.height))
 

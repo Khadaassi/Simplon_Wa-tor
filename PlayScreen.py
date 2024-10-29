@@ -1,9 +1,13 @@
+# standard imports
+from typing import cast
+
+# pygame imports
 import pygame
 from pygame.surface import Surface
-from PygameWrapper import PygameWrapper
+
+# Wa-Tor imports
 from UserImage import UserImage
 from DisplayState import DisplayState
-from typing import cast
 
 class PlayScreen :
     def __init__(self, screen_background_color ) :

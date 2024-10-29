@@ -1,4 +1,4 @@
-class Fish():
+class Fish:
     """
     A class to represent a fish in a water ecosystem.
 
@@ -22,12 +22,12 @@ class Fish():
     def __init__(self, reproduction_age: int):
         self.age = 0
         self.reproduction_age = reproduction_age
-        self.direction = "" # for later
+        self.direction = ""  # for later
         self.has_moved = False
 
     def __str__(self) -> str:
         return "FISH"
-    
+
     def reproduce(self):
         """
         Returns a new Fish instance if the fish is of reproductive age.
@@ -39,16 +39,16 @@ class Fish():
         """
         self.age += 1
         if self.age >= self.reproduction_age:
-            self.age = 0 
+            self.age = 0
             return True
         else:
             return False
 
 
 class Shark(Fish):
-    """"
+    """ "
     A class to represent a shark in a water ecosystem that inherites of Fish class.
-    
+
     Attributes
     ----------
     energy : int
@@ -57,7 +57,7 @@ class Shark(Fish):
         The maximum energy of the shark.
     reproduction_age : int
         The age at which the shark can reproduce.
-    
+
     Methods
     -------
     eat(energy: int)
@@ -74,7 +74,7 @@ class Shark(Fish):
 
     def __str__(self) -> str:
         return "SHARK"
-    
+
     def eat(self, energy: int):
         """
         Simulates the shark eating a fish.

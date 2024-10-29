@@ -1,7 +1,6 @@
 import os
 import time
-import matplotlib.pyplot as plt
-from fish import Fish 
+from plot import plot_population 
 from fish import Shark
 from world import World
 from WaTorDisplay import *
@@ -13,7 +12,9 @@ def main():
     """
     Main function to run the simulation
     """
-    world = World((100, 50), 0.5, (20,15), 3, 3, 2, 2)
+
+
+    world = World((500, 200), 0.001, (40,30), 3, 3, 2, 2)
     world.populate_world()
     current_iteration = 0
     start_t = time.time() # Start time
@@ -21,16 +22,15 @@ def main():
     shark_population = [] # List to store shark population
     iterations = [] # List to store iterations
     counter = 0
+    print_counter = 0
 
     
     print("Initial World State:")
     world.print_grid()
 
-    #________________________
-    # NCA {
+
     display = WaTorDisplay() # initialize View
     display.update_view(world) # create screen with the first world
-    # }
     
     time.sleep(1) # Sleep for 1 second
     clear()
@@ -44,18 +44,15 @@ def main():
             continue
 
         if time.time() - start_t >= world.chronos_length: 
-            counter += 1       
+            counter += 1
+            print_counter += 1       
             start_t = time.time()
             current_iteration += 1
+
             clear()
             print("Current iteration : ", current_iteration)
-
-            #________________________
-            # NCA {
             world.update_world()
             display.update_view(world) # update screen with the next world
-            # }
-        
             world.print_grid()
             print(f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population}")
             fish_population.append(world.fish_population)
@@ -63,27 +60,12 @@ def main():
             iterations.append(current_iteration)
 
         if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
+
             break
 
-        
+    plot_population(iterations, fish_population, shark_population)    
     while display.state != DisplayState.OUT : display.update_view(world)
-
-# Plotting the population changes of fish and sharks over time
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(iterations, fish_population, label='Fish Population', color='blue')
-    plt.plot(iterations, shark_population, label='Shark Population', color='red')
-    plt.xlabel('Iteration')
-    plt.ylabel('Population')
-    plt.title('Population Changes of Fish and Sharks Over Time')
-    plt.legend()
-    plt.savefig('my_plot.png')  # Save as PNG file
-
-    #plt.show( )
-
-   
-
-
+ 
 
 if __name__ == "__main__":
     main()

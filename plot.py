@@ -26,4 +26,4 @@ def plot_population(iterations, fish_population, shark_population, megalodon_pop
     plt.grid(visible=True, which="both", linestyle="--", linewidth=0.5, alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig("images/population.png")
+    plt.savefig("images/population_evolution.png")

@@ -114,7 +114,7 @@ Samuel Thorez
     <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle; float: middle; margin-left: 30px;" alt="GitHub Logo">
 </a>
 
-Nicolas Cassonet 
+Nicolas Cassonnet 
 <a href="https://github.com/NicoCasso" target="_blank">
     <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle; float: middle; margin-left: 15px;" alt="GitHub Logo">
 </a>

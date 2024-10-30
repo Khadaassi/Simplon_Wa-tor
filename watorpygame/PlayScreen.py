@@ -11,6 +11,7 @@ from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImage import UserImage
 from watorpygame.UserButton import UserButton
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.UserImageInfo import UserImageInfo
 
 class WaTorPlayScreen :
     #__________________________________________________________________________
@@ -74,7 +75,7 @@ class WaTorPlayScreen :
         #_______________________________________________________________________
         # Adapt image dimensions to the cells dimensions
         # ATTENTION ! - this part of code may cause etrange bugs ;)
-        for image_key in [UserImageKey.FISH, UserImageKey.SHARK]:
+        for image_key in [UserImageKey.FISH, UserImageKey.SHARK, UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL]:
             image = self.image_provider.get_image(image_key)
             image.define_dimensions(self.cell_width, self.cell_heigth)
             self.image_provider.set_image(image_key, image)
@@ -96,9 +97,9 @@ class WaTorPlayScreen :
                 position_y = border_length + y_index * self.cell_heigth
 
                 even_cell = (x_index + y_index) % 2 == 0
-                image_key = self.data[y_index][x_index]
+                image_key = cast(UserImageInfo, self.data[y_index][x_index]).image_key
 
-                if image_key in [UserImageKey.WATER, UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL] :
+                if image_key in [UserImageKey.WATER] :
                     cell_color = UserImage.light_color if even_cell else UserImage.dark_color
                     pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
                     continue

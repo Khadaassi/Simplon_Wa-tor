@@ -16,8 +16,8 @@ class UserImageProvider :
         self.__images = {}
         self.__images[UserImageKey.FISH] = UserImage("images/Fish_image_1.png", "green", "darkgreen")
         self.__images[UserImageKey.SHARK] = UserImage("images/Shark_image_1.png", "red", "darkred")
-        #self.images[UserImageKey.MEGA_HEAD] = UserImage("images/Shark_image_1.png", "white", "white")
-        #self.images[UserImageKey.MEGA_TAIL] = UserImage("images/Shark_image_1.png", "white", "white")
+        self.__images[UserImageKey.MEGA_HEAD] = UserImage("images/mega_head.png", "purple", "magenta")
+        self.__images[UserImageKey.MEGA_TAIL] = UserImage("images/mega_tail.png", "purple", "magenta")
     
     def get_image(self, image_key: UserImageKey) -> UserImage :
         return self.__images[image_key]

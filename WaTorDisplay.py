@@ -1,58 +1,79 @@
-from PygameWrapper import PygameWrapper
+
+# Wa-Tor imports
+
 from world import World
 from fish import Fish, Shark
-from enum import Enum
-
-
-class DisplayState(Enum):
-    WAIT = 0
-    PLAY = 1
-    PAUSE = 2
-    STOP = 3
-    OUT = 4
-
+from watorpygame.DisplayState import DisplayState
+from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.PygameWrapper import PygameWrapper
 
 class WaTorDisplay:
     """
-    Management of the pygame interface
+    A class to manage the pygame interface 
+    and the user interaction.
+
+    Attributes
+    ----------
+    state : DisplayState
+        the actual state of all views.
+    user_data : dict
+        all the informations provided by the user
+
+    Methods
+    -------
+    update_view()
+        Update the data on the sreen
+
+    on_user_command()
+        set state variable 
+        and possibly set the informations provided by the user
+    
     """
-
-    def __init__(self, app_object=None):
-        """
-        When instanciated, the object starts a pygame
-        needs a app_object which have got three methods :
-            app_object.start()
-            app_object.pause()
-            app_object.stop()
-        """
-        self.mainObject = app_object
-        self.pygameWrapper = PygameWrapper(self.on_user_command)
+    #__________________________________________________________________________
+    #
+    # region __init__
+    #__________________________________________________________________________
+    def __init__(self):
         self.state = DisplayState.WAIT
-
-    def on_user_command(self, command: str):
-        # print(f"Button {command} clicked from a function !")
-        if command == "Start":
+        self.image_provider = UserImageProvider()
+        self.pygameWrapper = PygameWrapper(self.image_provider, self.on_user_command)
+        self.user_data = {}   
+    #__________________________________________________________________________
+    #
+    # region on_user_command
+    #__________________________________________________________________________
+    def on_user_command(self, command: DisplayState , command_data: dict =None):
+        """
+        update WatorDisplay instance variable : state
+        optionally uses command_data object if provided
+        """
+        if command == DisplayState.PLAY: 
             self.state = DisplayState.PLAY
-        elif command == "Pause":
-            if self.state == DisplayState.PLAY:
-                self.state = DisplayState.PAUSE
-            elif self.state == DisplayState.PAUSE:
-                self.state = DisplayState.PLAY
-            else:
-                pass
-        elif command == "Stop":
+
+        elif command == DisplayState.PAUSE: 
+            if self.state == DisplayState.PLAY: self.state = DisplayState.PAUSE
+            elif self.state == DisplayState.PAUSE: self.state = DisplayState.PLAY
+            else: pass
+
+        elif command == DisplayState.STOP:
             self.state = DisplayState.STOP
-        elif command == "Quit":
+
+        elif command == DisplayState.OUT:
             self.state = DisplayState.OUT
+
         else:
             self.state = DisplayState.OUT
 
+        if command_data != None :
+            self.user_data = command_data
+
+    #__________________________________________________________________________
+    #
+    # region update_view
+    #__________________________________________________________________________
     def update_view(self, world: World):
         """
-        Takes a world object which
-          is a list[list[str]] object
-          or contains a list[list[str]]
-        in which  ashark is a 'X', a fish is a 'o', water is a '~'
+        Takes a world object which contains a list[list[Fish]]
         """
         self.world = world
 
@@ -62,7 +83,7 @@ class WaTorDisplay:
         width = self.world.size[0]
         heigth = self.world.size[1]
 
-        image_tab = [["~" for x in range(width)] for y in range(heigth)]
+        data = [[UserImageKey.WATER for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
             for x_index in range(width):
                 item = self.world.grid[y_index][x_index]
@@ -70,10 +91,10 @@ class WaTorDisplay:
                     continue
 
                 if isinstance(item, Fish):
-                    image_tab[y_index][x_index] = self.pygameWrapper.fish_image
-
+                    data[y_index][x_index] = UserImageKey.FISH
+                                                                 
                 if isinstance(item, Shark):
-                    image_tab[y_index][x_index] = self.pygameWrapper.shark_image
-
-        self.pygameWrapper.set_tab(image_tab)
+                    data[y_index][x_index] = UserImageKey.SHARK
+                                                                 
+        self.pygameWrapper.set_data(data)
         self.pygameWrapper.draw()

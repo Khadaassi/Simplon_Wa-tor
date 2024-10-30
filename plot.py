@@ -1,4 +1,7 @@
+
 import matplotlib.pyplot as plt
+
+
 
 def plot_population(iterations, fish_population, shark_population, megalodon_population):
 

@@ -1,11 +1,11 @@
 import os
 import time
-from plot import plot_population
-from fish import Shark
-from world import World
-from WaTorDisplay import *
-from configfile import *
 
+from plot import plot_population
+from configfile import *
+from world import World
+from WaTorDisplay import WaTorDisplay
+from watorpygame.DisplayState import DisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
 
@@ -45,7 +45,7 @@ def main():
         if display.state == DisplayState.STOP:
             break
 
-        if display.state != DisplayState.PLAY or display.state == DisplayState.PAUSE:
+        if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
             display.update_view(world)
             continue
 

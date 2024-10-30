@@ -59,8 +59,14 @@ python main.py
 The simulation produces various visual outputs that depict interactions among fish, sharks, and megalodons. Below is an example of the simulation output:
 
 
-![World Simulation Output](path/to/world_output.png)  
-*Overview of the aquatic world with fish and sharks.*
+<p align="center">
+  <img src="images/demo.gif" alt="Project Demo" width="600"/>
+</p>
+
+<p align="center"><i>Overview of the aquatic world with fish and sharks.</i></p>
+
+## Statistics
+
 
 ## Evaluation Criteria
 
@@ -97,14 +103,18 @@ Relevant information displayed (e.g., current fish, shark counts, current time s
 
 ## Authors
 
-Samuel Thorez <a href="https://github.com/SamuelTD" target="_blank">
-    <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle;" alt="GitHub Logo">
+Samuel Thorez 
+<a href="https://github.com/SamuelTD" target="_blank">
+    <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle; float: middle; margin-left: 30px;" alt="GitHub Logo">
 </a>
 
- Nicolas Cassonet <a href="https://github.com/NicoCasso" target="_blank">
-    <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle;" alt="GitHub Logo">
+Nicolas Cassonet 
+<a href="https://github.com/NicoCasso" target="_blank">
+    <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle; float: middle; margin-left: 15px;" alt="GitHub Logo">
 </a>
 
-Khadija Aassi <a href="https://github.com/Khadaassi" target="_blank">
-    <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle;" alt="GitHub Logo">
+Khadija Aassi 
+<a href="https://github.com/Khadaassi" target="_blank">
+    <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle; float: middle; margin-left: 40px;" alt="GitHub Logo">
 </a>
+

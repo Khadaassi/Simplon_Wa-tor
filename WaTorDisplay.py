@@ -3,7 +3,7 @@
 
 from world import World
 from fish import Fish, Shark
-from DisplayState import DisplayState
+from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
 from watorpygame.PygameWrapper import PygameWrapper
 

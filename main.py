@@ -5,7 +5,7 @@ import time
 from fish import Shark
 from world import World
 from WaTorDisplay import WaTorDisplay
-from DisplayState import DisplayState
+from watorpygame.DisplayState import DisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
 
@@ -14,7 +14,7 @@ def main():
     Main function to run the simulation
     """
 
-    world = World((50, 20), 0.5, (20, 10), 3, 3, 2, 2)
+    world = World((100, 50), 0.25, (20, 10), 3, 3, 2, 2)
     world.populate_world()
     current_iteration = 0
     start_t = time.time()  # Start time

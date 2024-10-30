@@ -7,7 +7,7 @@ import pygame
 from pygame.surface import Surface
 
 # Wa-Tor imports
-from DisplayState import DisplayState
+from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImage import UserImage
 from watorpygame.UserButton import UserButton
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider

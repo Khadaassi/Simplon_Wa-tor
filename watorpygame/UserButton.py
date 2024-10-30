@@ -2,7 +2,7 @@
 import pygame
 
 # pygame imports
-import DisplayState
+import watorpygame.DisplayState as DisplayState
 
 
 class UserButton:

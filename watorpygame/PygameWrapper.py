@@ -8,7 +8,7 @@ import pygame
 from pygame.surface import Surface
 
 # Wa-Tor imports
-from DisplayState import DisplayState
+from watorpygame.DisplayState import DisplayState
 from watorpygame.UserButton import UserButton
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
@@ -44,6 +44,8 @@ class PygameWrapper:
         self.running = False
         self.screen = None
         self.clock = None
+        # self.max_time = 33 # value in milliseconds correspond to 3O Frame per second
+        # self.current_time = 0
 
     #__________________________________________________________________________
     #
@@ -104,8 +106,14 @@ class PygameWrapper:
     # region draw
     #__________________________________________________________________________
     def draw(self, display_state : DisplayState = DisplayState.WAIT):
+        
         if not self.running:
             self.initialize_screen()  # first time only, start screen
+            
+        # self.current_time = self.clock.tick() - self.current_time
+        # if self.current_time < 100 :
+        #     return 
+        
                      
         #__________________________________________________________________
         # poll for events 

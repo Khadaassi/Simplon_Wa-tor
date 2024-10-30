@@ -1,7 +1,7 @@
 # pygame imports
 import pygame
 
-class WaTorImage:
+class UserImage:
     light_color = (0, 0, 170)
     dark_color = (50, 20, 150)
 

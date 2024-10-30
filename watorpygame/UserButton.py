@@ -2,13 +2,13 @@
 import pygame
 
 # pygame imports
-import wa_tor_display_state
+import DisplayState
 
 
-class WaTorButton:
+class UserButton:
 
     
-    def __init__(self, command_key : wa_tor_display_state, command_text: str,  callback_function, button_rect : pygame.Rect):
+    def __init__(self, command_key : DisplayState, command_text: str,  callback_function, button_rect : pygame.Rect):
         
         self.command_key = command_key
         self.text = command_text

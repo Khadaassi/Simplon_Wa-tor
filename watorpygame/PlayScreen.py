@@ -1,22 +1,23 @@
 # standard imports
 from typing import cast
+from enum import Enum
 
 # pygame imports
 import pygame
 from pygame.surface import Surface
 
 # Wa-Tor imports
-from wa_tor_image import WaTorImage
-from wa_tor_button import WaTorButton
-from wa_tor_image_provider import *
-from wa_tor_display_state import WaTorDisplayState
+from DisplayState import DisplayState
+from watorpygame.UserImage import UserImage
+from watorpygame.UserButton import UserButton
+from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
 
 class WaTorPlayScreen :
     #__________________________________________________________________________
     #
     # region __init__
     #__________________________________________________________________________
-    def __init__(self, screen_background_color, image_provider: WaTorImageProvider ) :
+    def __init__(self, screen_background_color, image_provider: UserImageProvider ) :
 
         self.screen_background_color = screen_background_color
         self.image_provider = image_provider
@@ -49,7 +50,7 @@ class WaTorPlayScreen :
     #
     # region initialize_controls
     #__________________________________________________________________________
-    def initialize_controls(self, screen : pygame.Surface, border_length: int, buttons : list[WaTorButton]):
+    def initialize_controls(self, screen : pygame.Surface, border_length: int, buttons : list[UserButton]):
         """
         Need the data dimensions to create the chessboard
         """
@@ -72,12 +73,11 @@ class WaTorPlayScreen :
  
         #_______________________________________________________________________
         # Adapt image dimensions to the cells dimensions
-        #for image_key in WaTorImageKey :
-        for image_key in [WaTorImageKey.FISH, WaTorImageKey.SHARK]:
+        # ATTENTION ! - this part of code may cause etrange bugs ;)
+        for image_key in [UserImageKey.FISH, UserImageKey.SHARK]:
             image = self.image_provider.get_image(image_key)
             image.define_dimensions(self.cell_width, self.cell_heigth)
             self.image_provider.set_image(image_key, image)
-
 
     #__________________________________________________________________________
     #
@@ -96,17 +96,16 @@ class WaTorPlayScreen :
                 position_y = border_length + y_index * self.cell_heigth
 
                 even_cell = (x_index + y_index) % 2 == 0
-                cell_color = WaTorImage.light_color if even_cell else WaTorImage.dark_color
-                pygame.draw.rect( screen, cell_color, 
-                                 [position_x, position_y, self.cell_width, self.cell_heigth] )
-
                 image_key = self.data[y_index][x_index]
-                if image_key in [WaTorImageKey.WATER, WaTorImageKey.MEGA_HEAD, WaTorImageKey.MEGA_TAIL] :
+
+                if image_key in [UserImageKey.WATER, UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL] :
+                    cell_color = UserImage.light_color if even_cell else UserImage.dark_color
+                    pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
                     continue
 
                 fish_image = self.image_provider.get_image(image_key)
-                case_color = fish_image.light_background_color if even_cell else fish_image.dark_background_color
-                pygame.draw.rect( screen, case_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
+                cell_color = fish_image.light_background_color if even_cell else fish_image.dark_background_color
+                pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
                     
                 x_image = border_length + x_index * self.cell_width
                 y_image = border_length + y_index * self.cell_heigth

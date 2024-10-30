@@ -3,9 +3,9 @@
 
 from world import World
 from fish import Fish, Shark
-from wa_tor_display_state import WaTorDisplayState
-from wa_tor_image_provider import WaTorImageKey, WaTorImageProvider
-from PygameWrapper import PygameWrapper
+from DisplayState import DisplayState
+from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.PygameWrapper import PygameWrapper
 
 class WaTorDisplay:
     """
@@ -34,35 +34,35 @@ class WaTorDisplay:
     # region __init__
     #__________________________________________________________________________
     def __init__(self):
-        self.state = WaTorDisplayState.WAIT
-        self.image_provider = WaTorImageProvider()
+        self.state = DisplayState.WAIT
+        self.image_provider = UserImageProvider()
         self.pygameWrapper = PygameWrapper(self.image_provider, self.on_user_command)
         self.user_data = {}   
     #__________________________________________________________________________
     #
-    # region __init__
+    # region on_user_command
     #__________________________________________________________________________
-    def on_user_command(self, command: WaTorDisplayState , command_data: dict =None):
+    def on_user_command(self, command: DisplayState , command_data: dict =None):
         """
         update WatorDisplay instance variable : state
         optionally uses command_data object if provided
         """
-        if command == WaTorDisplayState.PLAY: 
-            self.state = WaTorDisplayState.PLAY
+        if command == DisplayState.PLAY: 
+            self.state = DisplayState.PLAY
 
-        elif command == WaTorDisplayState.PAUSE: 
-            if self.state == WaTorDisplayState.PLAY: self.state = WaTorDisplayState.PAUSE
-            elif self.state == WaTorDisplayState.PAUSE: self.state = WaTorDisplayState.PLAY
+        elif command == DisplayState.PAUSE: 
+            if self.state == DisplayState.PLAY: self.state = DisplayState.PAUSE
+            elif self.state == DisplayState.PAUSE: self.state = DisplayState.PLAY
             else: pass
 
-        elif command == WaTorDisplayState.STOP:
-            self.state = WaTorDisplayState.STOP
+        elif command == DisplayState.STOP:
+            self.state = DisplayState.STOP
 
-        elif command == WaTorDisplayState.OUT:
-            self.state = WaTorDisplayState.OUT
+        elif command == DisplayState.OUT:
+            self.state = DisplayState.OUT
 
         else:
-            self.state = WaTorDisplayState.OUT
+            self.state = DisplayState.OUT
 
         if command_data != None :
             self.user_data = command_data
@@ -83,7 +83,7 @@ class WaTorDisplay:
         width = self.world.size[0]
         heigth = self.world.size[1]
 
-        data = [[WaTorImageKey.WATER for x in range(width)] for y in range(heigth)]
+        data = [[UserImageKey.WATER for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
             for x_index in range(width):
                 item = self.world.grid[y_index][x_index]
@@ -91,10 +91,10 @@ class WaTorDisplay:
                     continue
 
                 if isinstance(item, Fish):
-                    data[y_index][x_index] = WaTorImageKey.FISH
+                    data[y_index][x_index] = UserImageKey.FISH
                                                                  
                 if isinstance(item, Shark):
-                    data[y_index][x_index] = WaTorImageKey.SHARK
+                    data[y_index][x_index] = UserImageKey.SHARK
                                                                  
         self.pygameWrapper.set_data(data)
         self.pygameWrapper.draw()

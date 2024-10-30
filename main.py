@@ -4,8 +4,8 @@ import time
 # from plot import plot_population
 from fish import Shark
 from world import World
-from wa_tor_display import WaTorDisplay
-from wa_tor_display_state import WaTorDisplayState
+from WaTorDisplay import WaTorDisplay
+from DisplayState import DisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
 
@@ -34,10 +34,10 @@ def main():
     clear()
 
     while True:
-        if display.state == WaTorDisplayState.STOP:
+        if display.state == DisplayState.STOP:
             break
 
-        if display.state == WaTorDisplayState.WAIT or display.state == WaTorDisplayState.PAUSE:
+        if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
             display.update_view(world)
             continue
 
@@ -63,7 +63,7 @@ def main():
             break
 
     # plot_population(iterations, fish_population, shark_population)
-    while display.state != WaTorDisplayState.OUT: display.update_view(world)
+    while display.state != DisplayState.OUT: display.update_view(world)
 
 
 if __name__ == "__main__":

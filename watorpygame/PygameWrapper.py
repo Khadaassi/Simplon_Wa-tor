@@ -1,17 +1,18 @@
 
 # standard imports
 from typing import cast
+from enum import Enum
 
 # pygame imports
 import pygame
 from pygame.surface import Surface
 
 # Wa-Tor imports
-from wa_tor_button import WaTorButton
-from wa_tor_image import WaTorImage
-from wa_tor_image_provider import *
-from wa_tor_display_state import WaTorDisplayState
-from wa_tor_play_screen import WaTorPlayScreen
+from DisplayState import DisplayState
+from watorpygame.UserButton import UserButton
+from watorpygame.UserImage import UserImage
+from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.PlayScreen import WaTorPlayScreen
 
 class PygameWrapper:
 
@@ -19,7 +20,7 @@ class PygameWrapper:
     #
     # region __init__
     #__________________________________________________________________________
-    def __init__(self, image_provider : WaTorImageProvider, callback_function):
+    def __init__(self, image_provider : UserImageProvider, callback_function):
         self.image_provider = image_provider
         self.callback_function = callback_function
 
@@ -48,7 +49,7 @@ class PygameWrapper:
     #
     # region set_data
     #__________________________________________________________________________
-    def set_data(self, data : list[list[WaTorImageKey]]):
+    def set_data(self, data : list[list[UserImageKey]]):
         self.play_screen.set_data(data)
     
     #__________________________________________________________________________
@@ -73,14 +74,14 @@ class PygameWrapper:
         # Buttons need to be created after the creation of the screen
 
         self.commands = {
-            WaTorDisplayState.PLAY: "Start",
-            WaTorDisplayState.PAUSE: "Pause", 
-            WaTorDisplayState.STOP: "Stop"
+            DisplayState.PLAY: "Start",
+            DisplayState.PAUSE: "Pause", 
+            DisplayState.STOP: "Stop"
         }
         count = 3
         for command_key, command_text in reversed(self.commands.items()):
             self.buttons.append(
-                WaTorButton( command_key, command_text, self.callback_function,
+                UserButton( command_key, command_text, self.callback_function,
                     pygame.Rect(
                         self.window_width - count * (self.button_width + self.border_length),
                         self.window_heigth - self.button_heigth - self.border_length,
@@ -102,7 +103,7 @@ class PygameWrapper:
     #
     # region draw
     #__________________________________________________________________________
-    def draw(self, display_state : WaTorDisplayState = WaTorDisplayState.WAIT):
+    def draw(self, display_state : DisplayState = DisplayState.WAIT):
         if not self.running:
             self.initialize_screen()  # first time only, start screen
                      
@@ -117,7 +118,6 @@ class PygameWrapper:
             for button in self.buttons:
                 button.check_event(event)
                 
-        self.play_screen.running = self.running
         self.play_screen.draw(self.screen, self.border_length)
             
         #______________________________________________________________________
@@ -129,7 +129,7 @@ class PygameWrapper:
         # here stopped the old while true
 
         if not self.running:
-            self.callback_function(WaTorDisplayState.OUT)
+            self.callback_function(DisplayState.OUT)
             pygame.quit()
 
         

@@ -111,8 +111,7 @@ class World:
                 isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
-                will_die = False   
-                will_evolve = False       
+                will_die = False        
                 
                 #Get the availlable directions for current entity    
                 direction = self.get_shark_directions(x, y) if isShark else self.get_megalodons_directions(x, y) if isMegalodon \

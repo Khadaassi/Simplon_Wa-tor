@@ -26,6 +26,8 @@ class PygameWrapper:
 
         self.shark_image = UserImage("images/Shark_image_1.png")
         self.fish_image = UserImage("images/Fish_image_1.png")
+        self.mega_head_image = UserImage("images/mega_head.png")
+        self.mega_tail_image = UserImage("images/mega_tail.png")
         self.running = False
         self.screen = None
 
@@ -62,6 +64,8 @@ class PygameWrapper:
 
         self.shark_image.define_dimensions(self.x_cell_length, self.y_cell_length)
         self.fish_image.define_dimensions(self.x_cell_length, self.y_cell_length)
+        self.mega_head_image.define_dimensions(self.x_cell_length, self.y_cell_length)
+        self.mega_tail_image.define_dimensions(self.x_cell_length, self.y_cell_length)
 
     def initialize_screen(self):
         # pygame setup

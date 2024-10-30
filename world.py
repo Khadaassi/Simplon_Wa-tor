@@ -111,8 +111,7 @@ class World:
                 isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
-                will_die = False   
-                will_evolve = False       
+                will_die = False        
                 
                 #Get the availlable directions for current entity    
                 direction = self.get_shark_directions(x, y) if isShark else self.get_megalodons_directions(x, y) if isMegalodon \
@@ -125,7 +124,7 @@ class World:
                 #Get one direction randomly among all availlable direction
                 direction = direction[randint(0, len(direction)-1)]                
                 
-                #If Shark will eat a fish, it gains energy
+                #If Shark will eat a fish or Megalodons will eat a shark, it gains energy
                 if self.next_move_will_eat:
                         self.grid[x][y].eat(self.shark_energy_gained_by_eating)    
                         #If Megaladons can appear, check if current shark can evolve

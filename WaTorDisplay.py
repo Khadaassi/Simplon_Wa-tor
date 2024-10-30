@@ -1,6 +1,6 @@
 from PygameWrapper import PygameWrapper
 from world import World
-from fish import Fish, Shark
+from fish import Fish, Shark, Megalodon, Megalodon_Tail
 from enum import Enum
 
 
@@ -74,6 +74,13 @@ class WaTorDisplay:
 
                 if isinstance(item, Shark):
                     image_tab[y_index][x_index] = self.pygameWrapper.shark_image
+                    
+                if isinstance(item, Megalodon):
+                    image_tab[y_index][x_index] = self.pygameWrapper.mega_head_image
+                    
+                if isinstance(item, Megalodon_Tail):
+                    image_tab[y_index][x_index] = self.pygameWrapper.mega_tail_image
+                    
 
         self.pygameWrapper.set_tab(image_tab)
         self.pygameWrapper.draw()

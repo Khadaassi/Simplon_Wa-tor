@@ -1,24 +1,16 @@
+# pygame imports
 import pygame
 
-
 class UserImage:
     light_color = (0, 0, 170)
     dark_color = (50, 20, 150)
 
-
-class UserImage:
-    light_color = (0, 0, 170)
-    dark_color = (50, 20, 150)
-
-    def __init__(
-        self,
-        png_filename: str,
-        light_background_color: pygame.Color = UserImage.light_color,
-        dark_background_color: pygame.Color = UserImage.dark_color,
-    ):
+    def __init__( self, png_filename: str,
+        light_background_color: pygame.Color = light_color,
+        dark_background_color: pygame.Color = dark_color ):
 
         self.image = pygame.image.load(png_filename)
-        self.__proportion = self.image.get_width() / self.image.get_height()
+        self.__proportion = self.image.get_width() / self.image.get_height() # keep the initial proportion inside the object
         self.resized = self.image
         self.light_background_color = light_background_color
         self.dark_background_color = dark_background_color

@@ -70,7 +70,7 @@ def main():
         if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
             break
 
-    #plot_population(iterations, fish_population, shark_population, megalodon_population)
+    # plot_population(iterations, fish_population, shark_population, megalodon_population)
     while display.state != DisplayState.OUT:
         display.update_view(world)
 

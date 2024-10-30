@@ -65,7 +65,13 @@ The simulation produces various visual outputs that depict interactions among fi
 
 <p align="center"><i>Overview of the aquatic world with fish and sharks.</i></p>
 
-## Statistics
+## Example of Statistics
+The graph below shows the population trends of fish, sharks, and megalodons throughout the simulation.
+<p align="center">
+  <img src="images/populations.png" alt="stats" width="600"/>
+</p>
+
+## Application pygame
 
 
 ## Evaluation Criteria

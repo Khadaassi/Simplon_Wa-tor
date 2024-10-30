@@ -1,7 +1,7 @@
 import os
 import time
 
-from plot import plot_population
+#from plot import plot_population
 from configfile import *
 from world import World
 from WaTorDisplay import WaTorDisplay
@@ -67,10 +67,10 @@ def main():
             megalodon_population.append(world.megalodon_population)
             iterations.append(current_iteration)
 
-        if world.fish_population == 0 or world.shark_population == 0 or counter == 1000:
+        if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
             break
 
-    plot_population(iterations, fish_population, shark_population, megalodon_population)
+    #plot_population(iterations, fish_population, shark_population, megalodon_population)
     while display.state != DisplayState.OUT:
         display.update_view(world)
 

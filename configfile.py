@@ -15,7 +15,7 @@ def write_config():
         "shark_energy": "2",
         "shark_energy_gain": "2",
         "allow_megalodons": "False",
-        "megalodon_evolution_threshold" : "10"
+        "megalodon_evolution_threshold" : "15"
     }
 
     with open("config.ini", "w") as configfile:

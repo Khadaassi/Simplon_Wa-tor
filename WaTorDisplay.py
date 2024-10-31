@@ -2,10 +2,12 @@
 # Wa-Tor imports
 
 from world import World
-from fish import Fish, Shark
+from fish import Fish, Shark, Megalodon, Megalodon_Tail
 from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
 from watorpygame.PygameWrapper import PygameWrapper
+from watorpygame.UserImageInfo import UserImageInfo
+import pygame
 
 class WaTorDisplay:
     """
@@ -83,18 +85,31 @@ class WaTorDisplay:
         width = self.world.size[0]
         heigth = self.world.size[1]
 
-        data = [[UserImageKey.WATER for x in range(width)] for y in range(heigth)]
+        data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
             for x_index in range(width):
                 item = self.world.grid[y_index][x_index]
                 if not item:
                     continue
 
-                if isinstance(item, Fish):
-                    data[y_index][x_index] = UserImageKey.FISH
-                                                                 
-                if isinstance(item, Shark):
-                    data[y_index][x_index] = UserImageKey.SHARK
-                                                                 
+                if isinstance(item, Megalodon_Tail):
+                    image_info = UserImageInfo(UserImageKey.MEGA_TAIL)                   
+                    image_info.set_direction(item.current_direction)
+                    data[y_index][x_index] = image_info                    
+                    
+                elif isinstance(item, Megalodon):
+                    image_info = UserImageInfo(UserImageKey.MEGA_HEAD)
+                    image_info.set_direction(item.current_direction)
+                    data[y_index][x_index] = image_info
+                    
+                elif isinstance(item, Shark):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.SHARK )    
+                                   
+                elif isinstance(item, Fish):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)
+        
+        
+    # def set_megalodon_rotation(pygame.image):
+                                                              
         self.pygameWrapper.set_data(data)
         self.pygameWrapper.draw()

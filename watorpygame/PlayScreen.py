@@ -10,7 +10,8 @@ from pygame.surface import Surface
 from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImage import UserImage
 from watorpygame.UserButton import UserButton
-from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.UserImageProvider import UserImageKey, UserImageProvider, Direction
+from watorpygame.UserImageInfo import UserImageInfo
 
 class WaTorPlayScreen :
     #__________________________________________________________________________
@@ -70,14 +71,30 @@ class WaTorPlayScreen :
 
         self.cell_width = (self.table_width) // self.data_width
         self.cell_heigth = (self.table_heigth) // self.data_height
- 
+
+        self.image_provider = UserImageProvider(self.cell_width, self.cell_heigth)
+        
         #_______________________________________________________________________
         # Adapt image dimensions to the cells dimensions
-        # ATTENTION ! - this part of code may cause etrange bugs ;)
-        for image_key in [UserImageKey.FISH, UserImageKey.SHARK]:
-            image = self.image_provider.get_image(image_key)
-            image.define_dimensions(self.cell_width, self.cell_heigth)
-            self.image_provider.set_image(image_key, image)
+        # ATTENTION ! - this part of code may cause strange bugs ;)
+        # for image_key in [UserImageKey.FISH, UserImageKey.SHARK]:
+        #     image = self.image_provider.get_image(image_key)
+        #     image.define_dimensions(self.cell_width, self.cell_heigth)
+        #     self.image_provider.set_image(image_key, image)
+                
+                        
+        # for image_key in [UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL]:
+        #     for x in range(0, 4):
+        #         match x:
+        #             case 0:
+        #                 image = self.image_provider.get_image(image_key, Direction.NORTH)
+        #             case 1:
+        #                 image = self.image_provider.get_image(image_key, Direction.SOUTH)
+        #             case 2:
+        #                 image = self.image_provider.get_image(image_key, Direction.WEST)
+        #             case 3:
+        #                 image = self.image_provider.get_image(image_key, Direction.EAST)
+                
 
     #__________________________________________________________________________
     #
@@ -96,20 +113,86 @@ class WaTorPlayScreen :
                 position_y = border_length + y_index * self.cell_heigth
 
                 even_cell = (x_index + y_index) % 2 == 0
-                image_key = self.data[y_index][x_index]
+                image_key = cast(UserImageInfo, self.data[y_index][x_index]).image_key          
 
-                if image_key in [UserImageKey.WATER, UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL] :
-                    cell_color = UserImage.light_color if even_cell else UserImage.dark_color
+                #---------
+                #Water drawing logic
+                if image_key in [UserImageKey.WATER] :
+                    cell_color = (0, 0, 170)
+                    # UserImage.light_color if even_cell else UserImage.dark_color
                     pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
                     continue
-
-                fish_image = self.image_provider.get_image(image_key)
-                cell_color = fish_image.light_background_color if even_cell else fish_image.dark_background_color
-                pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
+                
+                #---------
+                #Fish drawing logic
+                
+                cell_rect = pygame.Rect( position_x, position_y, self.cell_width, self.cell_heigth )              
+                
+                if image_key in [UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL]:              
+                    fish_image = self.image_provider.get_image(image_key, self.data[y_index][x_index].direction)
+                    #Anchor the heads and tails to the right edge when upside down
+                    match self.data[y_index][x_index].direction:
+                        case Direction.NORTH:
+                            if image_key == UserImageKey.MEGA_HEAD:
+                                # Center the image horizontally, anchor at the bottom
+                                x_image = cell_rect.centerx - (fish_image.resized.get_width() // 2)
+                                y_image = cell_rect.bottom - fish_image.resized.get_height()  # Anchor at the bottom
+                            
+                            if image_key == UserImageKey.MEGA_TAIL:
+                                # Center the image horizontally, anchor at the top
+                                x_image = cell_rect.centerx - (fish_image.resized.get_width() // 2)
+                                y_image = cell_rect.top  # Anchor at the top
+                        case Direction.SOUTH:
+                            if image_key == UserImageKey.MEGA_TAIL:
+                                # Center the image horizontally, anchor at the bottom
+                                x_image = cell_rect.centerx - (fish_image.resized.get_width() // 2)
+                                y_image = cell_rect.bottom - fish_image.resized.get_height()  # Anchor at the bottom
+                            
+                            if image_key == UserImageKey.MEGA_HEAD:
+                                # Center the image horizontally, anchor at the top
+                                x_image = cell_rect.centerx - (fish_image.resized.get_width() // 2)
+                                y_image = cell_rect.top  # Anchor at the top
+                        case Direction.WEST:
+                            if image_key == UserImageKey.MEGA_HEAD:
+                                # Anchor at the right side, center vertically
+                                x_image = cell_rect.right - fish_image.resized.get_width()  # Anchor at the right
+                                y_image = cell_rect.centery - (fish_image.resized.get_height() // 2)
+                            
+                            if image_key == UserImageKey.MEGA_TAIL:
+                                # Anchor at the left side, center vertically
+                                x_image = cell_rect.left  # Anchor at the left
+                                y_image = cell_rect.centery - (fish_image.resized.get_height() // 2)
+                        case Direction.EAST:
+                            if image_key == UserImageKey.MEGA_TAIL:
+                                # Anchor at the right side, center vertically
+                                x_image = cell_rect.right - fish_image.resized.get_width()  # Anchor at the right
+                                y_image = cell_rect.centery - (fish_image.resized.get_height() // 2)
+                            
+                            if image_key == UserImageKey.MEGA_HEAD:
+                                # Anchor at the left side, center vertically
+                                x_image = cell_rect.left  # Anchor at the left
+                                y_image = cell_rect.centery - (fish_image.resized.get_height() // 2)
+                        case _:
+                            center_x, center_y = cell_rect.center
+                            # Calculate the top-left corner for blitting the image
+                            x_image = center_x - (fish_image.resized.get_width() // 2)
+                            y_image = center_y - (fish_image.resized.get_height() // 2)  
+                        
                     
-                x_image = border_length + x_index * self.cell_width
-                y_image = border_length + y_index * self.cell_heigth
-
+                else:
+                    fish_image = self.image_provider.get_image(image_key)
+                    #Fish and sharks are drawn in the center of their cell                    
+                    # Center of the cell
+                    center_x, center_y = cell_rect.center
+                    # Calculate the top-left corner for blitting the image
+                    x_image = center_x - (fish_image.resized.get_width() // 2)
+                    y_image = center_y - (fish_image.resized.get_height() // 2)  
+                                
+                
+                cell_color = fish_image.light_background_color if even_cell else fish_image.dark_background_color                
+                
+                pygame.draw.rect(screen, cell_color, cell_rect )   
+                
                 screen.blit(fish_image.resized, (x_image, y_image))
 
         for button in self.buttons:

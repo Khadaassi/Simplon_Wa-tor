@@ -7,7 +7,7 @@ class UserImage:
 
     def __init__( self, png_filename: str,
         light_background_color: pygame.Color = light_color,
-        dark_background_color: pygame.Color = dark_color ):
+        dark_background_color: pygame.Color = dark_color):
 
         self.image = pygame.image.load(png_filename)
         self.__proportion = self.image.get_width() / self.image.get_height() # keep the initial proportion inside the object
@@ -24,4 +24,4 @@ class UserImage:
             image_width = int(min_size * self.__proportion)
             image_height = min_size
 
-        self.resized = pygame.transform.scale(self.image, [image_width, image_height])
+        self.resized = pygame.transform.scale(self.resized, [image_width, image_height])

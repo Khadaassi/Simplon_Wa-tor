@@ -7,7 +7,7 @@ def write_config():
     config["world"] = {
         "fish_population": "500",
         "shark_population": "200",
-        "refresh_length": "0.01",
+        "refresh_length": "0.5",
         "world_width": "40",
         "world_height": "30",
         "fish_repro_time": "3",

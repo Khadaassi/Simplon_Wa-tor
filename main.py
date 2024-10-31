@@ -4,11 +4,11 @@ import time
 from plot import plot_population
 from configfile import *
 from world import World
+from pacman import Pacman
 from WaTorDisplay import WaTorDisplay
 from watorpygame.DisplayState import DisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
-
 
 if not os.path.exists("config.ini"):
     write_config()
@@ -30,24 +30,24 @@ def main():
     megalodon_population = []  # List to store megalodon population
     iterations = []  # List to store iterations
     counter = 0
-    print_counter = 0
+
 
     print("Initial World State:")
     world.print_grid()
 
-    display = WaTorDisplay()  # initialize View
-    display.update_view(world)  # create screen with the first world
+    # display = WaTorDisplay()  # initialize View
+    # display.update_view(world)  # create screen with the first world
 
     time.sleep(1)  # Sleep for 1 second
     clear()
 
     while True:
-        if display.state == DisplayState.STOP:
-            break
+        # if display.state == DisplayState.STOP:
+        #     break
 
-        if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
-            display.update_view(world)
-            continue
+        # if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
+            # display.update_view(world)
+            # continue
 
         if time.time() - start_t >= world.chronos_length:
             counter += 1
@@ -57,22 +57,22 @@ def main():
             clear()
             print("Current iteration : ", current_iteration)
             world.update_world()
-            display.update_view(world)  # update screen with the next world
+            # display.update_view(world)  # update screen with the next world
             world.print_grid()
             print(
-                f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population} ; Megalodon pop : {world.megalodon_population}"
+                f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population} ; Megalodon pop : {world.megalodon_population}; Pacman score : {world.pacman_score}"
             )
             fish_population.append(world.fish_population)
             shark_population.append(world.shark_population)
             megalodon_population.append(world.megalodon_population)
             iterations.append(current_iteration)
 
-        if world.fish_population == 0 or world.shark_population == 0 or counter == 1000:
+        if fish_population == 0 or shark_population == 0 or counter == 1000:
             break
 
     plot_population(iterations, fish_population, shark_population, megalodon_population)
-    while display.state != DisplayState.OUT:
-        display.update_view(world)
+    # while display.state != DisplayState.OUT:
+        # display.update_view(world)
 
 
 if __name__ == "__main__":

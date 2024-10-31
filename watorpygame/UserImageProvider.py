@@ -1,15 +1,7 @@
-# standard imports
-from enum import Enum
-
 # Wa-Tor imports
 from watorpygame.UserImage import UserImage
+from watorpygame.UserImageKey import UserImageKey
 
-class UserImageKey(Enum):
-    WATER = 0
-    FISH = 1
-    SHARK = 2
-    MEGA_HEAD = 3
-    MEGA_TAIL = 4
 
 class UserImageProvider :
     def __init__(self):
@@ -18,6 +10,7 @@ class UserImageProvider :
         self.__images[UserImageKey.SHARK] = UserImage("images/Shark_image_1.png", "red", "darkred")
         self.__images[UserImageKey.MEGA_HEAD] = UserImage("images/mega_head.png", "purple", "magenta")
         self.__images[UserImageKey.MEGA_TAIL] = UserImage("images/mega_tail.png", "purple", "magenta")
+        self.__images[UserImageKey.PROJECT] = UserImage("images/Img-wator.png", "green", "darkgreen")
     
     def get_image(self, image_key: UserImageKey) -> UserImage :
         return self.__images[image_key]

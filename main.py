@@ -10,19 +10,23 @@ from watorpygame.DisplayState import DisplayState
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
 
 
-if not os.path.exists("config.ini"):
-    write_config()
-
-config = read_config()
-
 def main():
     """
     Main function to run the simulation
     """
+    if not os.path.exists("config.ini"):
+        write_config()
+
+    config = read_config()
+
+    display = WaTorDisplay()  # initialize View
+    #config = display.display_conf_screen(config)
 
     world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
-    
     world.populate_world()
+
+    display.update_view(world)  # create screen with the first world
+
     current_iteration = 0
     start_t = time.time()  # Start time
     fish_population = []  # List to store fish population
@@ -34,10 +38,6 @@ def main():
 
     print("Initial World State:")
     world.print_grid()
-
-    display = WaTorDisplay()  # initialize View
-    display.update_view(world)  # create screen with the first world
-
     time.sleep(1)  # Sleep for 1 second
     clear()
 

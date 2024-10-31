@@ -10,7 +10,8 @@ from pygame.surface import Surface
 from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImage import UserImage
 from watorpygame.UserButton import UserButton
-from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.UserImageKey import UserImageKey
+from watorpygame.UserImageProvider import UserImageProvider
 from watorpygame.UserImageInfo import UserImageInfo
 
 class WaTorPlayScreen :
@@ -33,7 +34,8 @@ class WaTorPlayScreen :
         self.table_heigth = 0
         self.cell_width =0
         self.cell_heigth = 0
-    
+
+
     #__________________________________________________________________________
     #
     # region set_data
@@ -57,6 +59,9 @@ class WaTorPlayScreen :
         """
         if self.window_width != 0 : 
             return 
+        
+        if len(self.data) == 0:
+            return
 
         self.window_width = screen.get_width()
         self.window_heigth = screen.get_height()

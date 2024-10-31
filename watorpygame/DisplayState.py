@@ -2,7 +2,7 @@
 from enum import Enum
 
 class DisplayState(Enum):
-    # CONF = 0
+    CONF = 0
     WAIT = 1
     PLAY = 2
     # STEP = 3

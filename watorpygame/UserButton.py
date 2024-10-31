@@ -7,7 +7,6 @@ import watorpygame.DisplayState as DisplayState
 
 class UserButton:
 
-    
     def __init__(self, command_key : DisplayState, command_text: str,  callback_function, button_rect : pygame.Rect):
         
         self.command_key = command_key

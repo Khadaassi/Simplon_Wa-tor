@@ -3,7 +3,7 @@
     <img src="images/Img-wator.png" alt="Wa-Tor Simulation">
 </p>
 
-The Wa-Tor Project simulates an aquatic ecosystem, modeling interactions among various marine life, particularly focusing on fish, sharks, and the recently added megalodons. This project demonstrates complex ecosystem dynamics through predator-prey relationships and environmental interactions.
+The Wa-Tor Project simulates an aquatic ecosystem, modeling interactions among various marine life, particularly focusing on fish, sharks, and the recently added megalodons and pacman. This project demonstrates complex ecosystem dynamics through predator-prey relationships and environmental interactions.
 
 ## ➤ Menu
 
@@ -21,6 +21,7 @@ This project includes the following primary Python files:
 
 - **main.py**: The entry point of the simulation, which initializes the ecosystem and launches the simulation.
 - **fish.py**: Contains the `Fish` class for fish behavior and lifecycle. This file also defines the `Shark` class, which manages shark behavior and interactions with other species. Additionally, it implements the `Megalodon` class, representing a more formidable predator that preys on sharks.
+- **pacman.py**: Contains the `Pacman`class which inherits from fish and manages Pacman's behavior.
 - **world.py**: Manages the simulation environment, including aquatic habitats and the positioning of various species.
 - **plot.py**: Generates graphical representations of the simulation data using Matplotlib, showing population trends for fish, sharks, and megalodons.
 - **WaTorDisplay.py**: Responsible for rendering the simulation, showcasing real-time ecosystem activity.

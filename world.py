@@ -56,7 +56,7 @@ class World:
         self.megalodon_population = 0
 
         #DEBUG block
-        self.megalodon_starting_population = 5 #Force the presence of X megalodons on the starting world.
+        self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.
 
         #Cannot create a world smaller than total starting population
         if (sum(self.starting_population)) > self.size[0]*self.size[1]:

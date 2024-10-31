@@ -6,8 +6,19 @@ from random import randint
 
 class World:
     
-    def __init__(self, s_pop: tuple[int, int], chro_len: int, world_size: tuple[int, int], fish_repro_time: int, shark_repro_time: int,\
-        shark_energy: int, shark_energy_gain: int, allow_megalodons: bool = True, megalodon_evolution_threshold: int = 5, shark_energy_depletion_rate: int = 1) -> None:
+    def __init__(
+        self, 
+        s_pop: tuple[int, int], 
+        chro_len: int, 
+        world_size: tuple[int, int],
+        fish_repro_time: int,
+        shark_repro_time: int,
+        shark_energy: int,
+        shark_energy_gain: int,
+        allow_megalodons: bool = True,
+        megalodon_evolution_threshold: int = 5,
+        shark_energy_depletion_rate: int = 1
+        ) -> None:
         """
         [Args]\n
         s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
@@ -291,14 +302,24 @@ class World:
         elif self.check_for_only_shark_in_tile(x, y+1):
             outcomes += "E"
         
+        #If a shark is found, will eat it
         if outcomes != "":
             self.next_move_will_eat = True
             return outcomes
 
-        #If no shark availlable, return normal fish behavior
-        return self.get_fish_direction(x, y)
+        #Else, check if a free space is availlable to move
+        outcomes = self.get_fish_direction(x, y)
+       
+        if outcomes == "":
+            #If no free space is found, try to eat a fish. This will not provide energy.
+            outcomes = self.get_shark_directions(x,y, True)
+        
+        return outcomes
+        
+        # #If no shark availlable, return normal fish behavior
+        # return self.get_fish_direction(x, y)
     
-    def get_shark_directions(self, x: int, y: int) -> str:
+    def get_shark_directions(self, x: int, y: int, bypass_fish_behavior: bool = False) -> str:
         """
         Return all possible movement for the shark based only on the presence of fishes in its move radius. 
         If no fishes exist in this radius, acts like a normal fish instead.
@@ -355,7 +376,10 @@ class World:
             return outcomes
 
         #If no fish availlable, return normal fish behavior
-        return self.get_fish_direction(x, y)
+        if not bypass_fish_behavior:
+            return self.get_fish_direction(x, y)
+        else:
+            return outcomes
     
     def get_fish_direction(self, x: int, y: int) -> str:
         """

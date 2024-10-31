@@ -93,13 +93,13 @@ class WaTorDisplay:
                     continue
 
                 if isinstance(item, Megalodon_Tail):
-                    image_info = UserImageInfo(UserImageKey.MEGA_TAIL )
-                    
-                    data[y_index][x_index] = image_info
-                    
+                    image_info = UserImageInfo(UserImageKey.MEGA_TAIL)                   
+                    image_info.set_direction(item.current_direction)
+                    data[y_index][x_index] = image_info                    
                     
                 elif isinstance(item, Megalodon):
-                    image_info = UserImageInfo(UserImageKey.MEGA_HEAD )
+                    image_info = UserImageInfo(UserImageKey.MEGA_HEAD)
+                    image_info.set_direction(item.current_direction)
                     data[y_index][x_index] = image_info
                     
                 elif isinstance(item, Shark):
@@ -110,14 +110,6 @@ class WaTorDisplay:
         
         
     # def set_megalodon_rotation(pygame.image):
-                                                                 
-               
-                
-               
-                
-               
-                
-                
-                                                                 
+                                                              
         self.pygameWrapper.set_data(data)
         self.pygameWrapper.draw()

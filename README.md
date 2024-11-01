@@ -7,13 +7,13 @@ The Wa-Tor Project simulates an aquatic ecosystem, modeling interactions among v
 
 ## ➤ Menu
 
-* [➤ Project Structure](#-project-structure)
-* [➤ How to run](#-how-to-run)
-* [➤ Requirements](#-requirements)
-* [➤ Output](#-output)
-* [➤ Evaluation Criteria](#-evaluation_criteria)
-* [➤ Performances Metrics](#-Performances-metrics)
-* [➤ Author](#-authors)
+* [➤ Description](#description)
+* [➤ Resources](#resources)
+* [➤ Learning Objectives](#learning-objectives)
+* [➤ Requirements](#requirements)
+* [➤ Setup](#setup)
+* [➤ Tasks](#tasks)
+* [➤ Author](#author)
 
 ## Project Structure
 

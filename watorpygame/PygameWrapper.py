@@ -9,6 +9,7 @@ from pygame.surface import Surface
 
 # Wa-Tor imports
 from watorpygame.DisplayState import DisplayState
+from watorpygame.DisplayCommand import DisplayCommand
 from watorpygame.UserButton import UserButton
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageInfo import UserImageInfo
@@ -102,22 +103,23 @@ class PygameWrapper:
 
         #______________________________________________________________________
         # transfert to screens
-        if self.state == DisplayState.CONF :
-            if self.config_screen_need_initialization :
-                self.config_screen.initialize_controls(
-                    self.screen,
-                    self.border_length,
-                    self.buttons)
-                
-                self.config_screen_need_initialization = False
-        else :
-            if self.play_screen_need_initialization :
-                self.play_screen.initialize_controls(
+        match self.state :
+            case DisplayState.CONF :
+                if self.config_screen_need_initialization :
+                    self.config_screen.initialize_controls(
                         self.screen,
                         self.border_length,
                         self.buttons)
                 
-                self.play_screen_need_initialization = False
+                self.config_screen_need_initialization = False
+            case _ :
+                if self.play_screen_need_initialization :
+                    self.play_screen.initialize_controls(
+                            self.screen,
+                            self.border_length,
+                            self.buttons)
+                    
+                    self.play_screen_need_initialization = False
     
     #__________________________________________________________________________
     #
@@ -127,15 +129,16 @@ class PygameWrapper:
         #______________________________________________________________________
         # Buttons need to be created after the creation of the screen
 
-        if self.state == DisplayState.CONF:
-            self.commands = {
-                DisplayState.CONF : "Reset",
-                DisplayState.WAIT : "Go" }
-        else :
-            self.commands = {
-                DisplayState.PLAY: "Start",
-                DisplayState.PAUSE: "Pause", 
-                DisplayState.STOP: "Stop" }
+        match self.state :
+            case DisplayState.CONF:
+                self.commands = {
+                    DisplayCommand.RESET : "Reset",
+                    DisplayCommand.GO : "Go" }
+            case _ :
+                self.commands = {
+                    DisplayCommand.START: "Start",
+                    DisplayCommand.PAUSE: "Pause", 
+                    DisplayCommand.STOP: "Stop" }
             
         count = len(self.commands)
         for command_key, command_text in reversed(self.commands.items()):
@@ -146,7 +149,7 @@ class PygameWrapper:
                         self.window_heigth - self.button_heigth - self.border_length,
                         self.button_width,
                         self.button_heigth)))
-            count += 1
+            count -= 1
 
     #__________________________________________________________________________
     #
@@ -165,24 +168,7 @@ class PygameWrapper:
                 self.textboxes.append(textbox)
                 y += 50
 
-    def draw_label(self, screen : pygame.Surface, text : str,  x_pos:int, y_pos:int, font_size : int, align :int = -1) :
-        """
-        draw text in a y-centered rect on the screen depending on the value of align
-            align = -1 (default) draw the text rect starting at x
-            align = 0 draw the text rect centered on (x, y)
-            align = 1 draw the text rect ending at x + width
-        """
-        my_font = pygame.font.Font(None, font_size)
-        text_surface = my_font.render(text, False, (0, 0, 255))
-        width = text_surface.get_width() 
-        heigth = text_surface.get_height()
-        if align == -1 :
-            screen.blit(text_surface, (x_pos,y_pos-heigth/2))
-        elif align == 0 :
-            screen.blit(text_surface, (x_pos-width/2,y_pos-heigth/2))
-        elif align ==1 :
-            screen.blit(text_surface, (x_pos-width,y_pos-heigth/2))
-        else : raise ValueError("align value not available")
+    
 
     #__________________________________________________________________________
     #
@@ -216,12 +202,11 @@ class PygameWrapper:
         center_x = self.screen.get_rect().centerx
         top_y = self.screen.get_rect().top + 25
 
-        if self.state == DisplayState.CONF :
-            self.draw_label(self.screen, "Ecran de configuration", center_x, top_y, 30, 0)
-            self.config_screen.draw(self.screen, self.border_length)
-        else :
-            self.draw_label(self.screen, "Affichage initial", center_x, top_y, 30, 0)
-            self.play_screen.draw(self.screen, self.border_length)
+        match self.state :
+            case DisplayState.CONF :     
+                self.config_screen.draw(self.screen, self.border_length)
+            case _ :      
+                self.play_screen.draw(self.screen, self.border_length)
             
         #______________________________________________________________________
         # Wait for the next tick of the Clock
@@ -232,12 +217,17 @@ class PygameWrapper:
         # here stopped the old while true
 
         if not self.running:
-            self.callback_function(DisplayState.OUT)
+            self.callback_function(DisplayCommand.EXIT)
             pygame.quit()
 
-    
+    #__________________________________________________________________________
     #
+    # region get_conf
+    #__________________________________________________________________________
     def get_conf(self) -> dict :
         return self.config_screen.get_conf() 
 
         
+if __name__ == "__main__":
+    #put unit tests here
+    pass

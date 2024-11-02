@@ -5,6 +5,7 @@ from watorpygame.UserButton import UserButton
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
+from watorpygame.UserLabel import UserLabel
 
 class WaTorConfigScreen :
 
@@ -56,6 +57,12 @@ class WaTorConfigScreen :
 
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(self.screen_background_color)
+
+        center_x = screen.get_rect().centerx
+        top_y = screen.get_rect().top + 25
+
+        label_writer = UserLabel()
+        label_writer.draw(screen, "WA TOR - Ecran de configuration", center_x, top_y, 30, 0)
 
         #for line_of_data in self.data :
 

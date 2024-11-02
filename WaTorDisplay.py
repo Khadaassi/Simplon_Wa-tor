@@ -3,6 +3,7 @@
 
 from world import World
 from fish import Fish, Shark, Megalodon, Megalodon_Tail
+from watorpygame.DisplayCommand import DisplayCommand
 from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
 from watorpygame.PygameWrapper import PygameWrapper
@@ -46,33 +47,39 @@ class WaTorDisplay:
     #
     # region on_user_command
     #__________________________________________________________________________
-    def on_user_command(self, command: DisplayState , command_data: dict =None):
+    def on_user_command(self, command: DisplayCommand , command_data: dict =None):
         """
         update WatorDisplay instance variable : state
         optionally uses command_data object if provided
         """
-        if command == DisplayState.CONF:
-            self.state = DisplayState.CONF
-        
-        elif command == DisplayState.WAIT:
-            self.state = DisplayState.WAIT
 
-        elif command == DisplayState.PLAY:
-            self.state = DisplayState.PLAY
+        match command :
+            case DisplayCommand.RESET :
+                self.state = DisplayState.CONF
 
-        elif command == DisplayState.PAUSE: 
-            if self.state == DisplayState.PLAY: self.state = DisplayState.PAUSE
-            elif self.state == DisplayState.PAUSE: self.state = DisplayState.PLAY
-            else: pass
+            case DisplayCommand.GO :
+                self.state = DisplayState.WAIT
 
-        elif command == DisplayState.STOP:
-            self.state = DisplayState.STOP
+            case DisplayCommand.START :
+                self.state = DisplayState.PLAY
+
+            # not implemented feature
+            # case DisplayCommand.STEP :
+            #     self.state = DisplayState.PAUSE
+
+            case DisplayCommand.PAUSE: 
+                if self.state == DisplayState.PLAY: self.state = DisplayState.PAUSE
+                elif self.state == DisplayState.PAUSE: self.state = DisplayState.PLAY
+                else: pass 
+
+            case DisplayCommand.STOP:
+                self.state = DisplayState.STOP
    
-        elif command == DisplayState.OUT:
-            self.state = DisplayState.OUT
+            case DisplayCommand.EXIT:
+                self.state = DisplayState.OUT
 
-        else:
-            self.state = DisplayState.OUT
+            case _ :
+                self.state = DisplayState.OUT
 
         self.pygameWrapper.set_state(self.state)
 
@@ -173,3 +180,8 @@ class WaTorDisplay:
                                                               
         self.pygameWrapper.set_data(data)
         self.pygameWrapper.draw(self.state)
+
+
+if __name__ == "__main__":
+    #put unit tests here
+    pass

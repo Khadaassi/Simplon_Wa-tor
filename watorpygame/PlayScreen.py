@@ -9,6 +9,7 @@ from pygame.surface import Surface
 # Wa-Tor imports
 from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImage import UserImage
+from watorpygame.UserLabel import UserLabel
 from watorpygame.UserButton import UserButton
 from watorpygame.UserImageProvider import UserImageKey, UserImageProvider, Direction
 from watorpygame.UserImageInfo import UserImageInfo
@@ -109,6 +110,13 @@ class WaTorPlayScreen :
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(self.screen_background_color)
 
+        center_x = screen.get_rect().centerx
+        top_y = screen.get_rect().top + 25
+
+        # put the title
+        label_writer = UserLabel()
+        label_writer.draw(screen, "WA TOR - Ecran principal", center_x, top_y, 30, 0)
+
         # RENDER YOUR GAME HERE
         for y_index in range(self.data_height):
             for x_index in range(self.data_width):
@@ -206,5 +214,7 @@ class WaTorPlayScreen :
         pygame.display.flip()
 
         
-
+if __name__ == "__main__":
+    #put unit tests here
+    pass
         

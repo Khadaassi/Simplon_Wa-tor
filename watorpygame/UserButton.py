@@ -2,12 +2,12 @@
 import pygame
 
 # pygame imports
-import watorpygame.DisplayState as DisplayState
+import watorpygame.DisplayCommand as DisplayCommand
 
 
 class UserButton:
 
-    def __init__(self, command_key : DisplayState, command_text: str,  callback_function, button_rect : pygame.Rect):
+    def __init__(self, command_key : DisplayCommand, command_text: str,  callback_function, button_rect : pygame.Rect):
         
         self.command_key = command_key
         self.text = command_text
@@ -67,3 +67,7 @@ class UserButton:
 
         # Draw the button on the screen
         screen.blit(self.button_surface, (self.button_rect.x, self.button_rect.y))
+
+if __name__ == "__main__":
+    #put unit tests here
+    pass

@@ -20,7 +20,7 @@ def main():
     config = read_config()
 
     display = WaTorDisplay()  # initialize View
-    #config = display.display_conf_screen(config)
+    config = display.display_conf_screen(config)
 
     world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
     world.populate_world()

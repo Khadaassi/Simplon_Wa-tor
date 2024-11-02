@@ -47,7 +47,7 @@ class WaTorDisplay:
     #
     # region on_user_command
     #__________________________________________________________________________
-    def on_user_command(self, command: DisplayCommand , command_data: dict =None):
+    def on_user_command(self, command: DisplayCommand , command_data: dict = None):
         """
         update WatorDisplay instance variable : state
         optionally uses command_data object if provided
@@ -58,7 +58,7 @@ class WaTorDisplay:
                 self.state = DisplayState.CONF
 
             case DisplayCommand.GO :
-                self.state = DisplayState.WAIT
+                self.state = DisplayState.BETWEEN # state between config screen and play screen
 
             case DisplayCommand.START :
                 self.state = DisplayState.PLAY
@@ -76,7 +76,8 @@ class WaTorDisplay:
                 self.state = DisplayState.STOP
    
             case DisplayCommand.EXIT:
-                self.state = DisplayState.OUT
+                if self.state != DisplayState.BETWEEN :
+                     self.state = DisplayState.OUT
 
             case _ :
                 self.state = DisplayState.OUT
@@ -86,14 +87,12 @@ class WaTorDisplay:
         if command_data != None :
             self.user_data = command_data
 
+    
     #__________________________________________________________________________
     #
-    # region display_conf_screen
+    # region _get_config_dict
     #__________________________________________________________________________
-    def display_conf_screen(self, config_from_file:list) -> list:
-
-        self.state = DisplayState.CONF
-        self.pygameWrapper.set_state(self.state )
+    def _get_config_dict(self, config_from_file:list) -> dict:
 
         #check config_from_file here
         assert len(config_from_file) == 11
@@ -111,16 +110,13 @@ class WaTorDisplay:
         display_config[ConfigFields.ALLOW_MEGALODONS] = config_from_file[9]
         display_config[ConfigFields.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
         
-        self.pygameWrapper.set_data(display_config)
-        self.pygameWrapper.initialize_screen()
-        while True :
-            if self.state != DisplayState.CONF :
-                break
+        return display_config
             
-            self.pygameWrapper.draw(self.state)
-
-
-        #while(self.state != DisplayState.WAIT) :
+    #__________________________________________________________________________
+    #
+    # region get_config
+    #__________________________________________________________________________
+    def get_config(self) -> list :
         conf = self.pygameWrapper.get_conf()
         returned_config = [0 for i in range(11)]
         returned_config[0] = conf[ConfigFields.FISH_POPULATION] 
@@ -134,9 +130,21 @@ class WaTorDisplay:
         returned_config[8]  = conf[ConfigFields.SHARK_ENERGY_GAIN]
         returned_config[9] = conf[ConfigFields.ALLOW_MEGALODONS] 
         returned_config[10] = conf[ConfigFields.MEGALODON_EVOLUTION_THRESHOLD]
-        
-
         return returned_config
+    
+    #__________________________________________________________________________
+    #
+    # region update_config
+    #__________________________________________________________________________
+    def update_config(self, config_from_file:list):
+        
+        self.state = DisplayState.CONF
+        self.pygameWrapper.set_state(self.state )
+
+        display_config = self._get_config_dict(config_from_file)
+        self.pygameWrapper.set_data(display_config)
+
+        self.pygameWrapper.draw(self.state)
 
 
     #__________________________________________________________________________
@@ -179,6 +187,11 @@ class WaTorDisplay:
                     data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)
                                                               
         self.pygameWrapper.set_data(data)
+        if self.state == DisplayState.BETWEEN :
+            self.state = DisplayState.WAIT
+            self.pygameWrapper.set_state(self.state)
+            self.pygameWrapper.initialize_controls() # new controls (no textboxes, different buttons)
+
         self.pygameWrapper.draw(self.state)
 
 

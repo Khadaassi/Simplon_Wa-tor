@@ -94,7 +94,13 @@ class PygameWrapper:
         # each time the tick(60) function will be called 
         self.clock = pygame.time.Clock()
         self.running = True
+        self.initialize_controls()
 
+    #__________________________________________________________________________
+    #
+    # region initialize_controls
+    #__________________________________________________________________________
+    def initialize_controls(self):
         #______________________________________________________________________
         # the buttons need a screen object to exist (because they are localized in screen) 
         # the textboxes need a font object which does not exist before pygame.init()
@@ -111,7 +117,8 @@ class PygameWrapper:
                         self.border_length,
                         self.buttons)
                 
-                self.config_screen_need_initialization = False
+                    self.config_screen_need_initialization = False
+
             case _ :
                 if self.play_screen_need_initialization :
                     self.play_screen.initialize_controls(
@@ -137,11 +144,12 @@ class PygameWrapper:
             case _ :
                 self.commands = {
                     DisplayCommand.START: "Start",
+                    #DisplayCommand.STEP : "Step", # not implemented feature
                     DisplayCommand.PAUSE: "Pause", 
                     DisplayCommand.STOP: "Stop" }
             
         count = len(self.commands)
-        for command_key, command_text in reversed(self.commands.items()):
+        for command_key, command_text in self.commands.items():
             self.buttons.append(
                 UserButton( command_key, command_text, self.callback_function,
                     pygame.Rect(
@@ -157,18 +165,20 @@ class PygameWrapper:
     #__________________________________________________________________________
     def initialize_textboxes(self):
         
-        if self.state == DisplayState.CONF :
-            field_values = cast(dict, self.data).values()
-            font = pygame.font.Font(None, 30)
+        if self.state != DisplayState.CONF :
+            self.textboxes = []
+            return
+        
+        self.textboxes = []
+        field_values = cast(dict, self.data).values()
+        font = pygame.font.Font(None, 30)
 
-            x = 100
-            y = 100
-            for field_value in field_values : 
-                textbox = UserTextBox(x, y, 100, 50, font, field_value)
-                self.textboxes.append(textbox)
-                y += 50
-
-    
+        x = 100
+        y = 100
+        for field_value in field_values : 
+            textbox = UserTextBox(x, y, 100, 50, font, field_value)
+            self.textboxes.append(textbox)
+            y += 50       
 
     #__________________________________________________________________________
     #
@@ -205,6 +215,8 @@ class PygameWrapper:
         match self.state :
             case DisplayState.CONF :     
                 self.config_screen.draw(self.screen, self.border_length)
+            case DisplayState.BETWEEN :     
+                pass
             case _ :      
                 self.play_screen.draw(self.screen, self.border_length)
             

@@ -16,18 +16,18 @@ class UserLabel :
             align = 1 draw the text rect ending at x + width
         """
         my_font = pygame.font.Font(None, font_size)
-        text_surface_back = my_font.render(text, False, "white")
+        text_surface_back = my_font.render(text, False, "cyan")
         text_surface_front = my_font.render(text, False, (0, 0, 255))
         width = text_surface_front.get_width() 
         heigth = text_surface_front.get_height()
         if align == -1 :
-            screen.blit(text_surface_back, (2+x_pos,2+y_pos-heigth/2))
+            screen.blit(text_surface_back, (1+x_pos,1+y_pos-heigth/2))
             screen.blit(text_surface_front, (x_pos,y_pos-heigth/2))
         elif align == 0 :
-            screen.blit(text_surface_back, (2+x_pos-width/2,2+y_pos-heigth/2))
+            screen.blit(text_surface_back, (1+x_pos-width/2,1+y_pos-heigth/2))
             screen.blit(text_surface_front, (x_pos-width/2,y_pos-heigth/2))
         elif align ==1 :
-            screen.blit(text_surface_back, (2+x_pos-width,2+y_pos-heigth/2))
+            screen.blit(text_surface_back, (1+x_pos-width,1+y_pos-heigth/2))
             screen.blit(text_surface_front, (x_pos-width,y_pos-heigth/2))
         else : 
             raise ValueError("align value not available")

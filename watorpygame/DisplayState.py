@@ -8,3 +8,4 @@ class DisplayState(Enum):
     PAUSE = 4
     STOP = 5
     OUT = 6
+    BETWEEN = 7

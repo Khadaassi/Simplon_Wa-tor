@@ -39,7 +39,7 @@ class WaTorConfigScreen :
     #__________________________________________________________________________
     def initialize_controls(self, screen : pygame.Surface, border_length: int, buttons : list[UserButton]):
         """
-        Need the data dimensions to create the chessboard
+        need number of config fields to initialize screen dimensions
         """
         if self.window_width != 0 : 
             return 

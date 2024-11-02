@@ -19,9 +19,11 @@ def main():
 
     config = read_config()
 
-    display = WaTorDisplay()  # initialize View
-    config = display.display_conf_screen(config)
+    display = WaTorDisplay(DisplayState.CONF)  # initialize View
+    while display.state == DisplayState.CONF :
+        display.update_config(config)
 
+    config = display.get_config()
     world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
     world.populate_world()
 
@@ -42,7 +44,7 @@ def main():
     clear()
 
     while True:
-        if display.state == DisplayState.STOP:
+        if display.state == DisplayState.STOP or display.state == DisplayState.OUT :
             break
 
         if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:

@@ -34,9 +34,9 @@ class WaTorPlayScreen :
         self.window_width = 0
         self.window_height = 0
         self.table_width = 0
-        self.table_heigth = 0
+        self.table_height = 0
         self.cell_width =0
-        self.cell_heigth = 0
+        self.cell_height = 0
 
 
     #__________________________________________________________________________
@@ -80,17 +80,17 @@ class WaTorPlayScreen :
         self.window_height = screen.get_height()
 
         self.buttons = buttons
-        button_heigth = buttons[0].button_rect.height
+        button_height = buttons[0].button_rect.height
 
         #_______________________________________________________________________
         # Creation of the chessboard
         self.table_width = self.window_width - 2 * border_length
-        self.table_heigth = self.window_height - button_heigth - 4 * border_length
+        self.table_height = self.window_height - button_height - 4 * border_length
 
         self.cell_width = (self.table_width) // self.data_width
-        self.cell_heigth = (self.table_heigth) // self.data_height
+        self.cell_height = (self.table_height) // self.data_height
 
-        self.image_provider = UserImageProvider(self.cell_width, self.cell_heigth)
+        self.image_provider = UserImageProvider(self.cell_width, self.cell_height)
         
         #_______________________________________________________________________
         # Adapt image dimensions to the cells dimensions
@@ -130,22 +130,26 @@ class WaTorPlayScreen :
         label_writer = UserLabel()
         label_writer.draw(screen, "Wa - Tor : l'écran principal", center_x, top_y+20, 30, 0)
 
-        label_writer.draw(screen, "Current iteration : {0}".format(self.iterationInfo.current_iteration), border_length, int(1.5*border_length), 20, -1)
+        label_writer.draw(screen, 
+            "Current iteration : {0}".format(self.iterationInfo.current_iteration), 
+            border_length, 
+            int(1.5*border_length), 
+            20, -1)
         label_writer.draw(screen, 
             "Fish pop : {0} ; Shar pop : {1} ; Megalodon pop : {2}".format(
                 self.iterationInfo.fish_pop,
                 self.iterationInfo.shark_pop,
                 self.iterationInfo.megalodon_pop), 
-                border_length, 
-                self.window_height - int(1.5*border_length) - self.buttons[0].button_rect.height, 
-                20, -1)
+            border_length, 
+            self.window_height - int(1.5*border_length) - self.buttons[0].button_rect.height, 
+            20, -1)
 
         # RENDER YOUR GAME HERE
         for y_index in range(self.data_height):
             for x_index in range(self.data_width):
 
                 position_x = border_length + x_index * self.cell_width
-                position_y = 2*border_length + y_index * self.cell_heigth
+                position_y = 2*border_length + y_index * self.cell_height
 
                 even_cell = (x_index + y_index) % 2 == 0
                 image_key = cast(UserImageInfo, self.data[y_index][x_index]).image_key          
@@ -155,13 +159,13 @@ class WaTorPlayScreen :
                 if image_key in [UserImageKey.WATER] :
                     cell_color = (0, 0, 170)
                     # UserImage.light_color if even_cell else UserImage.dark_color
-                    pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_heigth] )
+                    pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_height] )
                     continue
                 
                 #---------
                 #Fish drawing logic
                 
-                cell_rect = pygame.Rect( position_x, position_y, self.cell_width, self.cell_heigth )              
+                cell_rect = pygame.Rect( position_x, position_y, self.cell_width, self.cell_height )              
                 
                 if image_key in [UserImageKey.MEGA_HEAD, UserImageKey.MEGA_TAIL]:              
                     fish_image = self.image_provider.get_image(image_key, self.data[y_index][x_index].direction)

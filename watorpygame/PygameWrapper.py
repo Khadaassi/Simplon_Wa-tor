@@ -11,7 +11,6 @@ from pygame.surface import Surface
 from watorpygame.DisplayState import DisplayState
 from watorpygame.DisplayCommand import DisplayCommand
 
-
 from watorpygame.WaTorColors import *
 
 from watorpygame.UserImage import UserImage
@@ -214,7 +213,6 @@ class PygameWrapper:
         for textbox in self.textboxes :
             cast(UserTextBox, textbox).callback_function = None
         
-
     #__________________________________________________________________________
     #
     # region draw

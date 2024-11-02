@@ -39,13 +39,13 @@ class PygameWrapper:
         #______________________________________________________________________
         # Default window dimensions 
         self.window_width = 1000  # defaut value
-        self.window_heigth = 700  # defaut value
+        self.window_height = 700  # defaut value
 
         #______________________________________________________________________
         # Central definition of 
         # borders & buttons dimensions
         self.border_length = 25
-        self.button_heigth = 50
+        self.button_height = 50
         self.button_width = 75
         self.buttons =[]
         self.textboxes = []
@@ -99,7 +99,7 @@ class PygameWrapper:
 
         #______________________________________________________________________
         # start the window on screen
-        size = (self.window_width, self.window_heigth)
+        size = (self.window_width, self.window_height)
         self.screen = pygame.display.set_mode(size)
 
         #______________________________________________________________________
@@ -168,9 +168,9 @@ class PygameWrapper:
                 UserButton( command_key, command_text, self.callback_function,
                     pygame.Rect(
                         self.window_width - count * (self.button_width + self.border_length),
-                        self.window_heigth - self.button_heigth - self.border_length,
+                        self.window_height - self.button_height - self.border_length,
                         self.button_width,
-                        self.button_heigth)))
+                        self.button_height)))
             count -= 1
 
     #__________________________________________________________________________

@@ -1,4 +1,5 @@
-from watorpygame.UserImageProvider import UserImageKey, Direction
+from watorpygame.UserImageKey import UserImageKey
+from watorpygame.UserImageProvider import Direction
 
 class UserImageInfo:
     

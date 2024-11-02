@@ -10,14 +10,20 @@ from pygame.surface import Surface
 # Wa-Tor imports
 from watorpygame.DisplayState import DisplayState
 from watorpygame.DisplayCommand import DisplayCommand
-from watorpygame.UserButton import UserButton
+
+
+from watorpygame.WaTorColors import *
+
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageKey import UserImageKey
-from watorpygame.UserImageProvider import UserImageProvider
+from watorpygame.UserImageProvider import UserImageProvider, Direction
+
+import watorpygame.ConfigField as cf 
 from watorpygame.UserTextBox import UserTextBox
+from watorpygame.UserButton import UserButton
 from watorpygame.PlayScreen import WaTorPlayScreen
-from watorpygame.WaTorColors import *
+
 from watorpygame.ConfigScreen import WaTorConfigScreen
 
 class PygameWrapper:
@@ -45,7 +51,7 @@ class PygameWrapper:
         self.textboxes = []
         self.state = DisplayState.OUT
 
-        background_color = WaTorColors().colors[ColorChoice.SCREEN_BACKGROUND_COLOR]
+        background_color = WaTorColors().get(ColorChoice.SCREEN_BACKGROUND_COLOR)
 
         self.config_screen = WaTorConfigScreen(background_color, self.image_provider)
         self.play_screen = WaTorPlayScreen(background_color, self.image_provider)
@@ -115,7 +121,8 @@ class PygameWrapper:
                     self.config_screen.initialize_controls(
                         self.screen,
                         self.border_length,
-                        self.buttons)
+                        self.buttons,
+                        self.textboxes)
                 
                     self.config_screen_need_initialization = False
 
@@ -170,15 +177,23 @@ class PygameWrapper:
             return
         
         self.textboxes = []
-        field_values = cast(dict, self.data).values()
+        config_fields = cast(dict, self.data)
+
         font = pygame.font.Font(None, 30)
 
-        x = 100
-        y = 100
-        for field_value in field_values : 
-            textbox = UserTextBox(x, y, 100, 50, font, field_value)
+        textbox_width = 150
+        textbox_heigth = 40
+        textbox_pos_x = self.window_width - self.border_length - textbox_width 
+        textbox_pos_y = 2 * self.border_length
+        for fied_key, field_value in config_fields.items() : 
+            textbox = UserTextBox(fied_key, 
+                textbox_pos_x, textbox_pos_y, 
+                textbox_width, textbox_heigth, 
+                font, 
+                str(field_value),
+                cf.get_validation_function(fied_key))
             self.textboxes.append(textbox)
-            y += 50       
+            textbox_pos_y += textbox_heigth + 5     
 
     #__________________________________________________________________________
     #
@@ -199,15 +214,15 @@ class PygameWrapper:
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
 
-            for textbox in self.textboxes :
-                cast(UserTextBox, textbox).handle_event(event)
-
             if event.type == pygame.QUIT:
                 self.running = False
 
+            for textbox in self.textboxes :
+                cast(UserTextBox, textbox).check_event(event)
+            
             # Check for the mouse button down event
             for button in self.buttons:
-                button.check_event(event)
+                cast(UserButton, button).check_event(event)
 
         center_x = self.screen.get_rect().centerx
         top_y = self.screen.get_rect().top + 25
@@ -232,14 +247,23 @@ class PygameWrapper:
             self.callback_function(DisplayCommand.EXIT)
             pygame.quit()
 
+
     #__________________________________________________________________________
     #
-    # region get_conf
+    # region reset_config
     #__________________________________________________________________________
-    def get_conf(self) -> dict :
-        return self.config_screen.get_conf() 
+    def reset_config(self):
+        self.config_screen.reset_config() 
+
+
+    #__________________________________________________________________________
+    #
+    # region get_config
+    #__________________________________________________________________________
+    def get_config(self) -> dict :
+        return self.config_screen.get_config() 
 
         
-if __name__ == "__main__":
-    #put unit tests here
-    pass
+# if __name__ == "__main__":
+#     #put unit tests here
+#     pass

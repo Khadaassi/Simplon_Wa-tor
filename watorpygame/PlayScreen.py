@@ -9,10 +9,11 @@ from pygame.surface import Surface
 # Wa-Tor imports
 from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImage import UserImage
+from watorpygame.UserImageKey import UserImageKey
+from watorpygame.UserImageProvider import UserImageProvider, Direction
+from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserLabel import UserLabel
 from watorpygame.UserButton import UserButton
-from watorpygame.UserImageProvider import UserImageKey, UserImageProvider, Direction
-from watorpygame.UserImageInfo import UserImageInfo
 
 class WaTorPlayScreen :
     #__________________________________________________________________________
@@ -29,7 +30,7 @@ class WaTorPlayScreen :
         self.data_width = 0
 
         self.window_width = 0
-        self.window_heigth = 0
+        self.window_height = 0
         self.table_width = 0
         self.table_heigth = 0
         self.cell_width =0
@@ -64,7 +65,7 @@ class WaTorPlayScreen :
             return
 
         self.window_width = screen.get_width()
-        self.window_heigth = screen.get_height()
+        self.window_height = screen.get_height()
 
         self.buttons = buttons
         button_heigth = buttons[0].button_rect.height
@@ -72,7 +73,7 @@ class WaTorPlayScreen :
         #_______________________________________________________________________
         # Creation of the chessboard
         self.table_width = self.window_width - 2 * border_length
-        self.table_heigth = self.window_heigth - button_heigth - 3 * border_length
+        self.table_heigth = self.window_height - button_heigth - 3 * border_length
 
         self.cell_width = (self.table_width) // self.data_width
         self.cell_heigth = (self.table_heigth) // self.data_height
@@ -111,11 +112,11 @@ class WaTorPlayScreen :
         screen.fill(self.screen_background_color)
 
         center_x = screen.get_rect().centerx
-        top_y = screen.get_rect().top + 25
+        top_y = screen.get_rect().top
 
         # put the title
         label_writer = UserLabel()
-        label_writer.draw(screen, "WA TOR - Ecran principal", center_x, top_y, 30, 0)
+        label_writer.draw(screen, "Wa - Tor : l'écran principal", center_x, top_y+10, 30, 0)
 
         # RENDER YOUR GAME HERE
         for y_index in range(self.data_height):
@@ -214,7 +215,7 @@ class WaTorPlayScreen :
         pygame.display.flip()
 
         
-if __name__ == "__main__":
-    #put unit tests here
-    pass
+# if __name__ == "__main__":
+#     #put unit tests here
+#     pass
         

@@ -7,7 +7,11 @@ import watorpygame.DisplayCommand as DisplayCommand
 
 class UserButton:
 
-    def __init__(self, command_key : DisplayCommand, command_text: str,  callback_function, button_rect : pygame.Rect):
+    # _________________________________________________________________________
+    #
+    # region __init__
+    # _________________________________________________________________________
+    def __init__(self, command_key : DisplayCommand, command_text: str, callback_function, button_rect : pygame.Rect):
         
         self.command_key = command_key
         self.text = command_text
@@ -30,14 +34,22 @@ class UserButton:
             center=(
                 self.button_surface.get_width() / 2,
                 self.button_surface.get_height() / 2))
-
+ 
+    # _________________________________________________________________________
+    #
+    # region check_event
+    # _________________________________________________________________________
     def check_event(self, event):
         # Check for the mouse button down event
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Call the on_mouse_button_down() function
             if self.button_rect.collidepoint(event.pos):
                 self.callback_function(self.command_key)
-
+    
+    # _________________________________________________________________________
+    #
+    # region draw
+    # _________________________________________________________________________
     def draw(self, screen: pygame.Surface):
 
         # Check if the mouse is over the button. This will create the button hover effect
@@ -68,6 +80,6 @@ class UserButton:
         # Draw the button on the screen
         screen.blit(self.button_surface, (self.button_rect.x, self.button_rect.y))
 
-if __name__ == "__main__":
-    #put unit tests here
-    pass
+# if __name__ == "__main__":
+#     #put unit tests here
+#     pass

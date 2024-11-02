@@ -3,12 +3,16 @@
 
 from world import World
 from fish import Fish, Shark, Megalodon, Megalodon_Tail
+
 from watorpygame.DisplayCommand import DisplayCommand
 from watorpygame.DisplayState import DisplayState
-from watorpygame.UserImageProvider import UserImageKey, UserImageProvider
-from watorpygame.PygameWrapper import PygameWrapper
+
+from watorpygame.UserImageKey import UserImageKey
+from watorpygame.UserImageProvider import UserImageProvider
 from watorpygame.UserImageInfo import UserImageInfo
-from watorpygame.ConfigFields import ConfigFields
+from watorpygame.ConfigField import ConfigField
+
+from watorpygame.PygameWrapper import PygameWrapper
 
 import pygame
 
@@ -42,7 +46,7 @@ class WaTorDisplay:
         self.state = state
         self.image_provider = UserImageProvider()
         self.pygameWrapper = PygameWrapper(self.image_provider, self.on_user_command)
-        self.user_data = {}   
+        self.__config = {}   
     #__________________________________________________________________________
     #
     # region on_user_command
@@ -56,9 +60,11 @@ class WaTorDisplay:
         match command :
             case DisplayCommand.RESET :
                 self.state = DisplayState.CONF
+                self.pygameWrapper.reset_config()
 
             case DisplayCommand.GO :
                 self.state = DisplayState.BETWEEN # state between config screen and play screen
+                #self.config = self.pygameWrapper.get_config()
 
             case DisplayCommand.START :
                 self.state = DisplayState.PLAY
@@ -92,23 +98,23 @@ class WaTorDisplay:
     #
     # region _get_config_dict
     #__________________________________________________________________________
-    def _get_config_dict(self, config_from_file:list) -> dict:
+    def __get_config_dict(self, config_from_file:list) -> dict:
 
         #check config_from_file here
         assert len(config_from_file) == 11
 
         display_config = {}
-        display_config[ConfigFields.FISH_POPULATION] = config_from_file[0]
-        display_config[ConfigFields.SHARK_POPULATION]= config_from_file[1]
-        display_config[ConfigFields.REFRESH_LENGTH] = config_from_file[2]
-        display_config[ConfigFields.WORLD_WIDTH]= config_from_file[3]
-        display_config[ConfigFields.WORD_HEIGTH] = config_from_file[4]
-        display_config[ConfigFields.FISH_REPRO_TIME] = config_from_file[5]
-        display_config[ConfigFields.SHARK_REPRO_TIME] = config_from_file[6]
-        display_config[ConfigFields.SHARK_ENERGY] = config_from_file[7]
-        display_config[ConfigFields.SHARK_ENERGY_GAIN]  = config_from_file[8]
-        display_config[ConfigFields.ALLOW_MEGALODONS] = config_from_file[9]
-        display_config[ConfigFields.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
+        display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
+        display_config[ConfigField.SHARK_POPULATION] = config_from_file[1]
+        display_config[ConfigField.REFRESH_LENGTH] = config_from_file[2]
+        display_config[ConfigField.WORLD_WIDTH] = config_from_file[3]
+        display_config[ConfigField.WORD_HEIGTH] = config_from_file[4]
+        display_config[ConfigField.FISH_REPRO_TIME] = config_from_file[5]
+        display_config[ConfigField.SHARK_REPRO_TIME] = config_from_file[6]
+        display_config[ConfigField.SHARK_ENERGY] = config_from_file[7]
+        display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
+        display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
+        display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
         
         return display_config
             
@@ -117,20 +123,20 @@ class WaTorDisplay:
     # region get_config
     #__________________________________________________________________________
     def get_config(self) -> list :
-        conf = self.pygameWrapper.get_conf()
-        returned_config = [0 for i in range(11)]
-        returned_config[0] = conf[ConfigFields.FISH_POPULATION] 
-        returned_config[1]= conf [ConfigFields.SHARK_POPULATION]
-        returned_config[2] = conf[ConfigFields.REFRESH_LENGTH]
-        returned_config[3]= conf[ConfigFields.WORLD_WIDTH]
-        returned_config[4] = conf[ConfigFields.WORD_HEIGTH]
-        returned_config[5] = conf[ConfigFields.FISH_REPRO_TIME]
-        returned_config[6] = conf[ConfigFields.SHARK_REPRO_TIME] 
-        returned_config[7] = conf[ConfigFields.SHARK_ENERGY]
-        returned_config[8]  = conf[ConfigFields.SHARK_ENERGY_GAIN]
-        returned_config[9] = conf[ConfigFields.ALLOW_MEGALODONS] 
-        returned_config[10] = conf[ConfigFields.MEGALODON_EVOLUTION_THRESHOLD]
-        return returned_config
+        self.__config = self.pygameWrapper.get_config()
+        config_list = [0 for i in range(11)]
+        config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
+        config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
+        config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
+        config_list[3] = self.__config[ConfigField.WORLD_WIDTH]
+        config_list[4] = self.__config[ConfigField.WORD_HEIGTH]
+        config_list[5] = self.__config[ConfigField.FISH_REPRO_TIME]
+        config_list[6] = self.__config[ConfigField.SHARK_REPRO_TIME] 
+        config_list[7] = self.__config[ConfigField.SHARK_ENERGY]
+        config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
+        config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
+        config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
+        return config_list
     
     #__________________________________________________________________________
     #
@@ -139,13 +145,13 @@ class WaTorDisplay:
     def update_config(self, config_from_file:list):
         
         self.state = DisplayState.CONF
-        self.pygameWrapper.set_state(self.state )
+        self.pygameWrapper.set_state(self.state)
 
-        display_config = self._get_config_dict(config_from_file)
-        self.pygameWrapper.set_data(display_config)
+        if len(self.__config) == 0 :
+            self.__config = display_config = self.__get_config_dict(config_from_file)
+            self.pygameWrapper.set_data(display_config)
 
         self.pygameWrapper.draw(self.state)
-
 
     #__________________________________________________________________________
     #

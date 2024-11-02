@@ -44,7 +44,8 @@ class UserButton:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             # Call the on_mouse_button_down() function
             if self.button_rect.collidepoint(event.pos):
-                self.callback_function(self.command_key)
+                if self.callback_function != None :
+                    self.callback_function(self.command_key)
     
     # _________________________________________________________________________
     #

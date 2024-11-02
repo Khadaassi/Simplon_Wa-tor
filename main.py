@@ -9,7 +9,6 @@ from watorpygame.DisplayState import DisplayState
 
 clear = lambda: os.system("cls" if os.name == "nt" else "clear")
 
-
 def main():
     """
     Main function to run the simulation
@@ -27,13 +26,14 @@ def main():
     world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
     world.populate_world()
 
-    display.update_view(world)  # create screen with the first world
+    display.update_view(world, 0)  # create screen with the first world
 
     current_iteration = 0
     start_t = time.time()  # Start time
     fish_population = []  # List to store fish population
     shark_population = []  # List to store shark population
     megalodon_population = []  # List to store megalodon population
+
     iterations = []  # List to store iterations
     counter = 0
     print_counter = 0
@@ -48,7 +48,7 @@ def main():
             break
 
         if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
-            display.update_view(world)
+            display.update_view(world, current_iteration)
             continue
 
         if time.time() - start_t >= world.chronos_length:
@@ -59,7 +59,7 @@ def main():
             clear()
             print("Current iteration : ", current_iteration)
             world.update_world()
-            display.update_view(world)  # update screen with the next world
+            display.update_view(world, current_iteration)  # update screen with the next world
             world.print_grid()
             print(
                 f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population} ; Megalodon pop : {world.megalodon_population}"
@@ -74,7 +74,7 @@ def main():
 
     # plot_population(iterations, fish_population, shark_population, megalodon_population)
     while display.state != DisplayState.OUT:
-        display.update_view(world)
+        display.update_view(world, current_iteration)
 
 
 if __name__ == "__main__":

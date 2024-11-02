@@ -25,6 +25,7 @@ from watorpygame.UserButton import UserButton
 from watorpygame.PlayScreen import WaTorPlayScreen
 
 from watorpygame.ConfigScreen import WaTorConfigScreen
+from watorpygame.IterationInfo import IterationInfo
 
 class PygameWrapper:
 
@@ -82,6 +83,13 @@ class PygameWrapper:
         else :
             self.data = cast(list[list[UserImageInfo]], data)
             self.play_screen.set_data(self.data)
+
+    #__________________________________________________________________________
+    #
+    # region set_data
+    #__________________________________________________________________________
+    def set_info(self, iterationInfo : IterationInfo) :
+        self.play_screen.set_info(iterationInfo)
     #__________________________________________________________________________
     #
     # region initialize_screen
@@ -194,6 +202,18 @@ class PygameWrapper:
                 cf.get_validation_function(fied_key))
             self.textboxes.append(textbox)
             textbox_pos_y += textbox_heigth + 5     
+
+    #__________________________________________________________________________
+    #
+    # region disable_config_controls
+    #__________________________________________________________________________
+    def disable_config_controls(self) :
+        for button in self.buttons :
+            cast(UserButton, button).callback_function = None
+
+        for textbox in self.textboxes :
+            cast(UserTextBox, textbox).callback_function = None
+        
 
     #__________________________________________________________________________
     #

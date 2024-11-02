@@ -15,6 +15,8 @@ from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserLabel import UserLabel
 from watorpygame.UserButton import UserButton
 
+from watorpygame.IterationInfo import IterationInfo
+
 class WaTorPlayScreen :
     #__________________________________________________________________________
     #
@@ -49,6 +51,16 @@ class WaTorPlayScreen :
         self.data = data
         self.data_height = len(self.data)
         self.data_width = len(self.data[0])
+
+    #__________________________________________________________________________
+    #
+    # region set_info
+    #__________________________________________________________________________
+    def set_info(self, iterationInfo : IterationInfo):
+
+        self.iterationInfo = iterationInfo
+        self.data_height = len(self.data)
+        self.data_width = len(self.data[0])
     
     #__________________________________________________________________________
     #
@@ -73,7 +85,7 @@ class WaTorPlayScreen :
         #_______________________________________________________________________
         # Creation of the chessboard
         self.table_width = self.window_width - 2 * border_length
-        self.table_heigth = self.window_height - button_heigth - 3 * border_length
+        self.table_heigth = self.window_height - button_heigth - 4 * border_length
 
         self.cell_width = (self.table_width) // self.data_width
         self.cell_heigth = (self.table_heigth) // self.data_height
@@ -116,14 +128,24 @@ class WaTorPlayScreen :
 
         # put the title
         label_writer = UserLabel()
-        label_writer.draw(screen, "Wa - Tor : l'écran principal", center_x, top_y+10, 30, 0)
+        label_writer.draw(screen, "Wa - Tor : l'écran principal", center_x, top_y+20, 30, 0)
+
+        label_writer.draw(screen, "Current iteration : {0}".format(self.iterationInfo.current_iteration), border_length, int(1.5*border_length), 20, -1)
+        label_writer.draw(screen, 
+            "Fish pop : {0} ; Shar pop : {1} ; Megalodon pop : {2}".format(
+                self.iterationInfo.fish_pop,
+                self.iterationInfo.shark_pop,
+                self.iterationInfo.megalodon_pop), 
+                border_length, 
+                self.window_height - int(1.5*border_length) - self.buttons[0].button_rect.height, 
+                20, -1)
 
         # RENDER YOUR GAME HERE
         for y_index in range(self.data_height):
             for x_index in range(self.data_width):
 
                 position_x = border_length + x_index * self.cell_width
-                position_y = border_length + y_index * self.cell_heigth
+                position_y = 2*border_length + y_index * self.cell_heigth
 
                 even_cell = (x_index + y_index) % 2 == 0
                 image_key = cast(UserImageInfo, self.data[y_index][x_index]).image_key          

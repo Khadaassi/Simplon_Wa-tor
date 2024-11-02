@@ -93,7 +93,7 @@ class WaTorConfigScreen :
 
     #__________________________________________________________________________
     #
-    # region draw
+    # region on_textbox_validated
     #__________________________________________________________________________
     def on_textbox_validated(self, field_key: ConfigField) :
         for textbox in self.textboxes :

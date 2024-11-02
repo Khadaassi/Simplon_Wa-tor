@@ -3,6 +3,7 @@
 
 from world import World
 from fish import Fish, Shark, Megalodon, Megalodon_Tail
+from watorpygame.IterationInfo import IterationInfo
 
 from watorpygame.DisplayCommand import DisplayCommand
 from watorpygame.DisplayState import DisplayState
@@ -11,6 +12,8 @@ from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider
 from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.ConfigField import ConfigField
+
+
 
 from watorpygame.PygameWrapper import PygameWrapper
 
@@ -64,6 +67,7 @@ class WaTorDisplay:
 
             case DisplayCommand.GO :
                 self.state = DisplayState.BETWEEN # state between config screen and play screen
+                self.pygameWrapper.disable_config_controls()
                 #self.config = self.pygameWrapper.get_config()
 
             case DisplayCommand.START :
@@ -157,7 +161,7 @@ class WaTorDisplay:
     #
     # region update_view
     #__________________________________________________________________________
-    def update_view(self, world: World):
+    def update_view(self, world: World, current_iteration: int):
         """
         Takes a world object which contains a list[list[Fish]]
         """
@@ -168,6 +172,12 @@ class WaTorDisplay:
 
         width = self.world.size[0]
         heigth = self.world.size[1]
+
+        iterationInfo = IterationInfo(
+            current_iteration,
+            world.fish_population,
+            world.shark_population,
+            world.megalodon_population)
 
         data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
@@ -193,6 +203,7 @@ class WaTorDisplay:
                     data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)
                                                               
         self.pygameWrapper.set_data(data)
+        self.pygameWrapper.set_info(iterationInfo)
         if self.state == DisplayState.BETWEEN :
             self.state = DisplayState.WAIT
             self.pygameWrapper.set_state(self.state)

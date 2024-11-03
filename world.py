@@ -5,12 +5,91 @@ from fish import Megalodon_Tail
 from pacman import Pacman
 from random import randint
 
+#__________________________________________________________________________
+#
+# region World
+#__________________________________________________________________________
 class World:
+    """
+    A class to represent a world in which fishes and sharks live.
+
+    Attributes
+    ----------
+    starting_population : tuple[int, int]
+        The starting population of fishes and sharks, respectively.
+    chronos_length : int
+        The length of a chronos for this world.
+    size : tuple[int, int]
+        The size of the world (= the size of the grid).
+    fish_reproduction_time : int
+        The amount of chronos a fish needs to reproduce.
+    shark_reproduction_time : int
+        The amount of chronos a shark needs to reproduce.
+    grid : list[list[bool]]
+        The actual world. A list of lists holding, fishes, sharks or FALSE (water) to simulate a grid view.
+    current_fish_population : int
+        The current amount of fishes in the world.
+    current_shark_population : int
+        The current amount of sharks in the world.
+    shark_energy : int
+        The starting energy of a shark.
+    shark_energy_gained_by_eating : int
+        The amount of energy a shark gains when eating a fish.
+    shark_energy_depletion_rate : int
+        The amount of energy lost when a shark moves. 1 by default.
+    enable_megalodons : bool
+        If False, sharks will never evolve to Megalodons.
+    megalodon_evolution_threshold : int
+        The amount of Fish a shark needs to eat before evolving to a Megalodon.
+    pacman : Pacman
+        The pacman object.
+    next_move_will_eat : bool
+        If True, the next move will eat.
+    next__move_will_eat_mega_head : bool
+        If True, the next move will eat the mega head.
+    fish_population : int
+        The fish population.
+    shark_population : int
+        The shark population.
+    megalodon_population : int
+        The megalodon population.
+    pacman_score : int
+        The pacman score.
+
+    Methods
+    -------
+    populate_world()
+        Populate the first state of the world by placing fishes and sharks randomly in the grid.
+    update_world()
+        Update the world state and the state of every entity in the grid. (Movement, reproduction, death)
+    get_empty_grid_space()
+        Return the coordinates of a random empty space in the grid as two int x and y.
+    print_grid()
+        Print the state of the world in the console.
+    get_megalodons_directions(x: int, y: int)
+        Return all possible movement for the Megalodon based only on the presence of sharks in its move radius.
+    get_shark_directions(x: int, y: int)
+        Return all possible movement for the shark based only on the presence of fishes in its move radius.
+    get_fish_direction(x: int, y: int)
+        Return all possible movement for the fish.
+    get_pacman_direction(x: int, y: int)
+        Return all possible movement for Pacmank based on the presence of food in its move radius.
+    check_for_only_shark_in_tile(x: int, y: int)
+        Check for only shark in tile.
+    check_for_only_fish_in_tile(x: int, y: int)
+        Check for only fish in tile.
+    check_for_food(x: int, y: int)
+        Check for food.
+    """
+#__________________________________________________________________________
+#
+# region __init__
+#__________________________________________________________________________ 
     
     def __init__(self, s_pop: tuple[int, int], chro_len: int, world_size: tuple[int, int], fish_repro_time: int, shark_repro_time: int,\
         shark_energy: int, shark_energy_gain: int, allow_megalodons: bool = True, megalodon_evolution_threshold: int = 5, shark_energy_depletion_rate: int = 1) -> None:
         """
-        [Args]\n
+        [Args]
         s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
         chro_len = the length of a chronos for this world
         world_size = a tuple of int defining the world dimension as follow [width, height]
@@ -18,7 +97,8 @@ class World:
         shark_repro_time = the amount of chronos a shark needs to reproduce
         shark_energy = starting energy of a newly created shark (also its maximum, if needed)
         shark_energy_gain = amount of energy a shark gains when eating a fish
-        allow_megalodons = if False, sharks will never evolve to Megalodons"""
+        allow_megalodons = if False, sharks will never evolve to Megalodons
+        """
         
         #World parameters block
         self.starting_population = s_pop #The initial ratio of fish to shark. starting_population[0] = fishes, starting_population[1] = sharks
@@ -45,13 +125,16 @@ class World:
         self.megalodon_population = 0
 
         #DEBUG block
-        self.megalodon_starting_population = 5 #Force the presence of X megalodons on the starting world.
+        self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.
 
         #Cannot create a world smaller than total starting population
         if (sum(self.starting_population)) > self.size[0]*self.size[1]:
             raise ValueError("Total population too big : try increasing world size or reducing populations")
         
-        
+#__________________________________________________________________________
+#
+# region populate_world
+#__________________________________________________________________________
     def populate_world(self) -> None:
         """
         Populate the first state of the world by placing fishes and sharks randomly in the grid.
@@ -96,6 +179,10 @@ class World:
             self.grid[x][y] = Pacman()
             pacman -= 1
 
+#__________________________________________________________________________
+#
+# region update_world
+#__________________________________________________________________________
     def update_world(self) -> None:
         """
         Update the world state and the state of every entity in the grid. (Movement, reproduction, death)
@@ -217,7 +304,10 @@ class World:
                 if y:
                     y.has_moved = False        
           
-        
+#__________________________________________________________________________
+#
+# region get_empty_grid_space
+#__________________________________________________________________________
     def get_empty_grid_space(self) -> int:
         """
         Return the coordinates of a random empty space in the grid as two int x and y.
@@ -232,6 +322,10 @@ class World:
                 found_suitable_space = True
         return x, y
 
+#__________________________________________________________________________
+#
+# region print_grid
+#__________________________________________________________________________
     def print_grid(self) -> None: 
         """
         Print the state of the world in the console.
@@ -260,7 +354,11 @@ class World:
                     line += f"[\033[34m~\033[0m]"                
             line += " |"
             print(line)
-    
+
+#__________________________________________________________________________
+#
+# region get_megalodons_directions
+#__________________________________________________________________________
     def get_megalodons_directions(self, x: int, y: int) -> str:
         """
         Return all possible movement for the Megalodon based only on the presence of sharks in its move radius. 
@@ -275,7 +373,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of Megalodon
         """
                 
@@ -319,7 +417,11 @@ class World:
 
         #If no shark availlable, return normal fish behavior
         return self.get_fish_direction(x, y)
-    
+
+#__________________________________________________________________________
+#
+# region get_shark_directions
+#__________________________________________________________________________
     def get_shark_directions(self, x: int, y: int) -> str:
         """
         Return all possible movement for the shark based only on the presence of fishes in its move radius. 
@@ -334,7 +436,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of shark
         """
                 
@@ -378,7 +480,11 @@ class World:
 
         #If no fish availlable, return normal fish behavior
         return self.get_fish_direction(x, y)
-    
+
+#__________________________________________________________________________
+#
+# region get_fish_direction
+#__________________________________________________________________________
     def get_fish_direction(self, x: int, y: int) -> str:
         """
         Return all possible movement for the fish :
@@ -391,7 +497,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of fish
         """
         
@@ -430,7 +536,11 @@ class World:
             outcomes += "E"
      
         return outcomes
-    
+
+#__________________________________________________________________________
+#
+# region get_pacman_direction
+#__________________________________________________________________________
     def get_pacman_direction(self, x: int, y: int) -> str:
         """
         Return all possible movement for Pacmank based on the presence of food in its move radius. 
@@ -445,7 +555,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of shark
         """
                 
@@ -491,14 +601,44 @@ class World:
         #If no food availlable, return normal fish behavior
         return self.get_fish_direction(x, y)
 
+#__________________________________________________________________________
+#
+# region check_for_only_shark_in_tile
+#__________________________________________________________________________
     def check_for_only_shark_in_tile(self, x: int, y: int) -> bool:
+        """
+        Check for only shark in tile.
+        
+        [Args]
+        x, y = current coordinate of shark
+        """
         return isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
-            
+
+#__________________________________________________________________________
+#
+# region check_for_only_fish_in_tile
+# __________________________________________________________________________   
     def check_for_only_fish_in_tile(self, x: int, y: int) -> bool:
+        """
+        Check for only fish in tile.
+
+        [Args]
+        x, y = current coordinate of fish
+        """
         return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
 
+#__________________________________________________________________________
+#
+# region check_for_food
+# __________________________________________________________________
     def check_for_food(self, x: int, y: int) -> bool:
+        """
+        Check for food.
+
+        [Args]
+        x, y = current coordinate of Pacman
+        """
         return isinstance(self.grid[x][y], (Fish)) and not isinstance(self.grid[x][y], Pacman) and \
             (not isinstance(self.grid[x][y], Megalodon) or isinstance(self.grid[x][y], Megalodon_Tail))

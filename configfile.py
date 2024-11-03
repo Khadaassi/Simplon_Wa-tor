@@ -1,7 +1,13 @@
 from configparser import ConfigParser
 
-
+#_______________________________________________________________________________________
+#
+# region: Write Configuration file
+#_______________________________________________________________________________________
 def write_config():
+    """
+    Writes a default configuration file to config.ini
+    """
     config = ConfigParser()
 
     config["world"] = {
@@ -21,8 +27,14 @@ def write_config():
     with open("config.ini", "w") as configfile:
         config.write(configfile)
 
-
+#_______________________________________________________________________________________
+#
+# region: Read Configuration file
+#_______________________________________________________________________________________
 def read_config():
+    """
+    Reads the configuration file and returns a list of the values
+    """
     config = ConfigParser()
     config.read("config.ini")
 

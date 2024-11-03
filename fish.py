@@ -1,5 +1,9 @@
 from random import randint
 
+#__________________________________________________________________________
+#
+# region Fish 
+#__________________________________________________________________________
 class Fish:
     """
     A class to represent a fish in a water ecosystem.
@@ -30,7 +34,7 @@ class Fish:
     def __str__(self) -> str:
         return "FISH"
 
-    def reproduce(self):
+    def reproduce(self) -> bool:
         """
         Returns a new Fish instance if the fish is of reproductive age.
 
@@ -45,8 +49,10 @@ class Fish:
             return True
         else:
             return False
-
-
+#__________________________________________________________________________
+#
+# region Shark
+#__________________________________________________________________________
 class Shark(Fish):
     """ "
     A class to represent a shark in a water ecosystem that inherites of Fish class.
@@ -67,7 +73,6 @@ class Shark(Fish):
     energy_management(energy: int)
         Simulates the shark energy movement.
     """
-
     def __init__(self, reproduction_age: int, energy: int, evolution_threshold: int):
         super().__init__(reproduction_age)
         self.energy = energy
@@ -78,7 +83,7 @@ class Shark(Fish):
     def __str__(self) -> str:
         return "SHARK"
 
-    def eat(self, energy: int):
+    def eat(self, energy: int) -> None:
         """
         Simulates the shark eating a fish.
         """
@@ -87,7 +92,7 @@ class Shark(Fish):
         if self.energy > self.max_energy:
             self.energy = self.max_energy
 
-    def energy_management(self, energy: int):
+    def energy_management(self, energy: int) -> bool:
         """
         Simulates the shark energy movement.
         """
@@ -98,11 +103,18 @@ class Shark(Fish):
             return True
         
     def check_for_evolution(self) -> bool:
+        """
+        Checks if the shark has eaten enough fish to evolve into a megalodon.
+        """
         return self.fish_eaten >= self.megalodon_evolution_threshold
-
-
+#__________________________________________________________________________
+#
+# region Megalodon 
+#__________________________________________________________________________
 class Megalodon(Shark):
-
+    """
+    A class to represent a megalodon in a water ecosystem that inherites of Shark class.
+    """
     # Megalodons have twice as much energy
     def __init__(self, reproduction_age: int, energy: int, evolution_threshold: int):
         super().__init__(reproduction_age, energy, evolution_threshold)
@@ -112,11 +124,14 @@ class Megalodon(Shark):
         self.tail_pos = (0,0)
         self.skip_first_tail_check = True #When a Megalodon spawns, its tail doesn't occupy a space until its first move
 
-    def reproduce(self):
+    def reproduce(self) -> bool:
         # Megalodons don't reproduce
         return False
 
     def get_visual(self) -> str:
+        """
+        Returns the visual representation of the megalodon.
+        """
         if self.current_direction == "N" or self.current_direction== "D":
             return "^"
         if self.current_direction == "S" or self.current_direction == "U":
@@ -128,16 +143,23 @@ class Megalodon(Shark):
     
     def __str__(self) -> str:
         return "MEGA"
-
-
+#__________________________________________________________________________
+#
+# region Megalodon_Tail
+#__________________________________________________________________________
 class Megalodon_Tail(Megalodon):
-
+    """
+    A class to represent a megalodon's tail in a water ecosystem that inherites of Megalodon class.
+    """
     # Megalodons' tail has no specificities
     def __init__(self, direction: str):
         self.current_direction = direction
         self.has_moved = True #Megalodon tails only follow the heads and never move on their own
     
     def get_visual(self) -> str:
+        """
+        Returns the visual representation of the megalodon's tail.
+        """
         if self.current_direction == "N" or self.current_direction == "D" or self.current_direction == "S" or self.current_direction == "U":
             return "|"
         if self.current_direction == "W" or self.current_direction == "R" or self.current_direction == "E" or self.current_direction == "L":

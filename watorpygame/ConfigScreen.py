@@ -111,21 +111,23 @@ class WaTorConfigScreen :
         screen.fill(self.screen_background_color)
 
         center_x = screen.get_rect().centerx
-        top_y = screen.get_rect().top + 25
+        top_y = screen.get_rect().top 
 
         label_writer = UserLabel()
-        label_writer.draw(screen, "Wa - Tor : l'écran de configuration", center_x, top_y, 40, 0)
+        label_writer.draw(screen, "Wa - Tor : l'écran de configuration", center_x, top_y +20, 40, 0)
 
         project_image = self.image_provider.get_image(UserImageKey.PROJECT)
+    
+        image_width = self.window_width-2*border_length
+        image_height = self.window_height - 4* border_length - self.buttons[0].button_rect.height
+        surface = pygame.Surface((image_width, image_height))
+            
+        transformed = pygame.transform.scale(project_image.image, (image_width, image_height), surface)
 
-        target_surface = pygame.rect.Rect(
-            border_length, 
-            2*border_length, 
-            self.window_width - 2 * border_length,
-            self.window_height - 4 * border_length - self.buttons[0].button_rect.height)
+        # project_image.define_dimensions(self.window_width, self.window_height)
+        # converted_rect = project_image.resized.convert()
 
-        project_image.define_dimensions(target_surface.width, target_surface.height)
-        screen.blit(project_image.resized, target_surface.bottomleft)
+        screen.blit(transformed, (border_length, 2*border_length) )
 
         #for key, textbox in self.textboxes.items 
         #for line_of_data in self.data :

@@ -189,18 +189,28 @@ class PygameWrapper:
         font = pygame.font.Font(None, 30)
 
         textbox_width = 150
-        textbox_heigth = 40
+        textbox_height = 40
+
+        number_of_textboxes = len(config_fields)
+        number_of_spaces = number_of_textboxes -1
+        available_height = self.window_height - 4 * self.border_length - self.button_height
+        
+        total_space = available_height - textbox_height * number_of_textboxes
+        single_space = int(float(total_space)/number_of_spaces)
+        
         textbox_pos_x = self.window_width - self.border_length - textbox_width 
         textbox_pos_y = 2 * self.border_length
+
+
         for fied_key, field_value in config_fields.items() : 
             textbox = UserTextBox(fied_key, 
                 textbox_pos_x, textbox_pos_y, 
-                textbox_width, textbox_heigth, 
+                textbox_width, textbox_height, 
                 font, 
                 str(field_value),
                 cf.get_validation_function(fied_key))
             self.textboxes.append(textbox)
-            textbox_pos_y += textbox_heigth + 5     
+            textbox_pos_y += textbox_height + single_space    
 
     #__________________________________________________________________________
     #

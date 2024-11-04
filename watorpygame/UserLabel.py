@@ -9,8 +9,8 @@ class UserLabel :
     #__________________________________________________________________________
     def __init__(self) :
         colors = WaTorColors()
+        self.front_color = colors.get(ColorChoice.DEFAULT_FRONT_LABEL)
         self.back_color = colors.get(ColorChoice.DEFAULT_BACK_LABEL)
-        self.front_color = colors.get(ColorChoice.DEFAULT_BACK_LABEL)
 
     #__________________________________________________________________________
     #

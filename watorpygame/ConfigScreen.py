@@ -29,6 +29,7 @@ class WaTorConfigScreen :
 
         self.window_width = 0
         self.window_height = 0
+
         self.buttons = []
         self.textboxes = []
 
@@ -149,7 +150,6 @@ class WaTorConfigScreen :
                 if textbox.field_key in self.too_many_entities_fields :
                     self.check_nb_entities()
 
-
     #__________________________________________________________________________
     #
     # region draw
@@ -200,7 +200,7 @@ class WaTorConfigScreen :
             label_writer.draw(screen, 
                 "{0} :".format(field_user.get_label_text(textbox.field_key)), 
                 rect.left-10, 
-                rect.centery, 40, 1, True)
+                rect.centery, 30, 1, True)
             textbox.draw(screen)
 
         for button in self.buttons:

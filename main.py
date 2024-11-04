@@ -19,16 +19,16 @@ def main():
 
     config = read_config()
 
-    display = WaTorDisplay(DisplayState.CONF)  # initialize View
-    while display.state == DisplayState.CONF :
-        display.update_config(config)
+    # display = WaTorDisplay(DisplayState.CONF)  # initialize View
+    # while display.state == DisplayState.CONF :
+    #     display.update_config(config)
 
-    config = display.get_config()
+    # config = display.get_config()
     world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10], config[11])
     world.populate_world()
     
-    if not display.state == DisplayState.OUT :
-        display.update_view(world)  # create screen with the first world
+    # if not display.state == DisplayState.OUT :
+    #     display.update_view(world)  # create screen with the first world
 
     current_iteration = 0
     start_t = time.time()  # Start time
@@ -46,12 +46,12 @@ def main():
     clear()
 
     while True:
-        if display.state == DisplayState.STOP or display.state == DisplayState.OUT :
-            break
+        # if display.state == DisplayState.STOP or display.state == DisplayState.OUT :
+        #     break
 
-        if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
-            display.update_view(world)
-            continue
+        # if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
+        #     display.update_view(world)
+        #     continue
 
         if time.time() - start_t >= world.chronos_length:
             counter += 1
@@ -61,10 +61,10 @@ def main():
             clear()
             
             world.update_world()
-            display.update_view(world)  # update screen with the next world
+            # display.update_view(world)  # update screen with the next world
             
             #Console print
-            # console_print(world)
+            console_print(world)
             
             #Statistics appending
             fish_population.append(world.fish_population)
@@ -75,12 +75,9 @@ def main():
         if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
             break
     
-    print(world.fish_age_dict)
-    
     # plot_population(iterations, fish_population, shark_population, megalodon_population)
-    while display.state != DisplayState.OUT:
-        display.update_view(world)
-
+    # while display.state != DisplayState.OUT:
+    #     display.update_view(world)
 
 def console_print(world: World) -> None:
     print("Current iteration : ", world.world_age)

@@ -29,43 +29,85 @@ class WaTorConfigScreen :
         self.buttons = []
         self.textboxes = []
 
+        self.too_many_entities_fields = [
+            ConfigField.FISH_POPULATION,
+            ConfigField.SHARK_POPULATION,
+            ConfigField.WORLD_WIDTH,
+            ConfigField.WORD_HEIGTH
+        ]
+        self.too_many_entities = False
+
     #__________________________________________________________________________
     #
     # region set_data
     #__________________________________________________________________________
     def set_data(self, data : dict) :
         self.in_data = data
-        self.out_data = self.in_data
+        # self.out_data = self.in_data
+        self.out_data = self.in_data.copy()
+
+        #assert id(self.in_data) != id(self.out_data)
 
     #__________________________________________________________________________
     #
     # region reset_config
     #__________________________________________________________________________
     def reset_config(self) :
-        self.out_data = self.in_data
+        self.out_data = self.in_data.copy()
         for textbox in self.textboxes :
             field_value = self.out_data[textbox.field_key]
             textbox.reset_text(field_value)
 
+        self.too_many_entities = False
+
     #__________________________________________________________________________
     #
-    # region validate
+    # region validate_all
     #__________________________________________________________________________
-    def validate(self) -> bool :
+    def validate_all(self) -> bool :
         validated = True
         for textbox in self.textboxes :
             if not textbox.validate() :
                 validated = False
                 break
 
-        return validated 
+        if not validated :
+            return False
+
+        return self.check_nb_entities() 
+    #__________________________________________________________________________
+    #
+    # region check nb entities
+    #__________________________________________________________________________
+    def check_nb_entities(self)-> bool:
+        """
+        return True if the values in textboxes check thah condition :
+        nb_fish + nb_shark <= world_width * world_height 
+        """
+        nb_fish = 0
+        nb_shark = 0  
+        world_width = 0
+        world_height = 0
+        for textbox in self.textboxes :
+            match textbox.field_key :
+                case ConfigField.FISH_POPULATION : nb_fish = self.out_data[ConfigField.FISH_POPULATION]
+                case ConfigField.SHARK_POPULATION : nb_shark = self.out_data[ConfigField.SHARK_POPULATION]
+                case ConfigField.WORLD_WIDTH : world_width = self.out_data[ConfigField.WORLD_WIDTH]
+                case ConfigField.WORD_HEIGTH : world_height = self.out_data[ConfigField.WORD_HEIGTH]
+
+        if nb_fish + nb_shark > world_width * world_height :
+            self.too_many_entities = True
+            return False
+        
+        self.too_many_entities = False
+        return True
 
     #__________________________________________________________________________
     #
     # region get_config
     #__________________________________________________________________________
     def get_config(self) -> dict :
-        if self.validate() :
+        if self.validate_all() :
             selected_data = self.out_data 
         else : 
             selected_data = self.in_data
@@ -96,10 +138,14 @@ class WaTorConfigScreen :
     # region on_textbox_validated
     #__________________________________________________________________________
     def on_textbox_validated(self, field_key: ConfigField) :
+        need_entity_check = False
         for textbox in self.textboxes :
             if textbox.field_key == field_key :
                 val = textbox.get_validated_value()
                 self.out_data[field_key] = val
+                if textbox.field_key in self.too_many_entities_fields :
+                    self.check_nb_entities()
+
 
     #__________________________________________________________________________
     #
@@ -129,8 +175,18 @@ class WaTorConfigScreen :
 
         screen.blit(transformed, (border_length, 2*border_length) )
 
-        #for key, textbox in self.textboxes.items 
-        #for line_of_data in self.data :
+        if not self.check_nb_entities() :
+            error_label_writer = UserLabel()
+            error_label_writer.front_color = "red"
+            error_label_writer.back_color = "black"
+            error_label_writer.draw(screen, 
+                "Trop de poissons et de requins pour la taille du monde.", 
+                2* border_length, 
+                self.window_height-self.buttons[0].button_rect.height - int(1.5*border_length),30, -1, True)
+            error_label_writer.draw(screen, 
+                "Si vous continuez, la configuration par défaut sera utilisée.", 
+                3* border_length, 
+                self.window_height-self.buttons[0].button_rect.height - int(0.5*border_length),25, -1, True)
 
         for textbox in self.textboxes :
             rect = textbox.get_rect()

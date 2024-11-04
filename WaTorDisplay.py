@@ -130,6 +130,7 @@ class WaTorDisplay:
     #__________________________________________________________________________
     def get_config(self) -> list :
         self.__config = self.pygameWrapper.get_config()
+        
         config_list = [0 for i in range(12)]
         config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
         config_list[1] = self.__config [ConfigField.SHARK_POPULATION]

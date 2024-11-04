@@ -98,6 +98,7 @@ class PygameWrapper:
     def initialize_screen(self):
         # pygame setup
         pygame.init()
+        pygame.display.set_caption("wa - tor + pygame = wapygame ")
 
         #______________________________________________________________________
         # start the window on screen
@@ -162,7 +163,7 @@ class PygameWrapper:
                     DisplayCommand.GO : "Go" }
                 
             case DisplayState.BETWEEN:
-                 self.commands = { }
+                self.commands = { }
 
             case DisplayState.WAIT :
                 self.commands = {
@@ -180,12 +181,18 @@ class PygameWrapper:
                     DisplayCommand.PAUSE: "Resume", 
                     DisplayCommand.STOP: "Stop" }
 
-            case _ :
+            case DisplayState.STOP :
                 self.commands = {
                     DisplayCommand.RESTART: "Restart", 
                     DisplayCommand.EXIT: "Exit" }
             
+            case _ :
+                self.commands = { }
+            
         count = len(self.commands)
+        if count == 0 :
+            return
+        
         for command_key, command_text in self.commands.items():
             self.buttons.append(
                 UserButton( command_key, command_text, self.callback_function,
@@ -202,8 +209,10 @@ class PygameWrapper:
     #__________________________________________________________________________
     def initialize_textboxes(self):
         
+        if len(self.textboxes) != 0 :
+            self.disable_textboxes()
+
         if self.state != DisplayState.CONF :
-            self.textboxes = []
             return
         
         self.textboxes = []

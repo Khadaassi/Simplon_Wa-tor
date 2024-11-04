@@ -55,11 +55,14 @@ class WaTorDisplay:
     #
     # region on_user_command
     #__________________________________________________________________________
-    def on_user_command(self, command: DisplayCommand , command_data: dict = None):
+    def on_user_command(self, command: DisplayCommand, command_data: dict = None):
         """
         update WatorDisplay instance variable : state
         optionally uses command_data object if provided
         """
+
+        if self.state == DisplayState.OUT :
+            return # we are closed, we don't take commands anymore
 
         precedent_state = self.state
         match command :
@@ -88,25 +91,26 @@ class WaTorDisplay:
 
             case DisplayCommand.RESTART:
                 self.state = DisplayState.CONF
-                self.pygameWrapper.reset_config()
-                self.pygameWrapper.config_screen_need_initialization = True
+                self.pygameWrapper.set_state(self.state)
+                self.pygameWrapper.set_data(self.__config)
    
             case DisplayCommand.EXIT:
                 self.state = DisplayState.OUT
-                self.pygameWrapper.disable_textboxes()
-                self.pygameWrapper.disable_buttons()
                 self.pygameWrapper.running = False
                 return
 
             case _ :
                 self.state = DisplayState.OUT
 
+        if self.state == DisplayState.OUT :
+            return # we are closed i've told you
+
         self.pygameWrapper.set_state(self.state)
         if self.state != precedent_state :
             self.pygameWrapper.initialize_buttons()
 
-        if command_data != None :
-            self.user_data = command_data
+        if command_data != None :           #not used code 
+            self.user_data = command_data   #not used code
 
     
     #__________________________________________________________________________
@@ -195,8 +199,13 @@ class WaTorDisplay:
         iterationInfo = IterationInfo(
             world.world_age,
             world.fish_population,
-            world.shark_population,
-            world.megalodon_population)
+            world.shark_population)
+        
+        if world.enable_megalodons :
+            iterationInfo.add_megalodons_info(world.megalodon_population)
+
+        if world.enable_pacman :
+            iterationInfo.add_pacman_info(world.pacman_score)
 
         data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
@@ -233,6 +242,9 @@ class WaTorDisplay:
 
         self.pygameWrapper.draw(self.state)
 
+    def this_is_the_end(self) :
+        self.on_user_command(DisplayCommand.STOP)
+        
 
 if __name__ == "__main__":
     #put unit tests here

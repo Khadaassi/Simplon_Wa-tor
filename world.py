@@ -45,6 +45,7 @@ class World:
         self.enable_megalodons = allow_megalodons #if False, Megalodons generation will be disabled.
         self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of Fish a shark needs to eat before evolving to a Megalodon
         self.enable_pacman = allow_packman 
+        self.pacman_score = 0 # temporary added 
         
         #Internal logic block
         self.next_move_will_eat = False

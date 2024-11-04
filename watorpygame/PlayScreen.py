@@ -131,18 +131,29 @@ class WaTorPlayScreen :
         label_writer.draw(screen, "Wa - Tor : l'écran principal", center_x, top_y+20, 40, 0)
 
         label_writer.draw(screen, 
-            "Current iteration : {0}".format(self.iterationInfo.current_iteration), 
+            "Chronons écoulés : {0}".format(self.iterationInfo.current_iteration), 
             border_length, 
             int(1.5*border_length), 
             30, -1)
-        label_writer.draw(screen, 
-            "Fish pop : {0} ; Shar pop : {1} ; Megalodon pop : {2}".format(
-                self.iterationInfo.fish_pop,
-                self.iterationInfo.shark_pop,
-                self.iterationInfo.megalodon_pop), 
-            border_length, 
+        
+        under_info = "{0} poisson{1}, {2} requin{3}".format(  
+            self.iterationInfo.fish_pop,
+            "s" if self.iterationInfo.fish_pop >1 else "",
+            self.iterationInfo.shark_pop,
+            "s" if self.iterationInfo.shark_pop >1 else "")
+        
+        if self.iterationInfo.allow_megalodons :
+            under_info += ", {0} mégalodon{1}".format(
+                self.iterationInfo.megalodon_pop,
+                "s" if self.iterationInfo.megalodon_pop >1 else "")
+
+        if self.iterationInfo.allow_pacman :
+            under_info += f", score de pacman : {self.iterationInfo.pacman_score}"
+
+        label_writer.draw(screen, under_info,  border_length, 
             self.window_height - int(1.5*border_length) - self.buttons[0].button_rect.height, 
-            30, -1)
+            30, 
+            -1)
 
         # RENDER YOUR GAME HERE
         for y_index in range(self.data_height):

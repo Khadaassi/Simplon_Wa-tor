@@ -21,7 +21,8 @@ def main():
 
     
     display = WaTorDisplay(DisplayState.CONF)  # initialize View
-    while display.state == DisplayState.CONF : 
+    while display.state == DisplayState.CONF : # added to restart a new simulation at the end of the first one
+
         while display.state == DisplayState.CONF :
             display.update_config(config)
 
@@ -81,8 +82,10 @@ def main():
                 megalodon_population.append(world.megalodon_population)
                 iterations.append(current_iteration)
 
-            if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
+            if world.fish_population == 0 or world.shark_population == 0 or counter == config[ConfigField.MAX_ITERATION]:
                 break
+
+        display.this_is_the_end()
         
         print(world.fish_age_dict)
         

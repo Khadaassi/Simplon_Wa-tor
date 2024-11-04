@@ -201,7 +201,6 @@ class PygameWrapper:
         textbox_pos_x = self.window_width - self.border_length - textbox_width 
         textbox_pos_y = 2 * self.border_length
 
-
         for fied_key, field_value in config_fields.items() : 
             textbox = UserTextBox(fied_key, 
                 textbox_pos_x, textbox_pos_y, 

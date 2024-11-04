@@ -17,7 +17,7 @@ class WaTorColors :
             ColorChoice.TEXTBOX_ACTIVE : pygame.Color((128, 255, 0)),
             ColorChoice.TEXTBOX_INVALID :pygame.Color((192, 64, 64)),
             ColorChoice.FRONT_LABEL : pygame.Color((0, 0, 200)), 
-            ColorChoice.BACK_LABEL : pygame.Color((100, 100, 100))}
+            ColorChoice.BACK_LABEL : pygame.Color("yellow")}
         
     def get(self, choice: ColorChoice) -> pygame.color.Color :
         return self.__colors[choice]

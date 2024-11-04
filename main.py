@@ -47,6 +47,12 @@ def main():
         megalodon_population = []  # List to store megalodon population
 
         iterations = []  # List to store iterations
+
+        fish_ages = [] # List of dictionaries to store fish age pyramid
+        shark_ages = []  # List of dictionaries to store shark age pyramid
+        megalodon_ages = []  # List of dictionaries to store megalodon age pyramid
+
+
         counter = 0
 
 
@@ -82,16 +88,27 @@ def main():
                 megalodon_population.append(world.megalodon_population)
                 iterations.append(current_iteration)
 
+                fish_ages.append(world.fish_age_dict)
+                shark_ages.append(world.shark_age_dict)
+                megalodon_ages.append(world.megalodon_age_dict)
+                
             if world.fish_population == 0 or world.shark_population == 0 or counter == config[ConfigField.MAX_ITERATION]:
                 break
 
-        display.this_is_the_end()
+        display.there_is_no_more_data() # tells display there is no more world to show 
+
+        plot_population(iterations, fish_population, shark_population, megalodon_population)
         
-        print(world.fish_age_dict)
+        print( world.fish_age_dict[0])
+        print( world.shark_age_dict[0])
+        print( world.megalodon_age_dict[0])
         
-        # plot_population(iterations, fish_population, shark_population, megalodon_population)
         while display.state not in [DisplayState.CONF, DisplayState.OUT] :
             display.update_view(world)
+
+        
+
+    
 
 
 def console_print(world: World) -> None:

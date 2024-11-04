@@ -242,7 +242,7 @@ class WaTorDisplay:
 
         self.pygameWrapper.draw(self.state)
 
-    def this_is_the_end(self) :
+    def there_is_no_more_data(self) :
         self.on_user_command(DisplayCommand.STOP)
         
 

@@ -26,10 +26,10 @@ class Fish:
     """
 
     def __init__(self, reproduction_age: int):
-        self.age = 0
-        self.reproduction_age = reproduction_age
-        self.direction = ""  # for later
+        self.time_since_last_reproduction = 0
+        self.reproduction_threshold = reproduction_age
         self.has_moved = False
+        self.age = 0
 
     def __str__(self) -> str:
         return "FISH"
@@ -43,9 +43,9 @@ class Fish:
         Fish or None
             A new Fish instance if the fish can reproduce, otherwise None.
         """
-        self.age += 1
-        if self.age >= self.reproduction_age:
-            self.age = 0
+        self.time_since_last_reproduction += 1
+        if self.time_since_last_reproduction >= self.reproduction_threshold:
+            self.time_since_last_reproduction = 0
             return True
         else:
             return False
@@ -92,7 +92,7 @@ class Shark(Fish):
         if self.energy > self.max_energy:
             self.energy = self.max_energy
 
-    def energy_management(self, energy: int) -> bool:
+    def energy_management(self, energy: int = 1):
         """
         Simulates the shark energy movement.
         """
@@ -155,6 +155,7 @@ class Megalodon_Tail(Megalodon):
     def __init__(self, direction: str):
         self.current_direction = direction
         self.has_moved = True #Megalodon tails only follow the heads and never move on their own
+        self.age = 0
     
     def get_visual(self) -> str:
         """

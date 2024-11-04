@@ -21,7 +21,8 @@ def write_config():
         "shark_energy": "2",
         "shark_energy_gain": "2",
         "allow_megalodons": "False",
-        "megalodon_evolution_threshold" : "15"
+        "megalodon_evolution_threshold" : "15",
+        "allow_pacman": "False"
     }
 
     with open("config.ini", "w") as configfile:
@@ -49,6 +50,7 @@ def read_config():
     shark_energy_gain = config.getint("world", "shark_energy_gain")
     allow_megalodons = config.getboolean("world", "allow_megalodons")
     megalodon_evolution_threshold = config.getint("world", "megalodon_evolution_threshold")
+    allow_pacman = config.getboolean("world", "allow_pacman")
 
     return [
         fish_population,
@@ -61,6 +63,7 @@ def read_config():
         shark_energy,
         shark_energy_gain,
         allow_megalodons,
-        megalodon_evolution_threshold
+        megalodon_evolution_threshold,
+        allow_pacman
         ]
     

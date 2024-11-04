@@ -282,7 +282,6 @@ class PygameWrapper:
     def reset_config(self):
         self.config_screen.reset_config() 
 
-
     #__________________________________________________________________________
     #
     # region get_config

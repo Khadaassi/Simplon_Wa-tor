@@ -25,8 +25,9 @@ def main():
     config = display.get_config()
     world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
     world.populate_world()
-
-    display.update_view(world, 0)  # create screen with the first world
+    
+    if not display.state == DisplayState.OUT :
+        display.update_view(world, 0)  # create screen with the first world
 
     current_iteration = 0
     start_t = time.time()  # Start time

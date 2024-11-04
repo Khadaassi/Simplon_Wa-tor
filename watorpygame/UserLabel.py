@@ -8,7 +8,9 @@ class UserLabel :
     # region __init__
     #__________________________________________________________________________
     def __init__(self) :
-       pass
+        colors = WaTorColors()
+        self.back_color = colors.get(ColorChoice.BACK_LABEL)
+        self.front_color = colors.get(ColorChoice.FRONT_LABEL)
 
     #__________________________________________________________________________
     #
@@ -27,13 +29,9 @@ class UserLabel :
             align = 1 draw the text rect ending at x
         """
 
-        colors = WaTorColors()
-        back_color = colors.get(ColorChoice.BACK_LABEL)
-        front_color = colors.get(ColorChoice.FRONT_LABEL)
-
         my_font = pygame.font.Font(None, font_size)
-        text_surface_back = my_font.render(text, False, back_color)
-        text_surface_front = my_font.render(text, False, front_color)
+        text_surface_back = my_font.render(text, False, self.back_color)
+        text_surface_front = my_font.render(text, False, self.front_color)
 
         width = text_surface_front.get_width() 
         heigth = text_surface_front.get_height()

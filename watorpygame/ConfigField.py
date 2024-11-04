@@ -12,6 +12,7 @@ class ConfigField(StrEnum):
     SHARK_ENERGY_GAIN = "shark_energy_gain"
     ALLOW_MEGALODONS = "allow_megalodons"
     MEGALODON_EVOLUTION_THRESHOLD = "megalodon_evolution_threshold"
+    ALLOW_PACMAN = "allow_pacman"
 
 def get_validation_function(field : ConfigField) -> object:
     match field :
@@ -26,4 +27,5 @@ def get_validation_function(field : ConfigField) -> object:
         case ConfigField.SHARK_ENERGY_GAIN : return int 
         case ConfigField.ALLOW_MEGALODONS : return bool 
         case ConfigField.MEGALODON_EVOLUTION_THRESHOLD : return int 
+        case ConfigField.ALLOW_PACMAN : return bool
         case _ : return str

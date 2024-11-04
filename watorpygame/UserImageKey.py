@@ -8,3 +8,4 @@ class UserImageKey(Enum):
     MEGA_HEAD = 3
     MEGA_TAIL = 4
     PROJECT = 5
+    PACMAN = 6

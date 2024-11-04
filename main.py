@@ -1,7 +1,7 @@
 import os
 import time
 
-#from plot import plot_population
+from plot import plot_population
 from configfile import *
 from world import World
 from pacman import Pacman
@@ -24,10 +24,10 @@ def main():
         display.update_config(config)
 
     config = display.get_config()
-    world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10])
+    world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10], config[11])
     world.populate_world()
 
-    display.update_view(world, 0)  # create screen with the first world
+    display.update_view(world)  # create screen with the first world
 
     current_iteration = 0
     start_t = time.time()  # Start time
@@ -49,7 +49,7 @@ def main():
             break
 
         if display.state == DisplayState.WAIT or display.state == DisplayState.PAUSE:
-            display.update_view(world, current_iteration)
+            display.update_view(world)
             continue
 
         if time.time() - start_t >= world.chronos_length:
@@ -58,29 +58,35 @@ def main():
             current_iteration += 1
             
             clear()
-            print("Current iteration : ", current_iteration)
+            
             world.update_world()
-            display.update_view(world, current_iteration)  # update screen with the next world
-            world.print_grid()
-            print(
-                f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population} ; Megalodon pop : {world.megalodon_population}; Pacman score : {world.pacman_score}"
-            )
+            display.update_view(world)  # update screen with the next world
+            
+            #Console print
+            # console_print(world)
+            
+            #Statistics appending
             fish_population.append(world.fish_population)
             shark_population.append(world.shark_population)
             megalodon_population.append(world.megalodon_population)
             iterations.append(current_iteration)
 
-<<<<<<< HEAD
-        if fish_population == 0 or shark_population == 0 or counter == 1000:
-=======
         if world.fish_population == 0 or world.shark_population == 0 or counter == 100:
->>>>>>> d04d173c42376d07ee5c51ee96f284fced4c6db0
             break
-
-    plot_population(iterations, fish_population, shark_population, megalodon_population)
+    
+    print(world.fish_age_dict)
+    
+    # plot_population(iterations, fish_population, shark_population, megalodon_population)
     while display.state != DisplayState.OUT:
-        display.update_view(world, current_iteration)
+        display.update_view(world)
 
+
+def console_print(world: World) -> None:
+    print("Current iteration : ", world.world_age)
+    world.print_grid()
+    print(
+        f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population} ; Megalodon pop : {world.megalodon_population}; Pacman score : {world.pacman_score}"
+        )
 
 if __name__ == "__main__":
     main()

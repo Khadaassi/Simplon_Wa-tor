@@ -3,6 +3,7 @@
 
 from world import World
 from fish import Fish, Shark, Megalodon, Megalodon_Tail
+from pacman import Pacman
 from watorpygame.IterationInfo import IterationInfo
 
 from watorpygame.DisplayCommand import DisplayCommand
@@ -105,7 +106,7 @@ class WaTorDisplay:
     def __get_config_dict(self, config_from_file:list) -> dict:
 
         #check config_from_file here
-        assert len(config_from_file) == 11
+        assert len(config_from_file) == 12
 
         display_config = {}
         display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
@@ -119,6 +120,7 @@ class WaTorDisplay:
         display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
         display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
         display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
+        display_config[ConfigField.ALLOW_PACMAN] = config_from_file[11]
         
         return display_config
             
@@ -128,7 +130,7 @@ class WaTorDisplay:
     #__________________________________________________________________________
     def get_config(self) -> list :
         self.__config = self.pygameWrapper.get_config()
-        config_list = [0 for i in range(11)]
+        config_list = [0 for i in range(12)]
         config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
         config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
         config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
@@ -140,6 +142,7 @@ class WaTorDisplay:
         config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
         config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
         config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
+        config_list[11] = self.__config[ConfigField.ALLOW_PACMAN]
         return config_list
     
     #__________________________________________________________________________
@@ -161,7 +164,7 @@ class WaTorDisplay:
     #
     # region update_view
     #__________________________________________________________________________
-    def update_view(self, world: World, current_iteration: int):
+    def update_view(self, world: World):
         """
         Takes a world object which contains a list[list[Fish]]
         """
@@ -174,7 +177,7 @@ class WaTorDisplay:
         heigth = self.world.size[1]
 
         iterationInfo = IterationInfo(
-            current_iteration,
+            world.world_age,
             world.fish_population,
             world.shark_population,
             world.megalodon_population)
@@ -198,6 +201,9 @@ class WaTorDisplay:
                     
                 elif isinstance(item, Shark):
                     data[y_index][x_index] = UserImageInfo(UserImageKey.SHARK )    
+                
+                elif isinstance(item, Pacman):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.PACMAN) 
                                    
                 elif isinstance(item, Fish):
                     data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)

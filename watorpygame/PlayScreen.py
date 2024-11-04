@@ -219,7 +219,10 @@ class WaTorPlayScreen :
                         
                     
                 else:
-                    fish_image = self.image_provider.get_image(image_key)
+                    if image_key == UserImageKey.PACMAN:
+                        fish_image = self.image_provider.get_image(image_key, pacman_status=self.iterationInfo.current_iteration%2)
+                    else:
+                        fish_image = self.image_provider.get_image(image_key)
                     #Fish and sharks are drawn in the center of their cell                    
                     # Center of the cell
                     center_x, center_y = cell_rect.center

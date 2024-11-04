@@ -61,6 +61,7 @@ class WaTorDisplay:
         optionally uses command_data object if provided
         """
 
+        precedent_state = self.state
         match command :
             case DisplayCommand.RESET :
                 self.state = DisplayState.CONF
@@ -68,8 +69,7 @@ class WaTorDisplay:
 
             case DisplayCommand.GO :
                 self.state = DisplayState.BETWEEN # state between config screen and play screen
-                self.pygameWrapper.disable_config_controls()
-                #self.config = self.pygameWrapper.get_config()
+                self.pygameWrapper.disable_textboxes()
 
             case DisplayCommand.START :
                 self.state = DisplayState.PLAY
@@ -87,13 +87,18 @@ class WaTorDisplay:
                 self.state = DisplayState.STOP
    
             case DisplayCommand.EXIT:
-                if self.state != DisplayState.BETWEEN :
-                     self.state = DisplayState.OUT
+                self.state = DisplayState.OUT
+                self.pygameWrapper.disable_textboxes()
+                self.pygameWrapper.disable_buttons()
+                self.pygameWrapper.running = False
+                return
 
             case _ :
                 self.state = DisplayState.OUT
 
         self.pygameWrapper.set_state(self.state)
+        if self.state != precedent_state :
+            self.pygameWrapper.initialize_buttons()
 
         if command_data != None :
             self.user_data = command_data
@@ -169,6 +174,10 @@ class WaTorDisplay:
         """
         Takes a world object which contains a list[list[Fish]]
         """
+
+        if self.pygameWrapper.running == False :
+            return
+
         self.world = world
 
         # assert len(self.world.grid[0])  == self.world.size[0]

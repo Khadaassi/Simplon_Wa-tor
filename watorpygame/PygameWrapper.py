@@ -149,18 +149,38 @@ class PygameWrapper:
     def initialize_buttons(self) :
         #______________________________________________________________________
         # Buttons need to be created after the creation of the screen
+        if len(self.buttons) != 0 :
+            self.disable_buttons()
 
+        self.buttons = []
         match self.state :
             case DisplayState.CONF:
                 self.commands = {
                     DisplayCommand.RESET : "Reset",
                     DisplayCommand.GO : "Go" }
-            case _ :
+                
+            case DisplayState.BETWEEN:
+                 self.commands = { }
+
+            case DisplayState.WAIT :
                 self.commands = {
-                    DisplayCommand.START: "Start",
+                    DisplayCommand.START: "Start" }
+            
+            case DisplayState.PLAY :
+                self.commands = {
                     #DisplayCommand.STEP : "Step", # not implemented feature
                     DisplayCommand.PAUSE: "Pause", 
                     DisplayCommand.STOP: "Stop" }
+            
+            case DisplayState.PAUSE :
+                self.commands = {
+                    #DisplayCommand.STEP : "Step", # not implemented feature
+                    DisplayCommand.PAUSE: "Resume", 
+                    DisplayCommand.STOP: "Stop" }
+
+            case _ :
+                self.commands = {
+                    DisplayCommand.EXIT: "Exit" }
             
         count = len(self.commands)
         for command_key, command_text in self.commands.items():
@@ -213,12 +233,17 @@ class PygameWrapper:
 
     #__________________________________________________________________________
     #
-    # region disable_config_controls
+    # region disable_buttons
     #__________________________________________________________________________
-    def disable_config_controls(self) :
+    def disable_buttons(self) :
         for button in self.buttons :
             cast(UserButton, button).callback_function = None
 
+    #__________________________________________________________________________
+    #
+    # region disable_textboxes
+    #__________________________________________________________________________
+    def disable_textboxes(self) :
         for textbox in self.textboxes :
             cast(UserTextBox, textbox).callback_function = None
         
@@ -255,11 +280,16 @@ class PygameWrapper:
         top_y = self.screen.get_rect().top + 25
 
         match self.state :
-            case DisplayState.CONF :     
+            case DisplayState.CONF :  
+                self.config_screen.textboxes = self.textboxes
+                self.config_screen.buttons = self.buttons   
                 self.config_screen.draw(self.screen, self.border_length)
+
             case DisplayState.BETWEEN :     
                 pass
+            
             case _ :      
+                self.play_screen.buttons = self.buttons  
                 self.play_screen.draw(self.screen, self.border_length)
             
         #______________________________________________________________________
@@ -273,7 +303,6 @@ class PygameWrapper:
         if not self.running:
             self.callback_function(DisplayCommand.EXIT)
             pygame.quit()
-
 
     #__________________________________________________________________________
     #

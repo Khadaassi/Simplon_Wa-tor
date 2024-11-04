@@ -1,57 +1,56 @@
 from configparser import ConfigParser
+from ConfigField import ConfigField
 
 
 def write_config():
     config = ConfigParser()
 
     config["world"] = {
-        "fish_population": "500",
-        "shark_population": "200",
-        "refresh_length": "0.5",
-        "world_width": "40",
-        "world_height": "30",
-        "fish_repro_time": "3",
-        "shark_repro_time": "3",
-        "shark_energy": "2",
-        "shark_energy_gain": "2",
-        "allow_megalodons": "False",
-        "megalodon_evolution_threshold" : "15",
-        "allow_pacman": "False"
+        ConfigField.FISH_POPULATION.value : "500",
+        ConfigField.SHARK_POPULATION.value : "200",
+        ConfigField.REFRESH_LENGTH.value : "0.5",
+        ConfigField.MAX_ITERATION.value : "100",
+        ConfigField.WORLD_WIDTH.value : "40",
+        ConfigField.WORD_HEIGTH.value : "30",
+        ConfigField.FISH_REPRO_TIME.value : "3",
+        ConfigField.SHARK_REPRO_TIME.value : "3",
+        ConfigField.SHARK_ENERGY.value : "2",
+        ConfigField.SHARK_ENERGY_GAIN.value : "2",
+        ConfigField.ALLOW_MEGALODONS.value : "False",
+        ConfigField.MEGALODON_EVOLUTION_THRESHOLD.value : "15",
+        ConfigField.ALLOW_PACMAN.value : "False"
     }
 
     with open("config.ini", "w") as configfile:
         config.write(configfile)
 
 
-def read_config():
+def read_config() -> dict[ConfigField, bool|int|float|str]:
     config = ConfigParser()
     config.read("config.ini")
 
-    fish_population = config.getint("world", "fish_population")
-    shark_population = config.getint("world", "shark_population")
-    refresh_length = config.getfloat("world", "refresh_length")  # Fixed typo
-    world_width = config.getint("world", "world_width")
-    world_height = config.getint("world", "world_height")
-    fish_repro_time = config.getint("world", "fish_repro_time")
-    shark_repro_time = config.getint("world", "shark_repro_time")
-    shark_energy = config.getint("world", "shark_energy")
-    shark_energy_gain = config.getint("world", "shark_energy_gain")
-    allow_megalodons = config.getboolean("world", "allow_megalodons")
-    megalodon_evolution_threshold = config.getint("world", "megalodon_evolution_threshold")
-    allow_pacman = config.getboolean("world", "allow_pacman")
+    section = "world"
+    dictionary = {}
+    
+    int_fields = [ConfigField.FISH_POPULATION]
+    int_fields.append(ConfigField.SHARK_POPULATION)
+    float_fields = [ConfigField.REFRESH_LENGTH]
+    int_fields.append(ConfigField.MAX_ITERATION)
+    int_fields.append(ConfigField.WORLD_WIDTH)
+    int_fields.append(ConfigField.WORD_HEIGTH)
+    int_fields.append(ConfigField.FISH_REPRO_TIME)
+    int_fields.append(ConfigField.SHARK_REPRO_TIME)
+    int_fields.append(ConfigField.SHARK_ENERGY)
+    int_fields.append(ConfigField.SHARK_ENERGY_GAIN)
+    bool_fields = [ConfigField.ALLOW_MEGALODONS]
+    int_fields.append(ConfigField.MEGALODON_EVOLUTION_THRESHOLD)
+    bool_fields.append(ConfigField.ALLOW_PACMAN)
 
-    return [
-        fish_population,
-        shark_population,
-        refresh_length,
-        world_width,
-        world_height,
-        fish_repro_time,
-        shark_repro_time,
-        shark_energy,
-        shark_energy_gain,
-        allow_megalodons,
-        megalodon_evolution_threshold,
-        allow_pacman
-        ]
+    for field_key in ConfigField :
+        match field_key :
+            case key if key in bool_fields : dictionary[field_key] = config.getboolean(section, field_key.value)
+            case key if key in int_fields  : dictionary[field_key] = config.getint(section, field_key.value)
+            case key if key in float_fields : dictionary[field_key] = config.getfloat(section, field_key.value)   # Fixed typo
+
+    return dictionary
     

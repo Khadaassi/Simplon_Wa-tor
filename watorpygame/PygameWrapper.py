@@ -18,7 +18,7 @@ from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider, Direction
 
-import watorpygame.ConfigField as cf
+import ConfigField as cf
 import watorpygame.ConfigFieldUser as cfu 
 
 from watorpygame.UserTextBox import UserTextBox

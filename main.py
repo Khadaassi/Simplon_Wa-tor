@@ -26,7 +26,14 @@ def main():
             display.update_config(config)
 
         config = display.get_config()
-        world = World((config[0], config[1]), config[2], (config[3], config[4]), config[5], config[6], config[7], config[8], config[9], config[10], config[11])
+        world = World( (config[ConfigField.FISH_POPULATION], config[ConfigField.SHARK_POPULATION]),
+            config[ConfigField.REFRESH_LENGTH], 
+            (config[ConfigField.WORLD_WIDTH], config[ConfigField.WORD_HEIGTH]), 
+            config[ConfigField.FISH_REPRO_TIME], config[ConfigField.SHARK_REPRO_TIME],
+            config[ConfigField.SHARK_ENERGY], config[ConfigField.SHARK_ENERGY_GAIN],
+            config[ConfigField.ALLOW_MEGALODONS], config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD],
+            config[ConfigField.ALLOW_PACMAN])
+
         world.populate_world()
         
         if not display.state == DisplayState.OUT :

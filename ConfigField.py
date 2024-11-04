@@ -1,9 +1,10 @@
 from enum import StrEnum
 
 class ConfigField(StrEnum):
-    FISH_POPULATION =  "Po-po-pop uh lation des poissons" 
+    FISH_POPULATION =  "fish_population" 
     SHARK_POPULATION =  "shark_population"
     REFRESH_LENGTH = "refresh_length"
+    MAX_ITERATION = "max_iteration"
     WORLD_WIDTH = "world_width"
     WORD_HEIGTH = "world_height"
     FISH_REPRO_TIME = "fish_repro_time"

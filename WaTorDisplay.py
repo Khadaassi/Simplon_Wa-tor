@@ -12,7 +12,7 @@ from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider
 from watorpygame.UserImageInfo import UserImageInfo
-from watorpygame.ConfigField import ConfigField
+from ConfigField import ConfigField
 
 
 
@@ -116,21 +116,21 @@ class WaTorDisplay:
     def __get_config_dict(self, config_from_file:list) -> dict:
 
         #check config_from_file here
-        assert len(config_from_file) == 12
+        assert len(config_from_file) == 13
 
-        display_config = {}
-        display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
-        display_config[ConfigField.SHARK_POPULATION] = config_from_file[1]
-        display_config[ConfigField.REFRESH_LENGTH] = config_from_file[2]
-        display_config[ConfigField.WORLD_WIDTH] = config_from_file[3]
-        display_config[ConfigField.WORD_HEIGTH] = config_from_file[4]
-        display_config[ConfigField.FISH_REPRO_TIME] = config_from_file[5]
-        display_config[ConfigField.SHARK_REPRO_TIME] = config_from_file[6]
-        display_config[ConfigField.SHARK_ENERGY] = config_from_file[7]
-        display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
-        display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
-        display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
-        display_config[ConfigField.ALLOW_PACMAN] = config_from_file[11]
+        display_config = config_from_file
+        # display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
+        # display_config[ConfigField.SHARK_POPULATION] = config_from_file[1]
+        # display_config[ConfigField.REFRESH_LENGTH] = config_from_file[2]
+        # display_config[ConfigField.WORLD_WIDTH] = config_from_file[3]
+        # display_config[ConfigField.WORD_HEIGTH] = config_from_file[4]
+        # display_config[ConfigField.FISH_REPRO_TIME] = config_from_file[5]
+        # display_config[ConfigField.SHARK_REPRO_TIME] = config_from_file[6]
+        # display_config[ConfigField.SHARK_ENERGY] = config_from_file[7]
+        # display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
+        # display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
+        # display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
+        # display_config[ConfigField.ALLOW_PACMAN] = config_from_file[11]
         
         return display_config
             
@@ -141,20 +141,21 @@ class WaTorDisplay:
     def get_config(self) -> list :
         self.__config = self.pygameWrapper.get_config()
         
-        config_list = [0 for i in range(12)]
-        config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
-        config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
-        config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
-        config_list[3] = self.__config[ConfigField.WORLD_WIDTH]
-        config_list[4] = self.__config[ConfigField.WORD_HEIGTH]
-        config_list[5] = self.__config[ConfigField.FISH_REPRO_TIME]
-        config_list[6] = self.__config[ConfigField.SHARK_REPRO_TIME] 
-        config_list[7] = self.__config[ConfigField.SHARK_ENERGY]
-        config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
-        config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
-        config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
-        config_list[11] = self.__config[ConfigField.ALLOW_PACMAN]
-        return config_list
+        # config_list = [0 for i in range(12)]
+        # config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
+        # config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
+        # config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
+        # config_list[3] = self.__config[ConfigField.WORLD_WIDTH]
+        # config_list[4] = self.__config[ConfigField.WORD_HEIGTH]
+        # config_list[5] = self.__config[ConfigField.FISH_REPRO_TIME]
+        # config_list[6] = self.__config[ConfigField.SHARK_REPRO_TIME] 
+        # config_list[7] = self.__config[ConfigField.SHARK_ENERGY]
+        # config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
+        # config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
+        # config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
+        # config_list[11] = self.__config[ConfigField.ALLOW_PACMAN]
+        
+        return self.__config
     
     #__________________________________________________________________________
     #

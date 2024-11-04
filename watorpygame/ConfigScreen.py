@@ -10,7 +10,7 @@ from watorpygame.UserLabel import UserLabel
 from watorpygame.WaTorColors import WaTorColors, ColorChoice
 
 from watorpygame.UserTextBox import UserTextBox
-from watorpygame.ConfigField import ConfigField
+from ConfigField import ConfigField
 from watorpygame.ConfigFieldUser import ConfigFieldUser
 
 class WaTorConfigScreen :

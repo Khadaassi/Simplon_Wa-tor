@@ -7,8 +7,11 @@ from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider
 from watorpygame.UserLabel import UserLabel
+from watorpygame.WaTorColors import WaTorColors, ColorChoice
+
 from watorpygame.UserTextBox import UserTextBox
 from watorpygame.ConfigField import ConfigField
+from watorpygame.ConfigFieldUser import ConfigFieldUser
 
 class WaTorConfigScreen :
 
@@ -175,10 +178,11 @@ class WaTorConfigScreen :
 
         screen.blit(transformed, (border_length, 2*border_length) )
 
+        colors = WaTorColors()
         if not self.check_nb_entities() :
             error_label_writer = UserLabel()
-            error_label_writer.front_color = "red"
-            error_label_writer.back_color = "black"
+            error_label_writer.front_color = colors.get(ColorChoice.ERROR_FRONT_LABEL)
+            error_label_writer.back_color = colors.get(ColorChoice.ERROR_BACK_LABEL)
             error_label_writer.draw(screen, 
                 "Trop de poissons et de requins pour la taille du monde.", 
                 2* border_length, 
@@ -188,9 +192,15 @@ class WaTorConfigScreen :
                 3* border_length, 
                 self.window_height-self.buttons[0].button_rect.height - int(0.5*border_length),25, -1, True)
 
+        field_user = ConfigFieldUser()
         for textbox in self.textboxes :
             rect = textbox.get_rect()
-            label_writer.draw(screen, "{0} :".format(textbox.field_key.value), rect.left-10, rect.centery, 40, 1, True)
+            label_writer.front_color = colors.get(ColorChoice.FIELD_FRONT_LABEL)
+            label_writer.back_color = colors.get(ColorChoice.FIELD_BACK_LABEL)
+            label_writer.draw(screen, 
+                "{0} :".format(field_user.get_label_text(textbox.field_key)), 
+                rect.left-10, 
+                rect.centery, 40, 1, True)
             textbox.draw(screen)
 
         for button in self.buttons:

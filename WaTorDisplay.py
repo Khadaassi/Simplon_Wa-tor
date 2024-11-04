@@ -85,6 +85,11 @@ class WaTorDisplay:
 
             case DisplayCommand.STOP:
                 self.state = DisplayState.STOP
+
+            case DisplayCommand.RESTART:
+                self.state = DisplayState.CONF
+                self.pygameWrapper.reset_config()
+                self.pygameWrapper.config_screen_need_initialization = True
    
             case DisplayCommand.EXIT:
                 self.state = DisplayState.OUT

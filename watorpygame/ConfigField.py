@@ -14,18 +14,3 @@ class ConfigField(StrEnum):
     MEGALODON_EVOLUTION_THRESHOLD = "megalodon_evolution_threshold"
     ALLOW_PACMAN = "allow_pacman"
 
-def get_validation_function(field : ConfigField) -> object:
-    match field :
-        case ConfigField.FISH_POPULATION : return int 
-        case ConfigField.SHARK_POPULATION : return int 
-        case ConfigField.REFRESH_LENGTH : return float
-        case ConfigField.WORLD_WIDTH : return int 
-        case ConfigField.WORD_HEIGTH : return int 
-        case ConfigField.FISH_REPRO_TIME : return int 
-        case ConfigField.SHARK_REPRO_TIME : return int 
-        case ConfigField.SHARK_ENERGY : return int 
-        case ConfigField.SHARK_ENERGY_GAIN : return int 
-        case ConfigField.ALLOW_MEGALODONS : return bool 
-        case ConfigField.MEGALODON_EVOLUTION_THRESHOLD : return int 
-        case ConfigField.ALLOW_PACMAN : return bool
-        case _ : return str

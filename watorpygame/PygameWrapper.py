@@ -18,7 +18,9 @@ from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider, Direction
 
-import watorpygame.ConfigField as cf 
+import watorpygame.ConfigField as cf
+import watorpygame.ConfigFieldUser as cfu 
+
 from watorpygame.UserTextBox import UserTextBox
 from watorpygame.UserButton import UserButton
 from watorpygame.PlayScreen import WaTorPlayScreen
@@ -44,9 +46,9 @@ class PygameWrapper:
         #______________________________________________________________________
         # Central definition of 
         # borders & buttons dimensions
-        self.border_length = 25
+        self.border_length = 30
         self.button_height = 50
-        self.button_width = 75
+        self.button_width = 100
         self.buttons =[]
         self.textboxes = []
         self.state = DisplayState.OUT
@@ -180,6 +182,7 @@ class PygameWrapper:
 
             case _ :
                 self.commands = {
+                    DisplayCommand.RESTART: "Restart", 
                     DisplayCommand.EXIT: "Exit" }
             
         count = len(self.commands)
@@ -221,13 +224,14 @@ class PygameWrapper:
         textbox_pos_x = self.window_width - self.border_length - textbox_width 
         textbox_pos_y = 2 * self.border_length
 
-        for fied_key, field_value in config_fields.items() : 
-            textbox = UserTextBox(fied_key, 
+        field_user = cfu.ConfigFieldUser()
+        for field_key, field_value in config_fields.items() : 
+            textbox = UserTextBox(field_key, 
                 textbox_pos_x, textbox_pos_y, 
                 textbox_width, textbox_height, 
                 font, 
                 str(field_value),
-                cf.get_validation_function(fied_key))
+                field_user.get_validation_function(field_key))
             self.textboxes.append(textbox)
             textbox_pos_y += textbox_height + single_space    
 

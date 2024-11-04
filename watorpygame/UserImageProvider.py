@@ -5,14 +5,8 @@ import pygame
 
 # Wa-Tor imports
 from watorpygame.UserImage import UserImage
+from watorpygame.UserImageKey import UserImageKey
 
-
-class UserImageKey(Enum):
-    WATER = 0
-    FISH = 1
-    SHARK = 2
-    MEGA_HEAD = 3
-    MEGA_TAIL = 4
 
 class Direction(Enum):
     NONE = ""
@@ -30,6 +24,7 @@ class UserImageProvider :
         self.__images = {}
         self.__width = width
         self.__height = height
+        self.__images[UserImageKey.PROJECT] = UserImage("images/Img-wator.png",  self.light_color, self.dark_color)
         self.__images[UserImageKey.FISH] = UserImage("images/Fish_image_1.png", self.light_color, self.dark_color)
         self.__images[UserImageKey.SHARK] = UserImage("images/Shark_image_1.png", self.light_color, self.dark_color)
         

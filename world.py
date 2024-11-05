@@ -5,10 +5,10 @@ from fish import Megalodon_Tail
 from pacman import Pacman
 from random import randint
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region World
-#__________________________________________________________________________
+#______________________________________________________________________________
 class World:
     
     def __init__(
@@ -74,10 +74,10 @@ class World:
         if (sum(self.starting_population)) > self.size[0]*self.size[1]:
             raise ValueError("Total population too big : try increasing world size or reducing populations")
         
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region populate_world
-#__________________________________________________________________________
+#______________________________________________________________________________
     def populate_world(self) -> None:
         """
         Populate the first state of the world by placing fishes and sharks randomly in the grid.
@@ -124,10 +124,10 @@ class World:
                 self.grid[x][y] = Pacman()
                 pacman -= 1
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region update_world
-#__________________________________________________________________________
+#______________________________________________________________________________
     def update_world(self) -> None:
         """
         Update the world state and the state of every entity in the grid. (Movement, reproduction, death)
@@ -261,10 +261,10 @@ class World:
                 found_suitable_space = True
         return x, y
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region print_grid
-#__________________________________________________________________________
+#______________________________________________________________________________
     def print_grid(self) -> None: 
         """
         Print the state of the world in the console.
@@ -286,10 +286,10 @@ class World:
             line += " |"
             print(line)
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region get_megalodons_directions
-#__________________________________________________________________________
+#______________________________________________________________________________
     def get_megalodons_directions(self, x: int, y: int) -> str:
         """
         Return all possible movement for the Megalodon based only on the presence of sharks in its move radius. 
@@ -473,10 +473,10 @@ class World:
      
         return outcomes
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region get_pacman_direction
-#__________________________________________________________________________
+#______________________________________________________________________________
     def get_pacman_direction(self, x: int, y: int) -> str:
         """
         Return all possible movement for Pacmank based on the presence of food in its move radius. 
@@ -537,10 +537,10 @@ class World:
         #If no food availlable, return normal fish behavior
         return self.get_fish_direction(x, y)
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region check_for_only_shark_in_tile
-#__________________________________________________________________________
+#______________________________________________________________________________
     def check_for_only_shark_in_tile(self, x: int, y: int) -> bool:
         """
         Check for only shark in tile.
@@ -551,10 +551,10 @@ class World:
         return isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region check_for_only_fish_in_tile
-# __________________________________________________________________________   
+# _____________________________________________________________________________   
     def check_for_only_fish_in_tile(self, x: int, y: int) -> bool:
         """
         Check for only fish in tile.
@@ -565,10 +565,10 @@ class World:
         return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region check_for_food
-# __________________________________________________________________
+# _____________________________________________________________________________
     def check_for_food(self, x: int, y: int) -> bool:
         """
         Check for food.
@@ -579,10 +579,10 @@ class World:
         return isinstance(self.grid[x][y], (Fish)) and not isinstance(self.grid[x][y], Pacman) and \
             (not isinstance(self.grid[x][y], Megalodon) or isinstance(self.grid[x][y], Megalodon_Tail))
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region update_statistics
-# __________________________________________________________________
+# _____________________________________________________________________________
     def update_statistics(self) -> None:
         
         #Reset the stat variables

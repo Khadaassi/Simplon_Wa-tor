@@ -12,7 +12,7 @@ from watorpygame.DisplayState import DisplayState
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider
 from watorpygame.UserImageInfo import UserImageInfo
-from watorpygame.ConfigField import ConfigField
+from ConfigField import ConfigField
 
 
 
@@ -55,12 +55,16 @@ class WaTorDisplay:
     #
     # region on_user_command
     #__________________________________________________________________________
-    def on_user_command(self, command: DisplayCommand , command_data: dict = None):
+    def on_user_command(self, command: DisplayCommand, command_data: dict = None):
         """
         update WatorDisplay instance variable : state
         optionally uses command_data object if provided
         """
 
+        if self.state == DisplayState.OUT :
+            return # we are closed, we don't take commands anymore
+
+        precedent_state = self.state
         match command :
             case DisplayCommand.RESET :
                 self.state = DisplayState.CONF
@@ -68,8 +72,7 @@ class WaTorDisplay:
 
             case DisplayCommand.GO :
                 self.state = DisplayState.BETWEEN # state between config screen and play screen
-                self.pygameWrapper.disable_config_controls()
-                #self.config = self.pygameWrapper.get_config()
+                self.pygameWrapper.disable_textboxes()
 
             case DisplayCommand.START :
                 self.state = DisplayState.PLAY
@@ -85,18 +88,29 @@ class WaTorDisplay:
 
             case DisplayCommand.STOP:
                 self.state = DisplayState.STOP
+
+            case DisplayCommand.RESTART:
+                self.state = DisplayState.CONF
+                self.pygameWrapper.set_state(self.state)
+                self.pygameWrapper.set_data(self.__config)
    
             case DisplayCommand.EXIT:
-                if self.state != DisplayState.BETWEEN :
-                     self.state = DisplayState.OUT
+                self.state = DisplayState.OUT
+                self.pygameWrapper.running = False
+                return
 
             case _ :
                 self.state = DisplayState.OUT
 
-        self.pygameWrapper.set_state(self.state)
+        if self.state == DisplayState.OUT :
+            return # we are closed i've told you
 
-        if command_data != None :
-            self.user_data = command_data
+        self.pygameWrapper.set_state(self.state)
+        if self.state != precedent_state :
+            self.pygameWrapper.initialize_buttons()
+
+        if command_data != None :           #not used code 
+            self.user_data = command_data   #not used code
 
     
     #__________________________________________________________________________
@@ -106,21 +120,21 @@ class WaTorDisplay:
     def __get_config_dict(self, config_from_file:list) -> dict:
 
         #check config_from_file here
-        assert len(config_from_file) == 12
+        assert len(config_from_file) == 13
 
-        display_config = {}
-        display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
-        display_config[ConfigField.SHARK_POPULATION] = config_from_file[1]
-        display_config[ConfigField.REFRESH_LENGTH] = config_from_file[2]
-        display_config[ConfigField.WORLD_WIDTH] = config_from_file[3]
-        display_config[ConfigField.WORD_HEIGTH] = config_from_file[4]
-        display_config[ConfigField.FISH_REPRO_TIME] = config_from_file[5]
-        display_config[ConfigField.SHARK_REPRO_TIME] = config_from_file[6]
-        display_config[ConfigField.SHARK_ENERGY] = config_from_file[7]
-        display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
-        display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
-        display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
-        display_config[ConfigField.ALLOW_PACMAN] = config_from_file[11]
+        display_config = config_from_file
+        # display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
+        # display_config[ConfigField.SHARK_POPULATION] = config_from_file[1]
+        # display_config[ConfigField.REFRESH_LENGTH] = config_from_file[2]
+        # display_config[ConfigField.WORLD_WIDTH] = config_from_file[3]
+        # display_config[ConfigField.WORD_HEIGTH] = config_from_file[4]
+        # display_config[ConfigField.FISH_REPRO_TIME] = config_from_file[5]
+        # display_config[ConfigField.SHARK_REPRO_TIME] = config_from_file[6]
+        # display_config[ConfigField.SHARK_ENERGY] = config_from_file[7]
+        # display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
+        # display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
+        # display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
+        # display_config[ConfigField.ALLOW_PACMAN] = config_from_file[11]
         
         return display_config
             
@@ -131,20 +145,21 @@ class WaTorDisplay:
     def get_config(self) -> list :
         self.__config = self.pygameWrapper.get_config()
         
-        config_list = [0 for i in range(12)]
-        config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
-        config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
-        config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
-        config_list[3] = self.__config[ConfigField.WORLD_WIDTH]
-        config_list[4] = self.__config[ConfigField.WORD_HEIGTH]
-        config_list[5] = self.__config[ConfigField.FISH_REPRO_TIME]
-        config_list[6] = self.__config[ConfigField.SHARK_REPRO_TIME] 
-        config_list[7] = self.__config[ConfigField.SHARK_ENERGY]
-        config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
-        config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
-        config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
-        config_list[11] = self.__config[ConfigField.ALLOW_PACMAN]
-        return config_list
+        # config_list = [0 for i in range(12)]
+        # config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
+        # config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
+        # config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
+        # config_list[3] = self.__config[ConfigField.WORLD_WIDTH]
+        # config_list[4] = self.__config[ConfigField.WORD_HEIGTH]
+        # config_list[5] = self.__config[ConfigField.FISH_REPRO_TIME]
+        # config_list[6] = self.__config[ConfigField.SHARK_REPRO_TIME] 
+        # config_list[7] = self.__config[ConfigField.SHARK_ENERGY]
+        # config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
+        # config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
+        # config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
+        # config_list[11] = self.__config[ConfigField.ALLOW_PACMAN]
+        
+        return self.__config
     
     #__________________________________________________________________________
     #
@@ -169,6 +184,10 @@ class WaTorDisplay:
         """
         Takes a world object which contains a list[list[Fish]]
         """
+
+        if self.pygameWrapper.running == False :
+            return
+
         self.world = world
 
         # assert len(self.world.grid[0])  == self.world.size[0]
@@ -180,8 +199,13 @@ class WaTorDisplay:
         iterationInfo = IterationInfo(
             world.world_age,
             world.fish_population,
-            world.shark_population,
-            world.megalodon_population)
+            world.shark_population)
+        
+        if world.enable_megalodons :
+            iterationInfo.add_megalodons_info(world.megalodon_population)
+
+        if world.enable_pacman :
+            iterationInfo.add_pacman_info(world.pacman_score)
 
         data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
@@ -218,6 +242,9 @@ class WaTorDisplay:
 
         self.pygameWrapper.draw(self.state)
 
+    def there_is_no_more_data(self) :
+        self.on_user_command(DisplayCommand.STOP)
+        
 
 if __name__ == "__main__":
     #put unit tests here

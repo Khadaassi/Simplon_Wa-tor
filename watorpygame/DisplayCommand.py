@@ -8,4 +8,5 @@ class DisplayCommand(Enum):
     STEP = 3
     PAUSE = 4
     STOP = 5
-    EXIT = 6
+    RESTART = 6
+    EXIT = 7

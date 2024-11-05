@@ -1,15 +1,35 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+#__________________________________________________________________________
+#
+# region smooth_curve
+#__________________________________________________________________________
+def smooth_curve(x: list, y : list) -> tuple:
+    """
+    Smooths a curve using interpolation.
 
-def smooth_curve(x, y):
-    """Smooths a curve using interpolation."""
+    Parameters:
+    x (list): x-axis values.
+    y (list): y-axis values.
+    """
     x_new = np.linspace(min(x), max(x), num=300)
     y_smooth = np.interp(x_new, x, y)
     return x_new, y_smooth
-
-def plot_population(iterations, fish_population, shark_population, megalodon_population):
-    # Normalize populations
+#__________________________________________________________________________
+#
+# region plot_population
+#__________________________________________________________________________
+def plot_population(iterations: list, fish_population: list, shark_population: list, megalodon_population: list ) -> None:
+    """
+    Plots the population of fish, sharks, and megalodons over time.
+    
+    Parameters:
+    iterations (list): List of iterations.
+    fish_population (list): List of fish population.
+    shark_population (list): List of shark population.
+    megalodon_population (list): List of megalodon population.
+    """
     plt.style.use('seaborn-v0_8-darkgrid')
     
     # Create three subplots (3 rows, 1 column)

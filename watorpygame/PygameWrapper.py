@@ -18,7 +18,9 @@ from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider, Direction
 
-import watorpygame.ConfigField as cf 
+import ConfigField as cf
+import watorpygame.ConfigFieldUser as cfu 
+
 from watorpygame.UserTextBox import UserTextBox
 from watorpygame.UserButton import UserButton
 from watorpygame.PlayScreen import WaTorPlayScreen
@@ -44,9 +46,9 @@ class PygameWrapper:
         #______________________________________________________________________
         # Central definition of 
         # borders & buttons dimensions
-        self.border_length = 25
+        self.border_length = 30
         self.button_height = 50
-        self.button_width = 75
+        self.button_width = 100
         self.buttons =[]
         self.textboxes = []
         self.state = DisplayState.OUT
@@ -96,6 +98,7 @@ class PygameWrapper:
     def initialize_screen(self):
         # pygame setup
         pygame.init()
+        pygame.display.set_caption("wa - tor + pygame = wapygame ")
 
         #______________________________________________________________________
         # start the window on screen
@@ -149,20 +152,47 @@ class PygameWrapper:
     def initialize_buttons(self) :
         #______________________________________________________________________
         # Buttons need to be created after the creation of the screen
+        if len(self.buttons) != 0 :
+            self.disable_buttons()
 
+        self.buttons = []
         match self.state :
             case DisplayState.CONF:
                 self.commands = {
                     DisplayCommand.RESET : "Reset",
                     DisplayCommand.GO : "Go" }
-            case _ :
+                
+            case DisplayState.BETWEEN:
+                self.commands = { }
+
+            case DisplayState.WAIT :
                 self.commands = {
-                    DisplayCommand.START: "Start",
+                    DisplayCommand.START: "Start" }
+            
+            case DisplayState.PLAY :
+                self.commands = {
                     #DisplayCommand.STEP : "Step", # not implemented feature
                     DisplayCommand.PAUSE: "Pause", 
                     DisplayCommand.STOP: "Stop" }
             
+            case DisplayState.PAUSE :
+                self.commands = {
+                    #DisplayCommand.STEP : "Step", # not implemented feature
+                    DisplayCommand.PAUSE: "Resume", 
+                    DisplayCommand.STOP: "Stop" }
+
+            case DisplayState.STOP :
+                self.commands = {
+                    DisplayCommand.RESTART: "Restart", 
+                    DisplayCommand.EXIT: "Exit" }
+            
+            case _ :
+                self.commands = { }
+            
         count = len(self.commands)
+        if count == 0 :
+            return
+        
         for command_key, command_text in self.commands.items():
             self.buttons.append(
                 UserButton( command_key, command_text, self.callback_function,
@@ -179,8 +209,10 @@ class PygameWrapper:
     #__________________________________________________________________________
     def initialize_textboxes(self):
         
+        if len(self.textboxes) != 0 :
+            self.disable_textboxes()
+
         if self.state != DisplayState.CONF :
-            self.textboxes = []
             return
         
         self.textboxes = []
@@ -188,37 +220,43 @@ class PygameWrapper:
 
         font = pygame.font.Font(None, 30)
 
-        textbox_width = 150
-        textbox_height = 40
-
         number_of_textboxes = len(config_fields)
         number_of_spaces = number_of_textboxes -1
         available_height = self.window_height - 4 * self.border_length - self.button_height
+
+        textbox_width = 150
+        textbox_height = 0.80 * available_height / number_of_textboxes
         
         total_space = available_height - textbox_height * number_of_textboxes
-        single_space = int(float(total_space)/number_of_spaces)
+        single_space = float(total_space)/number_of_spaces
         
         textbox_pos_x = self.window_width - self.border_length - textbox_width 
         textbox_pos_y = 2 * self.border_length
 
-        for fied_key, field_value in config_fields.items() : 
-            textbox = UserTextBox(fied_key, 
-                textbox_pos_x, textbox_pos_y, 
-                textbox_width, textbox_height, 
+        field_user = cfu.ConfigFieldUser()
+        for field_key, field_value in config_fields.items() : 
+            textbox = UserTextBox(field_key, 
+                textbox_pos_x, int(textbox_pos_y), 
+                textbox_width, int(textbox_height), 
                 font, 
                 str(field_value),
-                cf.get_validation_function(fied_key))
+                field_user.get_validation_function(field_key))
             self.textboxes.append(textbox)
             textbox_pos_y += textbox_height + single_space    
 
     #__________________________________________________________________________
     #
-    # region disable_config_controls
+    # region disable_buttons
     #__________________________________________________________________________
-    def disable_config_controls(self) :
+    def disable_buttons(self) :
         for button in self.buttons :
             cast(UserButton, button).callback_function = None
 
+    #__________________________________________________________________________
+    #
+    # region disable_textboxes
+    #__________________________________________________________________________
+    def disable_textboxes(self) :
         for textbox in self.textboxes :
             cast(UserTextBox, textbox).callback_function = None
         
@@ -255,11 +293,16 @@ class PygameWrapper:
         top_y = self.screen.get_rect().top + 25
 
         match self.state :
-            case DisplayState.CONF :     
+            case DisplayState.CONF :  
+                self.config_screen.textboxes = self.textboxes
+                self.config_screen.buttons = self.buttons   
                 self.config_screen.draw(self.screen, self.border_length)
+
             case DisplayState.BETWEEN :     
                 pass
+            
             case _ :      
+                self.play_screen.buttons = self.buttons  
                 self.play_screen.draw(self.screen, self.border_length)
             
         #______________________________________________________________________
@@ -273,7 +316,6 @@ class PygameWrapper:
         if not self.running:
             self.callback_function(DisplayCommand.EXIT)
             pygame.quit()
-
 
     #__________________________________________________________________________
     #

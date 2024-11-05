@@ -6,6 +6,10 @@ from pacman import Pacman
 from storm import Storm, Storm_Tile
 from random import randint
 
+#__________________________________________________________________________
+#
+# region World
+#__________________________________________________________________________
 class World:
     
     def __init__(
@@ -22,7 +26,7 @@ class World:
         allow_packman: bool = True
         ) -> None:
         """
-        [Args]\n
+        [Args]
         s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
         chro_len = the length of a chronos for this world
         world_size = a tuple of int defining the world dimension as follow [width, height]
@@ -30,7 +34,8 @@ class World:
         shark_repro_time = the amount of chronos a shark needs to reproduce
         shark_energy = starting energy of a newly created shark (also its maximum, if needed)
         shark_energy_gain = amount of energy a shark gains when eating a fish
-        allow_megalodons = if False, sharks will never evolve to Megalodons"""
+        allow_megalodons = if False, sharks will never evolve to Megalodons
+        """
         
         #World parameters block
         self.starting_population = s_pop #The initial ratio of fish to shark. starting_population[0] = fishes, starting_population[1] = sharks
@@ -46,6 +51,7 @@ class World:
         self.enable_megalodons = allow_megalodons #if False, Megalodons generation will be disabled.
         self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of Fish a shark needs to eat before evolving to a Megalodon
         self.enable_pacman = allow_packman 
+      
         
         #Natural disasters block
         self.current_storms = []
@@ -60,11 +66,12 @@ class World:
         #Stats block
         self.world_age = 0 #Current iteration of the simulation
         self.fish_population = self.starting_population[0]
-        self.shark_population = self.starting_population[1]
+        self.shark_population = self.starting_population[1]      
         self.megalodon_population = 0
         self.fish_age_dict = {}
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
+        self.pacman_score = 0 # temporary added 
 
         #DEBUG block
         self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.
@@ -74,7 +81,10 @@ class World:
         if (sum(self.starting_population)) > self.size[0]*self.size[1]:
             raise ValueError("Total population too big : try increasing world size or reducing populations")
         
-        
+#__________________________________________________________________________
+#
+# region populate_world
+#__________________________________________________________________________
     def populate_world(self) -> None:
         """
         Populate the first state of the world by placing fishes and sharks randomly in the grid.
@@ -121,6 +131,10 @@ class World:
                 self.grid[x][y] = Pacman()
                 pacman -= 1
 
+#__________________________________________________________________________
+#
+# region update_world
+#__________________________________________________________________________
     def update_world(self) -> None:
         """
         Update the world state and the state of every entity in the grid. (Movement, reproduction, death)
@@ -256,6 +270,10 @@ class World:
                 found_suitable_space = True
         return x, y
 
+#__________________________________________________________________________
+#
+# region print_grid
+#__________________________________________________________________________
     def print_grid(self) -> None: 
         """
         Print the state of the world in the console.
@@ -278,7 +296,11 @@ class World:
                     line += f"[\033[34m~\033[0m]"                
             line += " |"
             print(line)
-    
+
+#__________________________________________________________________________
+#
+# region get_megalodons_directions
+#__________________________________________________________________________
     def get_megalodons_directions(self, x: int, y: int) -> str:
         """
         Return all possible movement for the Megalodon based only on the presence of sharks in its move radius. 
@@ -293,7 +315,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of Megalodon
         """
                 
@@ -362,7 +384,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of shark
         """
                 
@@ -422,7 +444,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of fish
         """
         
@@ -461,7 +483,11 @@ class World:
             outcomes += "E"
      
         return outcomes
-    
+
+#__________________________________________________________________________
+#
+# region get_pacman_direction
+#__________________________________________________________________________
     def get_pacman_direction(self, x: int, y: int) -> str:
         """
         Return all possible movement for Pacmank based on the presence of food in its move radius. 
@@ -476,7 +502,7 @@ class World:
         E = East
         L = Left (from right edge to left edge)
         
-        [Args]\n
+        [Args]
         x, y = current coordinate of shark
         """
                 
@@ -522,18 +548,52 @@ class World:
         #If no food availlable, return normal fish behavior
         return self.get_fish_direction(x, y)
 
+#__________________________________________________________________________
+#
+# region check_for_only_shark_in_tile
+#__________________________________________________________________________
     def check_for_only_shark_in_tile(self, x: int, y: int) -> bool:
+        """
+        Check for only shark in tile.
+        
+        [Args]
+        x, y = current coordinate of shark
+        """
         return isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
-            
+
+#__________________________________________________________________________
+#
+# region check_for_only_fish_in_tile
+# __________________________________________________________________________   
     def check_for_only_fish_in_tile(self, x: int, y: int) -> bool:
+        """
+        Check for only fish in tile.
+
+        [Args]
+        x, y = current coordinate of fish
+        """
         return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
 
+#__________________________________________________________________________
+#
+# region check_for_food
+# __________________________________________________________________
     def check_for_food(self, x: int, y: int) -> bool:
+        """
+        Check for food.
+
+        [Args]
+        x, y = current coordinate of Pacman
+        """
         return isinstance(self.grid[x][y], (Fish)) and not isinstance(self.grid[x][y], Pacman) and \
             (not isinstance(self.grid[x][y], Megalodon) or isinstance(self.grid[x][y], Megalodon_Tail))
-            
+
+#__________________________________________________________________________
+#
+# region update_statistics
+# __________________________________________________________________
     def update_statistics(self) -> None:
         
         #Reset the stat variables
@@ -558,15 +618,15 @@ class World:
                 if isinstance(y, Megalodon) or isinstance(y, Megalodon_Tail):                    
                     if not isinstance(y, Megalodon_Tail):
                         self.megalodon_population += 1
-                        self.megalodon_age_dict[str(y.age)] = self.megalodon_age_dict.get(str(y.age), 0) + 1
+                        self.megalodon_age_dict[y.age] = self.megalodon_age_dict.get(y.age, 0) + 1
                 elif isinstance(y, Shark):                    
                     self.shark_population += 1
-                    self.shark_age_dict[str(y.age)] = self.shark_age_dict.get(str(y.age), 0) + 1
+                    self.shark_age_dict[y.age] = self.shark_age_dict.get(y.age, 0) + 1
                 elif isinstance(y, Pacman):                    
                     self.pacman_score += y.score
                 elif isinstance(y,Fish):
                     self.fish_population += 1      
-                    self.fish_age_dict[str(y.age)] = self.fish_age_dict.get(str(y.age), 0) + 1     
+                    self.fish_age_dict[y.age] = self.fish_age_dict.get(y.age, 0) + 1     
     
     def manage_disasters(self) -> None:
         

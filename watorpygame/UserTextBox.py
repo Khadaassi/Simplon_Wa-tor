@@ -1,6 +1,6 @@
 import pygame as pg
 from watorpygame.WaTorColors import *
-from watorpygame.ConfigField import ConfigField
+from ConfigField import ConfigField
 
 #from typing import cast
 

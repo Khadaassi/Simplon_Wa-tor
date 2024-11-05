@@ -76,7 +76,7 @@ class WaTorPlayScreen :
         if len(self.data) == 0:
             return
 
-        self.window_width = screen.get_width()
+        self.window_width = screen.get_width() #TODO resolve bug
         self.window_height = screen.get_height()
 
         self.buttons = buttons

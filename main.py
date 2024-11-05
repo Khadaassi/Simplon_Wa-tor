@@ -97,7 +97,7 @@ def main():
 
         display.there_is_no_more_data() # tells display there is no more world to show 
 
-        #plot_population(iterations, fish_population, shark_population, megalodon_population)
+        plot_population(iterations, fish_population, shark_population, megalodon_population)
         
         # print( world.fish_age_dict[0])
         # print( world.shark_age_dict[0])
@@ -105,10 +105,6 @@ def main():
         
         while display.state not in [DisplayState.CONF, DisplayState.OUT] :
             display.update_view(world)
-
-        
-
-    
 
 
 def console_print(world: World) -> None:

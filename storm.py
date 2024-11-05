@@ -6,6 +6,8 @@ class Storm_Tile:
 
 class Storm:
     
+    #TODO : Scale storm size from grid size (storm can't be more than x% of total grid)
+    
     min_size = 10
     max_size = 10
     base_duration = 10
@@ -16,9 +18,13 @@ class Storm:
         self.size = 0
     
     def spawn_storm(self, max_x: int, max_y: int) -> None:
+        
+        #Get "eye of the storm", epicenter randomly
         init_x = randint(0, max_x)
         init_y = randint(0, max_y)
         self.coordinates.append((init_x, init_y))
+        
+        #
         self.size = randint(self.min_size, self.max_size)
         size = self.size
         x_offset = 0

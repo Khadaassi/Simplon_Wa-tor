@@ -146,6 +146,8 @@ class World:
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
                 
+                current_item = self.grid[x][y]
+                
                 #skip water tiles
                 if self.grid[x][y] == False or isinstance(self.grid[x][y], Storm_Tile) :
                     continue
@@ -207,8 +209,8 @@ class World:
                             self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
                     
                     #DEBUG
-                    # if isinstance(self.grid[x][y], bool):
-                    #     continue
+                    if isinstance(self.grid[x][y], bool):
+                        continue
                     #DEBUG
                     
                     #Megalodons lose energy when moving.
@@ -683,7 +685,7 @@ class World:
                     self.killed_by_storm += 1
                 #If a Megalodon's head is struck, remove its tail
                 if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon) and not isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
-                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False
+                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False                    
                 #Generate a storm tile
                 self.grid[coordinates[0]][coordinates[1]] = Storm_Tile()
             self.current_storms.append(new_storm) 

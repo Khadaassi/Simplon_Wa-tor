@@ -121,7 +121,7 @@ class Megalodon(Shark):
         self.energy *= 5
         self.max_energy *= 5
         self.current_direction = "NSWE"[randint(0, 3)] #The current direction of the head. North (N), South (S), West (W), East (E)
-        self.tail_pos = (0,0)
+        self.tail_pos = (-1, -1)
         self.skip_first_tail_check = True #When a Megalodon spawns, its tail doesn't occupy a space until its first move
 
     def reproduce(self) -> bool:

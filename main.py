@@ -18,9 +18,8 @@ def main():
         write_config()
 
     config = read_config()
-
-    
-    display = WaTorDisplay(DisplayState.CONF)  # initialize View
+ 
+    display = WaTorDisplay()  # initialize View
     while display.state == DisplayState.CONF : # added to restart a new simulation at the end of the first one
 
         while display.state == DisplayState.CONF :
@@ -29,7 +28,7 @@ def main():
         config = display.get_config()
         world = World( (config[ConfigField.FISH_POPULATION], config[ConfigField.SHARK_POPULATION]),
             config[ConfigField.REFRESH_LENGTH], 
-            (config[ConfigField.WORLD_WIDTH], config[ConfigField.WORD_HEIGTH]), 
+            (config[ConfigField.WORLD_WIDTH], config[ConfigField.WORLD_HEIGTH]), 
             config[ConfigField.FISH_REPRO_TIME], config[ConfigField.SHARK_REPRO_TIME],
             config[ConfigField.SHARK_ENERGY], config[ConfigField.SHARK_ENERGY_GAIN],
             config[ConfigField.ALLOW_MEGALODONS], config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD],
@@ -80,7 +79,7 @@ def main():
                 display.update_view(world)  # update screen with the next world
                 
                 #Console print
-                # console_print(world)
+                console_print(world)
                 
                 #Statistics appending
                 fish_population.append(world.fish_population)
@@ -95,7 +94,7 @@ def main():
             if world.fish_population == 0 or world.shark_population == 0 or counter == config[ConfigField.MAX_ITERATION]:
                 break
 
-        display.there_is_no_more_data() # tells display there is no more world to show 
+        display.stop() # tells display there is no more world to show 
 
         #plot_population(iterations, fish_population, shark_population, megalodon_population)
         
@@ -103,12 +102,9 @@ def main():
         # print( world.shark_age_dict[0])
         # print( world.megalodon_age_dict[0])
         
+        # keep the screen visible while user don't quit the pygame window (or click on 'Exit') 
         while display.state not in [DisplayState.CONF, DisplayState.OUT] :
             display.update_view(world)
-
-        
-
-    
 
 
 def console_print(world: World) -> None:

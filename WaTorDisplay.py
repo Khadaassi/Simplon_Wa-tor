@@ -1,180 +1,153 @@
 
-# Wa-Tor imports
+# no standard imports
+# no pygame imports
 
+# 'root' Wa-Tor imports
 from world import World
 from fish import Fish, Shark, Megalodon, Megalodon_Tail
 from pacman import Pacman
-from watorpygame.IterationInfo import IterationInfo
-
-from watorpygame.DisplayCommand import DisplayCommand
-from watorpygame.DisplayState import DisplayState
-
-from watorpygame.UserImageKey import UserImageKey
-from watorpygame.UserImageProvider import UserImageProvider
-from watorpygame.UserImageInfo import UserImageInfo
 from ConfigField import ConfigField
 
 
-
+# 'wrapped in a folder' Wa-Tor imports
+from watorpygame.DisplayState import DisplayState
+from watorpygame.DisplayCommand import DisplayCommand
+from watorpygame.IterationInfo import IterationInfo
+from watorpygame.UserImageKey import UserImageKey
+from watorpygame.UserImageProvider import UserImageProvider
+from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.PygameWrapper import PygameWrapper
-
-import pygame
 
 class WaTorDisplay:
     """
     A class to manage the pygame interface 
     and the user interaction.
 
-    Attributes
+    Properties
     ----------
     state : DisplayState
-        the actual state of all views.
-    user_data : dict
-        all the informations provided by the user
+        the actual state of all views
 
     Methods
     -------
-    update_view()
-        Update the data on the sreen
+    update_config()
+        Shows the configuration screen 
 
-    on_user_command()
-        set state variable 
-        and possibly set the informations provided by the user
+    get_config()
+        returns the config dictionary updated by user
+
+    update_view()
+        Shows the play screen which displays each ne version of the world object
+
+    stop()
+        Stop the display and Shows the 'Restart button'
     
     """
     #__________________________________________________________________________
     #
     # region __init__
     #__________________________________________________________________________
-    def __init__(self, state : DisplayState = DisplayState.WAIT):
-        self.state = state
-        self.image_provider = UserImageProvider()
-        self.pygameWrapper = PygameWrapper(self.image_provider, self.on_user_command)
+    def __init__(self):
+        self.__state = DisplayState.CONF
+        self.__image_provider = UserImageProvider()
+        self.__pygameWrapper = PygameWrapper(self.__image_provider, self.__on_user_command)
         self.__config = {}   
+    
     #__________________________________________________________________________
     #
-    # region on_user_command
+    # region __on_user_command
     #__________________________________________________________________________
-    def on_user_command(self, command: DisplayCommand, command_data: dict = None):
+    def __on_user_command(self, command: DisplayCommand):
         """
-        update WatorDisplay instance variable : state
-        optionally uses command_data object if provided
+        changes the state of the display
+        depending on the command
+        udate the public variables 
+        
         """
 
-        if self.state == DisplayState.OUT :
+        if self.__state == DisplayState.OUT :
             return # we are closed, we don't take commands anymore
 
-        precedent_state = self.state
         match command :
             case DisplayCommand.RESET :
-                self.state = DisplayState.CONF
-                self.pygameWrapper.reset_config()
+                self.__state = DisplayState.CONF
+                self.__pygameWrapper.reset_config()
 
             case DisplayCommand.GO :
-                self.state = DisplayState.BETWEEN # state between config screen and play screen
-                self.pygameWrapper.disable_textboxes()
+                # DisplayState.BETWEEN is the state 
+                # between config screen (DisplayState.CONF) and play screen (DisplayState.WAIT)
+                # only the call of UpdateView(world) makes the state change
+                self.__state = DisplayState.BETWEEN 
 
             case DisplayCommand.START :
-                self.state = DisplayState.PLAY
+                self.__state = DisplayState.PLAY
 
-            # not implemented feature
-            # case DisplayCommand.STEP :
-            #     self.state = DisplayState.PAUSE
+            case DisplayCommand.STEP :
+                # not implemented feature
+                # self.__state = DisplayState.PAUSE
+                pass
 
             case DisplayCommand.PAUSE: 
-                if self.state == DisplayState.PLAY: self.state = DisplayState.PAUSE
-                elif self.state == DisplayState.PAUSE: self.state = DisplayState.PLAY
+                if self.__state == DisplayState.PLAY: self.__state = DisplayState.PAUSE
+                elif self.__state == DisplayState.PAUSE: self.__state = DisplayState.PLAY
                 else: pass 
 
             case DisplayCommand.STOP:
-                self.state = DisplayState.STOP
+                self.__state = DisplayState.STOP
 
             case DisplayCommand.RESTART:
-                self.state = DisplayState.CONF
-                self.pygameWrapper.set_state(self.state)
-                self.pygameWrapper.set_data(self.__config)
+                self.__state = DisplayState.CONF
+                self.__pygameWrapper.set_state(self.__state)
+                self.__pygameWrapper.set_data(self.__config)
    
             case DisplayCommand.EXIT:
-                self.state = DisplayState.OUT
-                self.pygameWrapper.running = False
+                self.__state = DisplayState.OUT
+                self.__pygameWrapper.running = False
                 return
 
             case _ :
-                self.state = DisplayState.OUT
+                self.__state = DisplayState.OUT
 
-        if self.state == DisplayState.OUT :
+        if self.__state == DisplayState.OUT :
             return # we are closed i've told you
 
-        self.pygameWrapper.set_state(self.state)
-        if self.state != precedent_state :
-            self.pygameWrapper.initialize_buttons()
+        self.__pygameWrapper.set_state(self.__state)
 
-        if command_data != None :           #not used code 
-            self.user_data = command_data   #not used code
-
-    
     #__________________________________________________________________________
     #
-    # region _get_config_dict
+    # region state
     #__________________________________________________________________________
-    def __get_config_dict(self, config_from_file:list) -> dict:
+    @property
+    def state(self) -> DisplayState :
+        return self.__state
 
-        #check config_from_file here
-        assert len(config_from_file) == 13
-
-        display_config = config_from_file
-        # display_config[ConfigField.FISH_POPULATION] = config_from_file[0]
-        # display_config[ConfigField.SHARK_POPULATION] = config_from_file[1]
-        # display_config[ConfigField.REFRESH_LENGTH] = config_from_file[2]
-        # display_config[ConfigField.WORLD_WIDTH] = config_from_file[3]
-        # display_config[ConfigField.WORD_HEIGTH] = config_from_file[4]
-        # display_config[ConfigField.FISH_REPRO_TIME] = config_from_file[5]
-        # display_config[ConfigField.SHARK_REPRO_TIME] = config_from_file[6]
-        # display_config[ConfigField.SHARK_ENERGY] = config_from_file[7]
-        # display_config[ConfigField.SHARK_ENERGY_GAIN]  = config_from_file[8]
-        # display_config[ConfigField.ALLOW_MEGALODONS] = config_from_file[9]
-        # display_config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD] = config_from_file[10]
-        # display_config[ConfigField.ALLOW_PACMAN] = config_from_file[11]
-        
-        return display_config
-            
-    #__________________________________________________________________________
-    #
-    # region get_config
-    #__________________________________________________________________________
-    def get_config(self) -> list :
-        self.__config = self.pygameWrapper.get_config()
-        
-        # config_list = [0 for i in range(12)]
-        # config_list[0] = self.__config[ConfigField.FISH_POPULATION] 
-        # config_list[1] = self.__config [ConfigField.SHARK_POPULATION]
-        # config_list[2] = self.__config[ConfigField.REFRESH_LENGTH]
-        # config_list[3] = self.__config[ConfigField.WORLD_WIDTH]
-        # config_list[4] = self.__config[ConfigField.WORD_HEIGTH]
-        # config_list[5] = self.__config[ConfigField.FISH_REPRO_TIME]
-        # config_list[6] = self.__config[ConfigField.SHARK_REPRO_TIME] 
-        # config_list[7] = self.__config[ConfigField.SHARK_ENERGY]
-        # config_list[8] = self.__config[ConfigField.SHARK_ENERGY_GAIN]
-        # config_list[9] = self.__config[ConfigField.ALLOW_MEGALODONS] 
-        # config_list[10] = self.__config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD]
-        # config_list[11] = self.__config[ConfigField.ALLOW_PACMAN]
-        
-        return self.__config
-    
     #__________________________________________________________________________
     #
     # region update_config
     #__________________________________________________________________________
-    def update_config(self, config_from_file:list):
+    def update_config(self, config_from_file: dict):
         
-        self.state = DisplayState.CONF
-        self.pygameWrapper.set_state(self.state)
+        if self.__state != DisplayState.CONF :
+            return 
+
+        self.__pygameWrapper.set_state(self.__state)
+        
+        assert len(config_from_file) == 13 # until it changes ... 
+        # but if it changes, we will know it immediately
 
         if len(self.__config) == 0 :
-            self.__config = display_config = self.__get_config_dict(config_from_file)
-            self.pygameWrapper.set_data(display_config)
+            self.__config = config_from_file
 
-        self.pygameWrapper.draw(self.state)
+        self.__pygameWrapper.set_data(self.__config)
+        self.__pygameWrapper.draw(self.__state)
+
+    #__________________________________________________________________________
+    #
+    # region get_config
+    #__________________________________________________________________________
+    def get_config(self):
+        self.__config = self.__pygameWrapper.get_config()
+        return self.__config
 
     #__________________________________________________________________________
     #
@@ -182,35 +155,62 @@ class WaTorDisplay:
     #__________________________________________________________________________
     def update_view(self, world: World):
         """
-        Takes a world object which contains a list[list[Fish]]
+        Call this method when you want to display a new world on screen
+        takes a world object which contains a list[list[Fish]]
         """
 
-        if self.pygameWrapper.running == False :
+        if self.__pygameWrapper.running == False :
             return
-
-        self.world = world
-
-        # assert len(self.world.grid[0])  == self.world.size[0]
-        # assert len(self.world.grid) == self.world.size[1]
-
-        width = self.world.size[0]
-        heigth = self.world.size[1]
-
-        iterationInfo = IterationInfo(
-            world.world_age,
-            world.fish_population,
-            world.shark_population)
         
-        if world.enable_megalodons :
-            iterationInfo.add_megalodons_info(world.megalodon_population)
+        if self.__state in [DisplayState.CONF, DisplayState.OUT]:
+            return
+        
+        if self.__state == DisplayState.BETWEEN :
+            # First call of UpdateView(world) 
+            # => makes the state change to DisplayState.WAIT
+            self.__state = DisplayState.WAIT
+            self.__pygameWrapper.set_state(self.__state)
 
-        if world.enable_pacman :
-            iterationInfo.add_pacman_info(world.pacman_score)
+        # corresponds to the height of screen 
+        # it is the number of lines of the matrix
+        assert len(world.grid) == world.size[1]
+
+        # corresponds to the width of screen 
+        # it is the number of columns of the first line of the matrix
+        assert len(world.grid[0]) == world.size[0]
+
+        data, iteration_info = self.__create_data_for_view(world)
+                                               
+        self.__pygameWrapper.set_data(data)
+        self.__pygameWrapper.set_iteration_info(iteration_info)
+        self.__pygameWrapper.draw(self.__state)
+
+    #__________________________________________________________________________
+    #
+    # region stop
+    #__________________________________________________________________________
+    def stop(self) :
+        """
+        Call this method when there is no more world to compute
+        (at the end of the 'While True')
+        It will bring the view from the DisplayState.PLAY state
+        to the DisplayState.STOP state, and show the 'Restart' button
+        """
+        self.__on_user_command(DisplayCommand.STOP)
+
+    #__________________________________________________________________________
+    #
+    # region __create_data_for_view
+    #__________________________________________________________________________
+    def __create_data_for_view(self, world : World) -> tuple[list[list[UserImageInfo]], IterationInfo] :
+
+        width = world.size[0]
+        heigth = world.size[1]
 
         data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
         for y_index in range(heigth):
             for x_index in range(width):
-                item = self.world.grid[y_index][x_index]
+                item = world.grid[y_index][x_index]
                 if not item:
                     continue
 
@@ -232,19 +232,20 @@ class WaTorDisplay:
                                    
                 elif isinstance(item, Fish):
                     data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)
-                                                              
-        self.pygameWrapper.set_data(data)
-        self.pygameWrapper.set_info(iterationInfo)
-        if self.state == DisplayState.BETWEEN :
-            self.state = DisplayState.WAIT
-            self.pygameWrapper.set_state(self.state)
-            self.pygameWrapper.initialize_controls() # new controls (no textboxes, different buttons)
 
-        self.pygameWrapper.draw(self.state)
-
-    def there_is_no_more_data(self) :
-        self.on_user_command(DisplayCommand.STOP)
+        iteration_info = IterationInfo(
+            world.world_age,
+            world.fish_population,
+            world.shark_population)
         
+        if world.enable_megalodons :
+            iteration_info.add_megalodons_info(world.megalodon_population)
+
+        if world.enable_pacman :
+            iteration_info.add_pacman_info(world.pacman_score)
+
+        return data, iteration_info
+ 
 
 if __name__ == "__main__":
     #put unit tests here

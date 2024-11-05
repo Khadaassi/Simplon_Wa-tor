@@ -38,7 +38,7 @@ class UserTextBox:
     #__________________________________________________________________________
     def validate(self) -> bool :
         try :
-            val = self.get_validated_value() 
+            val = self.get_validated_value() # transforms value type from str to it's correct type
             return True
         except :
             return False
@@ -99,7 +99,7 @@ class UserTextBox:
                     #print(self.field_value)
                     #self.field_value = ''
                 if event.key == pg.K_BACKSPACE:
-                    self.field_value = self.field_value[:-1]
+                    self.field_value = str(self.field_value)[:-1]
                 else:
                     self.field_value = str(self.field_value) + str(event.unicode)
 

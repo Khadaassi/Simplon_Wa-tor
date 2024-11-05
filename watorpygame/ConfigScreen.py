@@ -27,9 +27,6 @@ class WaTorConfigScreen :
         self.in_data = {}
         self.out_data = {}
 
-        self.window_width = 0
-        self.window_height = 0
-
         self.buttons = []
         self.textboxes = []
 
@@ -37,7 +34,7 @@ class WaTorConfigScreen :
             ConfigField.FISH_POPULATION,
             ConfigField.SHARK_POPULATION,
             ConfigField.WORLD_WIDTH,
-            ConfigField.WORD_HEIGTH
+            ConfigField.WORLD_HEIGTH
         ]
         self.too_many_entities = False
 
@@ -47,10 +44,7 @@ class WaTorConfigScreen :
     #__________________________________________________________________________
     def set_data(self, data : dict) :
         self.in_data = data
-        # self.out_data = self.in_data
         self.out_data = self.in_data.copy()
-
-        #assert id(self.in_data) != id(self.out_data)
 
     #__________________________________________________________________________
     #
@@ -97,7 +91,7 @@ class WaTorConfigScreen :
                 case ConfigField.FISH_POPULATION : nb_fish = self.out_data[ConfigField.FISH_POPULATION]
                 case ConfigField.SHARK_POPULATION : nb_shark = self.out_data[ConfigField.SHARK_POPULATION]
                 case ConfigField.WORLD_WIDTH : world_width = self.out_data[ConfigField.WORLD_WIDTH]
-                case ConfigField.WORD_HEIGTH : world_height = self.out_data[ConfigField.WORD_HEIGTH]
+                case ConfigField.WORLD_HEIGTH : world_height = self.out_data[ConfigField.WORLD_HEIGTH]
 
         if nb_fish + nb_shark > world_width * world_height :
             self.too_many_entities = True
@@ -122,15 +116,10 @@ class WaTorConfigScreen :
     #
     # region initialize_controls
     #__________________________________________________________________________
-    def initialize_controls(self, screen : pygame.Surface, border_length: int, buttons : list[UserButton], textboxes : list[UserTextBox]):
+    def initialize_controls(self, buttons : list[UserButton], textboxes : list[UserTextBox]):
         """
         need number of config fields to initialize screen dimensions
         """
-        if self.window_width != 0 : 
-            return 
-
-        self.window_width = screen.get_width()
-        self.window_height = screen.get_height()
 
         self.buttons = buttons
         self.textboxes = textboxes
@@ -142,11 +131,15 @@ class WaTorConfigScreen :
     # region on_textbox_validated
     #__________________________________________________________________________
     def on_textbox_validated(self, field_key: ConfigField) :
-        need_entity_check = False
+        found = False
         for textbox in self.textboxes :
+            if found : 
+                break
+
             if textbox.field_key == field_key :
+                found = True
                 val = textbox.get_validated_value()
-                self.out_data[field_key] = val
+                self.out_data[field_key] = val              
                 if textbox.field_key in self.too_many_entities_fields :
                     self.check_nb_entities()
 
@@ -158,17 +151,21 @@ class WaTorConfigScreen :
 
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(self.screen_background_color)
-
-        center_x = screen.get_rect().centerx
-        top_y = screen.get_rect().top 
+        window_rect = screen.get_rect()
+        window_width = window_rect.width
+        window_height = window_rect.height
+        center_x = window_rect.centerx
+        top_y = window_rect.top 
 
         label_writer = UserLabel()
         label_writer.draw(screen, "Wa - Tor : l'écran de configuration", center_x, top_y +20, 40, 0)
 
         project_image = self.image_provider.get_image(UserImageKey.PROJECT)
+
+        button_height = self.buttons[0].button_rect.height
     
-        image_width = self.window_width-2*border_length
-        image_height = self.window_height - 4* border_length - self.buttons[0].button_rect.height
+        image_width = window_width-2*border_length
+        image_height = window_height - 4* border_length - button_height
         surface = pygame.Surface((image_width, image_height))
             
         transformed = pygame.transform.scale(project_image.image, (image_width, image_height), surface)
@@ -186,11 +183,11 @@ class WaTorConfigScreen :
             error_label_writer.draw(screen, 
                 "Trop de poissons et de requins pour la taille du monde.", 
                 2* border_length, 
-                self.window_height-self.buttons[0].button_rect.height - int(1.5*border_length),30, -1, True)
+                window_height- button_height - int(1.5*border_length),30, -1, True)
             error_label_writer.draw(screen, 
                 "Si vous continuez, la configuration par défaut sera utilisée.", 
                 3* border_length, 
-                self.window_height-self.buttons[0].button_rect.height - int(0.5*border_length),25, -1, True)
+                window_height- button_height - int(0.5*border_length),25, -1, True)
 
         field_user = ConfigFieldUser()
         for textbox in self.textboxes :

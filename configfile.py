@@ -17,7 +17,7 @@ def write_config():
         ConfigField.REFRESH_LENGTH.value : "0.5",
         ConfigField.MAX_ITERATION.value : "100",
         ConfigField.WORLD_WIDTH.value : "40",
-        ConfigField.WORD_HEIGTH.value : "30",
+        ConfigField.WORLD_HEIGTH.value : "30",
         ConfigField.FISH_REPRO_TIME.value : "3",
         ConfigField.SHARK_REPRO_TIME.value : "3",
         ConfigField.SHARK_ENERGY.value : "2",
@@ -49,7 +49,7 @@ def read_config()-> dict[ConfigField, bool|int|float|str]:
     float_fields = [ConfigField.REFRESH_LENGTH]
     int_fields.append(ConfigField.MAX_ITERATION)
     int_fields.append(ConfigField.WORLD_WIDTH)
-    int_fields.append(ConfigField.WORD_HEIGTH)
+    int_fields.append(ConfigField.WORLD_HEIGTH)
     int_fields.append(ConfigField.FISH_REPRO_TIME)
     int_fields.append(ConfigField.SHARK_REPRO_TIME)
     int_fields.append(ConfigField.SHARK_ENERGY)

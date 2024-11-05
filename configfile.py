@@ -1,8 +1,14 @@
 from configparser import ConfigParser
 from ConfigField import ConfigField
 
-
+#_______________________________________________________________________________________
+#
+# region: Write Configuration file
+#_______________________________________________________________________________________
 def write_config():
+    """
+    Writes a default configuration file to config.ini
+    """
     config = ConfigParser()
 
     config["world"] = {
@@ -24,8 +30,14 @@ def write_config():
     with open("config.ini", "w") as configfile:
         config.write(configfile)
 
-
-def read_config() -> dict[ConfigField, bool|int|float|str]:
+#_______________________________________________________________________________________
+#
+# region: Read Configuration file
+#_______________________________________________________________________________________
+def read_config()-> dict[ConfigField, bool|int|float|str]:
+    """
+    Reads the configuration file and returns a list of the values
+    """
     config = ConfigParser()
     config.read("config.ini")
 

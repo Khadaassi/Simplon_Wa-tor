@@ -55,13 +55,14 @@ class World:
         
         #Natural disasters block
         self.current_storms = []
-        self.chance_for_storm_to_spawn = 100
-        self.max_storm_concurrent = 1
+        self.chance_for_storm_to_spawn = 25
+        self.max_storm_concurrent = int(world_size[0]*world_size[1]*0.1)
         
         #Internal logic block
         self.next_move_will_eat = False
         self.next__move_will_eat_mega_head = False
         self.next_move_will_die = False
+        self.next_move_toward_storm = False
         
         #Stats block
         self.world_age = 0 #Current iteration of the simulation
@@ -72,6 +73,7 @@ class World:
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
         self.pacman_score = 0 # temporary added 
+        self.killed_by_storm = 0
 
         #DEBUG block
         self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.
@@ -159,7 +161,8 @@ class World:
                 isPacman = isinstance(self.grid[x][y], Pacman)
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
-                self.next_move_will_die = False        
+                self.next_move_will_die = False    
+                self.next_move_toward_storm = False    
                 
                 #Get the availlable directions for current entity    
                 direction = self.get_shark_directions(x, y) if isShark else self.get_megalodons_directions(x, y) if isMegalodon else self.get_pacman_direction(x,y) if isPacman\
@@ -194,11 +197,20 @@ class World:
                     if self.grid[x][y].skip_first_tail_check:
                         self.grid[x][y].skip_first_tail_check = False
                     
+                    #If a Pacman or a Storm Tile is at tail position, it means Megalodon was eaten or died from storm and needs to disapear.
                     else:
-                        if isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Pacman):
+                        if isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Pacman) or\
+                            isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Storm_Tile):
                             self.grid[x][y] = False
                             continue
-                        self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
+                        else:
+                            self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
+                    
+                    #DEBUG
+                    # if isinstance(self.grid[x][y], bool):
+                    #     continue
+                    #DEBUG
+                    
                     #Megalodons lose energy when moving.
                     if not self.grid[x][y].energy_management():
                         self.grid[x][y] = False
@@ -209,31 +221,33 @@ class World:
                         #Save new tail position
                         self.grid[x][y].tail_pos = (x, y)
                          
-                
-                #Move entity to new cell depending on direction                
-                #North/Up block
-                if direction == "N":                    
-                    self.grid[x-1][y] = self.grid[x][y] if not self.next_move_will_die else False               
-                if direction == "D":
-                    self.grid[len(self.grid)-1][y] = self.grid[x][y] if not self.next_move_will_die else False  
-                                    
-                #South/Down block
-                if direction == "S":
-                    self.grid[x+1][y] = self.grid[x][y] if not self.next_move_will_die else False                     
-                if direction == "U":
-                    self.grid[0][y] = self.grid[x][y] if not self.next_move_will_die else False  
-                    
-                #West/Right block             
-                if direction == "W":
-                    self.grid[x][y-1] = self.grid[x][y] if not self.next_move_will_die else False                      
-                if direction == "R":
-                    self.grid[x][len(self.grid[x])-1] = self.grid[x][y] if not self.next_move_will_die else False  
-                    
-                #East/Left block
-                if direction == "E":
-                    self.grid[x][y+1] = self.grid[x][y] if not self.next_move_will_die else False                      
-                if direction == "L":
-                    self.grid[x][0] = self.grid[x][y] if not self.next_move_will_die else False  
+                #If entity moves toward Storm, do nothing (Storm "killed" it)
+                if not self.next_move_toward_storm:
+               
+                    #Move entity to new cell depending on direction                
+                    #North/Up block
+                    if direction == "N":                    
+                        self.grid[x-1][y] = self.grid[x][y] if not self.next_move_will_die else False               
+                    if direction == "D":
+                        self.grid[len(self.grid)-1][y] = self.grid[x][y] if not self.next_move_will_die else False  
+                                        
+                    #South/Down block
+                    if direction == "S":
+                        self.grid[x+1][y] = self.grid[x][y] if not self.next_move_will_die else False                     
+                    if direction == "U":
+                        self.grid[0][y] = self.grid[x][y] if not self.next_move_will_die else False  
+                        
+                    #West/Right block             
+                    if direction == "W":
+                        self.grid[x][y-1] = self.grid[x][y] if not self.next_move_will_die else False                      
+                    if direction == "R":
+                        self.grid[x][len(self.grid[x])-1] = self.grid[x][y] if not self.next_move_will_die else False  
+                        
+                    #East/Left block
+                    if direction == "E":
+                        self.grid[x][y+1] = self.grid[x][y] if not self.next_move_will_die else False                      
+                    if direction == "L":
+                        self.grid[x][0] = self.grid[x][y] if not self.next_move_will_die else False  
                 
                 #Check for leaving tile behavior
                 #If reproducing, left a new entity of same type. Else, leaves water.
@@ -451,37 +465,57 @@ class World:
         outcomes = ""               
                      
         #Check for North availlable
-        if x == 0 and self.grid[len(self.grid)-1][y] in (False, Storm_Tile):
+        if x == 0 and isinstance(self.grid[len(self.grid)-1][y],(bool, Storm_Tile)):
+            if isinstance(self.grid[len(self.grid)-1][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "D"            
         elif x == 0:
             pass
-        elif self.grid[x-1][y] in (False, Storm_Tile):
+        elif isinstance(self.grid[x-1][y], (bool, Storm_Tile)):
+            if isinstance(self.grid[x-1][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "N"
             
         #Check for South availlable
-        if x == (len(self.grid) - 1) and self.grid[0][y] in (False, Storm_Tile):
+        if x == (len(self.grid) - 1) and isinstance(self.grid[0][y],(bool, Storm_Tile)):
+            if isinstance(self.grid[0][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "U"    
         elif x == (len(self.grid) - 1):
             pass      
-        elif self.grid[x+1][y] in (False, Storm_Tile):
+        elif isinstance(self.grid[x+1][y],(bool, Storm_Tile)):
+            if isinstance(self.grid[x+1][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "S"
             
         #Check for West availlable
-        if y == 0 and self.grid[x][len(self.grid[y])-1] in (False, Storm_Tile):
+        if y == 0 and isinstance(self.grid[x][len(self.grid[y])-1],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][len(self.grid[y])-1], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "R"     
         elif y == 0:
             pass
-        elif self.grid[x][y-1] in (False, Storm_Tile):
+        elif isinstance(self.grid[x][y-1],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][y-1], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "W"
             
         #check for East availlable
-        if y == (len(self.grid[x]) - 1) and self.grid[x][0] in (False, Storm_Tile):
+        if y == (len(self.grid[x]) - 1) and isinstance(self.grid[x][0],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][0], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "L"  
         elif y == (len(self.grid[x]) - 1):
             pass
-        elif self.grid[x][y+1] in (False, Storm_Tile):
+        elif isinstance(self.grid[x][y+1],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][y+1], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "E"
-     
+
+        if self.next_move_will_die:
+            self.killed_by_storm += 1
+            self.next_move_toward_storm = True
+        
         return outcomes
 
 #__________________________________________________________________________
@@ -644,9 +678,18 @@ class World:
             new_storm = Storm()
             new_storm.spawn_storm(self.size[1]-1, self.size[0]-1)
             for coordinates in new_storm.coordinates:
+                if self.grid[coordinates[0]][coordinates[1]] != False:
+                    #If there was something on the storm spawn, kill it.
+                    self.killed_by_storm += 1
+                #If a Megalodon's head is struck, remove its tail
+                if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon) and not isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
+                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False
+                #Generate a storm tile
                 self.grid[coordinates[0]][coordinates[1]] = Storm_Tile()
             self.current_storms.append(new_storm) 
-            
+
+# if __name__ == "__main__":
+          
             
                 
                                 

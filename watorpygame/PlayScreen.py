@@ -242,7 +242,8 @@ class WaTorPlayScreen :
                     y_image = center_y - (fish_image.resized.get_height() // 2)  
                                 
                 
-                cell_color = fish_image.light_background_color if even_cell else fish_image.dark_background_color                
+                cell_color = fish_image.light_background_color
+                # if even_cell else fish_image.dark_background_color                
                 
                 pygame.draw.rect(screen, cell_color, cell_rect )   
                 

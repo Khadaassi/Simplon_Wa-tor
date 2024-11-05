@@ -107,10 +107,10 @@ class Shark(Fish):
         Checks if the shark has eaten enough fish to evolve into a megalodon.
         """
         return self.fish_eaten >= self.megalodon_evolution_threshold
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region Megalodon 
-#__________________________________________________________________________
+#______________________________________________________________________________
 class Megalodon(Shark):
     """
     A class to represent a megalodon in a water ecosystem that inherites of Shark class.

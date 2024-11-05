@@ -45,7 +45,7 @@ class World:
         self.enable_megalodons = allow_megalodons #if False, Megalodons generation will be disabled.
         self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of Fish a shark needs to eat before evolving to a Megalodon
         self.enable_pacman = allow_packman 
-        self.pacman_score = 0 # temporary added 
+      
         
         #Internal logic block
         self.next_move_will_eat = False
@@ -54,11 +54,12 @@ class World:
         #Stats block
         self.world_age = 0 #Current iteration of the simulation
         self.fish_population = self.starting_population[0]
-        self.shark_population = self.starting_population[1]
+        self.shark_population = self.starting_population[1]      
         self.megalodon_population = 0
         self.fish_age_dict = {}
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
+        self.pacman_score = 0 # temporary added 
 
         #DEBUG block
         self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.

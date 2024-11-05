@@ -578,7 +578,11 @@ class World:
         """
         return isinstance(self.grid[x][y], (Fish)) and not isinstance(self.grid[x][y], Pacman) and \
             (not isinstance(self.grid[x][y], Megalodon) or isinstance(self.grid[x][y], Megalodon_Tail))
-            
+
+#__________________________________________________________________________
+#
+# region update_statistics
+# __________________________________________________________________
     def update_statistics(self) -> None:
         
         #Reset the stat variables
@@ -603,14 +607,14 @@ class World:
                 if isinstance(y, Megalodon) or isinstance(y, Megalodon_Tail):                    
                     if not isinstance(y, Megalodon_Tail):
                         self.megalodon_population += 1
-                        self.megalodon_age_dict[str(y.age)] = self.megalodon_age_dict.get(str(y.age), 0) + 1
+                        self.megalodon_age_dict[y.age] = self.megalodon_age_dict.get(y.age, 0) + 1
                 elif isinstance(y, Shark):                    
                     self.shark_population += 1
-                    self.shark_age_dict[str(y.age)] = self.shark_age_dict.get(str(y.age), 0) + 1
+                    self.shark_age_dict[y.age] = self.shark_age_dict.get(y.age, 0) + 1
                 elif isinstance(y, Pacman):                    
                     self.pacman_score += y.score
                 elif isinstance(y,Fish):
                     self.fish_population += 1      
-                    self.fish_age_dict[str(y.age)] = self.fish_age_dict.get(str(y.age), 0) + 1                     
+                    self.fish_age_dict[y.age] = self.fish_age_dict.get(y.age, 0) + 1                     
             
                     

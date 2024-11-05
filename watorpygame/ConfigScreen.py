@@ -53,7 +53,7 @@ class WaTorConfigScreen :
     def reset_config(self) :
         self.out_data = self.in_data.copy()
         for textbox in self.textboxes :
-            field_value = self.out_data[textbox.field_key]
+            field_value = str(self.out_data[textbox.field_key])
             textbox.reset_text(field_value)
 
         self.too_many_entities = False
@@ -138,8 +138,8 @@ class WaTorConfigScreen :
 
             if textbox.field_key == field_key :
                 found = True
-                val = textbox.get_validated_value()
-                self.out_data[field_key] = val              
+                typed_value = textbox.get_validated_value()
+                self.out_data[field_key] = typed_value              
                 if textbox.field_key in self.too_many_entities_fields :
                     self.check_nb_entities()
 
@@ -166,13 +166,8 @@ class WaTorConfigScreen :
     
         image_width = window_width-2*border_length
         image_height = window_height - 4* border_length - button_height
-        surface = pygame.Surface((image_width, image_height))
             
-        transformed = pygame.transform.scale(project_image.image, (image_width, image_height), surface)
-
-        # project_image.define_dimensions(self.window_width, self.window_height)
-        # converted_rect = project_image.resized.convert()
-
+        transformed = pygame.transform.scale(project_image.image, (image_width, image_height))
         screen.blit(transformed, (border_length, 2*border_length) )
 
         colors = WaTorColors()

@@ -26,6 +26,7 @@ def main():
             display.update_config(config)
 
         config = display.get_config()
+        print(config)
         world = World( (config[ConfigField.FISH_POPULATION], config[ConfigField.SHARK_POPULATION]),
             config[ConfigField.REFRESH_LENGTH], 
             (config[ConfigField.WORLD_WIDTH], config[ConfigField.WORLD_HEIGTH]), 

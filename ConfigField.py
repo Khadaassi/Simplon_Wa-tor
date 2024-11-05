@@ -1,8 +1,8 @@
 from enum import StrEnum
 
 class ConfigField(StrEnum):
-    FISH_POPULATION =  "fish_population" 
-    SHARK_POPULATION =  "shark_population"
+    FISH_POPULATION = "fish_population" 
+    SHARK_POPULATION = "shark_population"
     REFRESH_LENGTH = "refresh_length"
     MAX_ITERATION = "max_iteration"
     WORLD_WIDTH = "world_width"

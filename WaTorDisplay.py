@@ -161,6 +161,9 @@ class WaTorDisplay:
         if world.enable_pacman :
             iteration_info.add_pacman_info(world.pacman_score)
 
+        if world.enable_storms :
+            iteration_info.add_storms_info(world.killed_by_storm)
+
         return data, iteration_info
  
 

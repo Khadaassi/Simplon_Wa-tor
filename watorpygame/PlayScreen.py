@@ -155,6 +155,11 @@ class WaTorPlayScreen :
         if self.iterationInfo.allow_pacman :
             under_info += f", score de pacman : {self.iterationInfo.pacman_score}"
 
+        if self.iterationInfo.allow_storms :
+            under_info += ", tué{0} par tempête : {1}".format( 
+                "s" if self.iterationInfo.killed_by_storm >1 else "",
+                self.iterationInfo.killed_by_storm)
+
         label_writer.draw(screen, under_info,  border_length, 
             window_height - int(1.5*border_length) - button_height, 
             30, 

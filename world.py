@@ -208,6 +208,8 @@ class World:
                     else:
                         self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
                                         
+                    assert isinstance(self.grid[x][y], Megalodon)   
+
                     #Megalodons lose energy when moving.
                     if not self.grid[x][y].energy_management():
                         self.grid[x][y] = False

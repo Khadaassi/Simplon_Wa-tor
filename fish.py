@@ -32,8 +32,6 @@ class Fish:
 
     def reproduce(self) -> bool:
         """
-        Returns a new Fish instance if the fish is of reproductive age.
-
         Returns
         -------
         Fish or None
@@ -162,8 +160,6 @@ class Megalodon(Shark):
 
     def get_visual(self) -> str:
         """
-        Returns the visual representation of the megalodon.
-
         Returns
         -------
         str

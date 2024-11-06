@@ -52,7 +52,6 @@ class World:
         self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of Fish a shark needs to eat before evolving to a Megalodon
         self.enable_pacman = allow_packman 
       
-        
         #Natural disasters block
         self.current_storms = []
         self.chance_for_storm_to_spawn = 25

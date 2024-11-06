@@ -27,18 +27,14 @@ def main():
             display.update_config(config)
 
         config = display.get_config()
-        
-        #create world instance
-        world = World( (config[ConfigField.FISH_POPULATION], config[ConfigField.SHARK_POPULATION]),
+        world = World((config[ConfigField.FISH_POPULATION], config[ConfigField.SHARK_POPULATION]),
             config[ConfigField.REFRESH_LENGTH], 
             (config[ConfigField.WORLD_WIDTH], config[ConfigField.WORLD_HEIGTH]), 
             config[ConfigField.FISH_REPRO_TIME], config[ConfigField.SHARK_REPRO_TIME],
             config[ConfigField.SHARK_ENERGY], config[ConfigField.SHARK_ENERGY_GAIN],
             config[ConfigField.ALLOW_MEGALODONS], config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD],
-            config[ConfigField.ALLOW_PACMAN])
+            config[ConfigField.ALLOW_PACMAN], config[ConfigField.ALLOW_STORMS])
         
-        #config[ConfigField.ALLOW_STORMS] ?
-
         world.populate_world()
         
         if not display.state == DisplayState.OUT :

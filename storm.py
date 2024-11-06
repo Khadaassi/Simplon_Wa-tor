@@ -13,26 +13,34 @@ class Storm:
     max_duration = 20
     
     def __init__(self) -> None:
-        self.duration = randint(self.min_duration, self.max_duration)
+        
+        self.duration = randint(self.min_duration, self.max_duration) #Each storm's duration is randomized
         self.coordinates = [] #List holding the coordinates of every grid cell affected by the storm
         self.size = 0
     
     def spawn_storm(self, max_x: int, max_y: int) -> None:
         """
+        The main function of storm. This will create a new storm, getting coordinates, duration and size.
         
+        [Args]\n
+        max_x : the max height of the grid. \n
+        max_y : the max width of the grid.
         """
         #Get "eye of the storm", epicenter tile randomly
         init_x = randint(0, max_x)
         init_y = randint(0, max_y)
         self.coordinates.append((init_x, init_y))
         
-        #Spawn each storm tile based on a cyclone pattern. (Cross pattern into X pattern into cross pattern.....)
+        #Set size randomly
         self.size = randint(self.min_size, self.max_size)
         size = self.size - 1 #Epicenter took 1 size
+        
+        #Spawn each storm tile based on a cyclone pattern. (Cross pattern into X pattern into cross pattern.....)
         x_offset = 0
         y_offset = 0
         clockwork = 0 #Storm is spawned in a clockwork pattern (starting at 12)
-        diagonals = False
+        diagonals = False #Check if next spawn needs to be diagonal or orthogonal
+        
         #Add a storm tile while there is still storm to add
         while size > 0:
             for i in range(0, 4):
@@ -59,6 +67,7 @@ class Storm:
                         case 3:
                             self.coordinates.append((init_x-1-x_offset if init_x!= max_x else 0-x_offset, init_y-1-y_offset if init_y != 0 else max_y-y_offset))
                 
+                #Update the current pattern and check if there is no tile left to generate.
                 clockwork = clockwork + 1 if clockwork < 3 else 0
                 size -= 1
                 if size <= 0:
@@ -70,11 +79,10 @@ class Storm:
             diagonals = not diagonals
     
     def check_for_ending(self) -> bool:
+        """
+        Reduce duration by 1 and return True if Storm is ending.
+        """
         self.duration -= 1
         return self.duration <= 0
-         
-if __name__ == "__main__":
-    diagonals = True
-    print(f"Diagonals = {diagonals}")
-    print(f"-Diagonals = {not diagonals}")
+
         

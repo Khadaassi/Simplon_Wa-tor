@@ -1,13 +1,12 @@
 from random import randint
 
 class Storm_Tile:
+    #This class is used to represent the storm on the grid.
     def __init__(self) -> None:
         pass
 
 class Storm:
-    
-    #TODO : Scale storm size from grid size (storm can't be more than x% of total grid)
-    
+        
     min_size = 3
     max_size = 9
     min_duration = 5
@@ -15,11 +14,13 @@ class Storm:
     
     def __init__(self) -> None:
         self.duration = randint(self.min_duration, self.max_duration)
-        self.coordinates = []
+        self.coordinates = [] #List holding the coordinates of every grid cell affected by the storm
         self.size = 0
     
     def spawn_storm(self, max_x: int, max_y: int) -> None:
+        """
         
+        """
         #Get "eye of the storm", epicenter tile randomly
         init_x = randint(0, max_x)
         init_y = randint(0, max_y)

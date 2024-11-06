@@ -81,8 +81,8 @@ class World:
         self.pacman_starting_population = 1 #Force the presence of X pacaman on the starting world
 
         #Cannot create a world smaller than total starting population
-        if (sum(self.starting_population)) > self.size[0]*self.size[1]:
-            raise ValueError("Total population too big : try increasing world size or reducing populations")
+        if (sum(self.starting_population)) > (self.size[0]*self.size[1]) + self.enable_pacman:
+            raise ValueError("Population initiale trop importante : augmentez la taille du monde ou réduisez la population initiale.")
         
 #______________________________________________________________________________
 #
@@ -632,7 +632,6 @@ class World:
         self.fish_population = 0  
         self.shark_population = 0    
         self.megalodon_population = 0
-        self.pacman_score = 0
         self.fish_age_dict = {}
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
@@ -655,7 +654,7 @@ class World:
                     self.shark_population += 1
                     self.shark_age_dict[y.age] = self.shark_age_dict.get(y.age, 0) + 1
                 elif isinstance(y, Pacman):                    
-                    self.pacman_score += y.score
+                    self.pacman_score = y.score
                 elif isinstance(y,Fish):
                     self.fish_population += 1      
                     self.fish_age_dict[y.age] = self.fish_age_dict.get(y.age, 0) + 1     

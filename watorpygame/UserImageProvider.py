@@ -16,7 +16,11 @@ class Direction(Enum):
     EAST = "EL"
     
 class UserImageProvider :
-    
+    """
+    That class stores base images and create \n
+    resized, rotated, flipped ready to use images. \n
+    Base images are color modified (with transparency) using https://www.photopea.com/ 
+    """
     light_color = (0, 0, 255)
     dark_color = (0, 0, 255)
     

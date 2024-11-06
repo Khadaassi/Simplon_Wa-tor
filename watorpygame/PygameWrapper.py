@@ -44,15 +44,15 @@ class PygameWrapper:
 
         #______________________________________________________________________
         # Default window dimensions 
-        self.__window_width = 1280  # defaut value
-        self.__window_height = 850  # defaut value
+        self.__window_width = 1100  # defaut value
+        self.__window_height = 700  # defaut value
 
         #______________________________________________________________________
         # Central definition of 
         # borders & buttons dimensions
         self.__border_length = 30
         self.__button_height = 50
-        self.__button_width = 100
+        self.__button_width = 120
 
         self.__buttons = []
         self.__textboxes = []
@@ -104,15 +104,15 @@ class PygameWrapper:
         match self.__state :
             case DisplayState.CONF:
                 commands = {
-                    DisplayCommand.RESET : "Reset",
-                    DisplayCommand.GO : "Go" }
+                    DisplayCommand.RESET : "Réinitialiser",
+                    DisplayCommand.GO : "Commencer" }
                 
             case DisplayState.BETWEEN: #only the call of UpdateView(world) make the state change
                 commands = { }
 
             case DisplayState.WAIT :
                 commands = {
-                    DisplayCommand.START: "Start" }
+                    DisplayCommand.START: "Démarrer" }
             
             case DisplayState.PLAY :
                 commands = {
@@ -121,13 +121,13 @@ class PygameWrapper:
             
             case DisplayState.PAUSE :
                 commands = {
-                    DisplayCommand.PAUSE: "Resume", 
+                    DisplayCommand.PAUSE: "Reprendre", 
                     DisplayCommand.STOP: "Stop" }
 
             case DisplayState.STOP :
                 commands = {
-                    DisplayCommand.RESTART: "Restart", 
-                    DisplayCommand.EXIT: "Exit" }
+                    DisplayCommand.RESTART: "Retour", 
+                    DisplayCommand.EXIT: "Quitter" }
             
             case _ :
                 commands = { }

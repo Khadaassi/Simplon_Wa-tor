@@ -190,8 +190,8 @@ class WaTorConfigScreen :
         image_width = window_width-2*border_length
         image_height = window_height - 4* border_length - button_height
             
-        transformed = pygame.transform.scale(project_image.image, (image_width, image_height))
-        screen.blit(transformed, (border_length, 2*border_length) )
+        transformed = pygame.transform.scale(project_image.image, (image_width + 10, image_height + 10))
+        screen.blit(transformed, (border_length - 5, 2*border_length - 5) )
 
         if not self.__check_nb_entities() :
             error_label_writer = UserLabel()

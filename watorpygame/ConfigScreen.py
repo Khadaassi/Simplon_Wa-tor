@@ -85,18 +85,21 @@ class WaTorConfigScreen :
         nb_shark = 1
         world_width = 1
         world_height = 1
+        nb_pacman = 0
         for field in ConfigField:
             match field :
                 case ConfigField.FISH_POPULATION : nb_fish = self.__out_data[ConfigField.FISH_POPULATION]
                 case ConfigField.SHARK_POPULATION : nb_shark = self.__out_data[ConfigField.SHARK_POPULATION]
                 case ConfigField.WORLD_WIDTH : world_width = self.__out_data[ConfigField.WORLD_WIDTH]
                 case ConfigField.WORLD_HEIGTH : world_height = self.__out_data[ConfigField.WORLD_HEIGTH]
+                case ConfigField.ALLOW_PACMAN : 
+                    if self.__out_data[ConfigField.ALLOW_PACMAN] :
+                        nb_pacman = 1
                 case _ : pass
 
-        if nb_fish + nb_shark > world_width * world_height :
+        if nb_fish + nb_shark + nb_pacman > world_width * world_height :
             self.__too_many_entities = True
-        else :
-            self.__too_many_entities = False
+        else :            self.__too_many_entities = False
             
         return not self.__too_many_entities
 

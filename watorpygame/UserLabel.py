@@ -11,6 +11,7 @@ class UserLabel :
         colors = WaTorColors()
         self.front_color = colors.get(ColorChoice.DEFAULT_FRONT_LABEL)
         self.back_color = colors.get(ColorChoice.DEFAULT_BACK_LABEL)
+        self.margin = 1
 
     #__________________________________________________________________________
     #
@@ -38,13 +39,13 @@ class UserLabel :
 
         match align :
             case -1 :
-                if backlabel : screen.blit(text_surface_back, (1+x_pos,1+y_pos-heigth/2))
+                if backlabel : screen.blit(text_surface_back, (self.margin+x_pos,self.margin+y_pos-heigth/2))
                 screen.blit(text_surface_front, (x_pos,y_pos-heigth/2))
             case 0 :
-                if backlabel : screen.blit(text_surface_back, (1+x_pos-width/2,1+y_pos-heigth/2))
+                if backlabel : screen.blit(text_surface_back, (self.margin+x_pos-width/2,self.margin+y_pos-heigth/2))
                 screen.blit(text_surface_front, (x_pos-width/2,y_pos-heigth/2))
             case 1 :
-                if backlabel : screen.blit(text_surface_back, (1+x_pos-width,1+y_pos-heigth/2))
+                if backlabel : screen.blit(text_surface_back, (self.margin+x_pos-width,self.margin+y_pos-heigth/2))
                 screen.blit(text_surface_front, (x_pos-width,y_pos-heigth/2))
             case _ :
                   raise ValueError("align value not available")

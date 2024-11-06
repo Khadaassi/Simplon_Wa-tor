@@ -45,7 +45,7 @@ class PygameWrapper:
         #______________________________________________________________________
         # Default window dimensions 
         self.__window_width = 1000  # defaut value
-        self.__window_height = 800  # defaut value
+        self.__window_height = 750  # defaut value
 
         #______________________________________________________________________
         # Central definition of 
@@ -164,7 +164,7 @@ class PygameWrapper:
         available_height = self.__window_height - 4 * self.__border_length - self.__button_height
 
         textbox_width = 150
-        textbox_height = 0.80 * available_height / number_of_textboxes
+        textbox_height = 0.75 * available_height / number_of_textboxes
         
         total_space = available_height - textbox_height * number_of_textboxes
         single_space = float(total_space)/number_of_spaces

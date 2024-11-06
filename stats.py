@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 #______________________________________________________________________________
 #
@@ -72,8 +73,8 @@ def plot_population(iterations: list, fish_population: list, shark_population: l
         axs[1].set_ylim(0, max(shark_population) * 1.1)
         axs[2].set_ylim(0, max(megalodon_population) * 1.1 if max(megalodon_population) > 0 else 1)
 
-
-        plt.pause(0.03)  
+        if len(iterations) <= 100:
+            plt.pause(0.03)
     plt.savefig("images/wator_populations.png")
     plt.show()
 

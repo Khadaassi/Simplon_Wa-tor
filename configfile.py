@@ -14,7 +14,7 @@ def write_config():
     config["world"] = {
         ConfigField.FISH_POPULATION.value : "500",
         ConfigField.SHARK_POPULATION.value : "200",
-        ConfigField.REFRESH_LENGTH.value : "0.5",
+        ConfigField.REFRESH_LENGTH.value : "0.3",
         ConfigField.MAX_ITERATION.value : "100",
         ConfigField.WORLD_WIDTH.value : "40",
         ConfigField.WORLD_HEIGTH.value : "30",

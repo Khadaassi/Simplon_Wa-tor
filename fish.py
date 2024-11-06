@@ -152,10 +152,29 @@ class Megalodon_Tail(Megalodon):
     A class to represent a megalodon's tail in a water ecosystem that inherites of Megalodon class.
     """
     # Megalodons' tail has no specificities
-    def __init__(self, direction: str):
+    def __init__(self, direction: str, current_pos: tuple[int,int], world_size: int):
         self.current_direction = direction
         self.has_moved = True #Megalodon tails only follow the heads and never move on their own
-        self.age = 0
+        self.age = 0        
+        match direction:
+            case "N":
+                self.head_pos = (current_pos[0]-1, current_pos[1])
+            case "D":
+                self.head_pos = (world_size-1, current_pos[1])
+            case "S":
+                self.head_pos = (current_pos[0]+1, current_pos[1])
+            case "U":
+                self.head_pos = (0, current_pos[1])
+            case "W":
+                self.head_pos = (current_pos[0], current_pos[1]-1)
+            case "R":
+                self.head_pos = (current_pos[0], world_size-1)
+            case "E":
+                self.head_pos = (current_pos[0], current_pos[1]+1)
+            case "L":
+                self.head_pos = (current_pos[0], 0)
+            case _ :
+                 self.head_pos = (-1, -1)
     
     def get_visual(self) -> str:
         """

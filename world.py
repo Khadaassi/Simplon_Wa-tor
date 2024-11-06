@@ -256,7 +256,7 @@ class World:
                 if isMegalodon:
                     #Move tail if the Megalodon didn't die
                     if not self.next_move_will_die:
-                        self.grid[x][y] = Megalodon_Tail(direction)                                      
+                        self.grid[x][y] = Megalodon_Tail(direction, x, y)                                      
                 elif will_reproduce:
                     if isShark:
                         self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)

@@ -45,7 +45,7 @@ class PygameWrapper:
         #______________________________________________________________________
         # Default window dimensions 
         self.__window_width = 1000  # defaut value
-        self.__window_height = 700  # defaut value
+        self.__window_height = 800  # defaut value
 
         #______________________________________________________________________
         # Central definition of 

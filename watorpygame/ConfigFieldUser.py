@@ -21,6 +21,7 @@ class ConfigFieldTranslator :
             case ConfigField.ALLOW_MEGALODONS : display_texts = ["Existence des mégalodons"]
             case ConfigField.MEGALODON_EVOLUTION_THRESHOLD : display_texts = ["Seuil d'évolution des mégalodons"]
             case ConfigField.ALLOW_PACMAN : display_texts = ["Existence de pacman"]
+            case ConfigField.ALLOW_STORMS : display_texts = ["Existence des tempêtes"]
             case _ : display_texts = ["champ inconnu"]
 
         return display_texts[0]
@@ -40,4 +41,5 @@ class ConfigFieldTranslator :
             case ConfigField.ALLOW_MEGALODONS : return bool 
             case ConfigField.MEGALODON_EVOLUTION_THRESHOLD : return int 
             case ConfigField.ALLOW_PACMAN : return bool
+            case ConfigField.ALLOW_STORMS : return bool
             case _ : return str

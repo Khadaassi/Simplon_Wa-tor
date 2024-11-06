@@ -188,7 +188,7 @@ class WaTorDisplay:
 
         self.__pygameWrapper.set_state(self.__state)
         
-        assert len(config_from_file) == 13 # until it changes ... 
+        assert len(config_from_file) == 14 # until it changes ... 
         # but if it changes, we will know it immediately
 
         if len(self.__config) == 0 :

@@ -14,4 +14,5 @@ class ConfigField(StrEnum):
     ALLOW_MEGALODONS = "allow_megalodons"
     MEGALODON_EVOLUTION_THRESHOLD = "megalodon_evolution_threshold"
     ALLOW_PACMAN = "allow_pacman"
+    ALLOW_STORMS = "allow_storms"
 

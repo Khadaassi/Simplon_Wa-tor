@@ -5,7 +5,7 @@ from world import World
 from pacman import Pacman
 from configfile import *
 from consoleprint import console_print
-from plot import plot_population
+from stats import *
 from WaTorDisplay import WaTorDisplay
 from watorpygame.DisplayState import DisplayState
 
@@ -46,13 +46,13 @@ def main():
         shark_population = []  # List to store shark population
         megalodon_population = []  # List to store megalodon population
         iterations = []  # List to store iterations
-
+        population_stats(fish_population, shark_population, megalodon_population, iterations, world)
 
         print("Initial World State:")
         world.print_grid()
         time.sleep(1)  # Sleep for 1 second
         clear()
-
+        
         # Main loop
         while True:
             if display.state == DisplayState.STOP or display.state == DisplayState.OUT :
@@ -74,10 +74,7 @@ def main():
                 #console_print(world)
                 
                 #Statistics appending
-                fish_population.append(world.fish_population)
-                shark_population.append(world.shark_population)
-                megalodon_population.append(world.megalodon_population)
-                iterations.append(world.world_age)
+                population_stats(fish_population, shark_population, megalodon_population, iterations, world)
                 
             if world.fish_population == 0 or world.shark_population == 0 or world.world_age == config[ConfigField.MAX_ITERATION]:
                 break

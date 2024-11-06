@@ -36,6 +36,8 @@ def main():
             config[ConfigField.SHARK_ENERGY], config[ConfigField.SHARK_ENERGY_GAIN],
             config[ConfigField.ALLOW_MEGALODONS], config[ConfigField.MEGALODON_EVOLUTION_THRESHOLD],
             config[ConfigField.ALLOW_PACMAN])
+        
+        #config[ConfigField.ALLOW_STORMS] ?
 
         world.populate_world()
         
@@ -73,7 +75,7 @@ def main():
                 display.update_view(world)  # update screen with the next world
                 
                 #Console print
-                console_print(world)
+                #console_print(world)
                 
                 #Statistics appending
                 fish_population.append(world.fish_population)

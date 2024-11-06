@@ -24,7 +24,8 @@ def write_config():
         ConfigField.SHARK_ENERGY_GAIN.value : "2",
         ConfigField.ALLOW_MEGALODONS.value : "False",
         ConfigField.MEGALODON_EVOLUTION_THRESHOLD.value : "15",
-        ConfigField.ALLOW_PACMAN.value : "False"
+        ConfigField.ALLOW_PACMAN.value : "False",
+        ConfigField.ALLOW_STORMS.value : "False"
     }
 
     with open("config.ini", "w") as configfile:
@@ -57,6 +58,7 @@ def read_config()-> dict[ConfigField, bool|int|float|str]:
     bool_fields = [ConfigField.ALLOW_MEGALODONS]
     int_fields.append(ConfigField.MEGALODON_EVOLUTION_THRESHOLD)
     bool_fields.append(ConfigField.ALLOW_PACMAN)
+    bool_fields.append(ConfigField.ALLOW_STORMS)
 
     for field_key in ConfigField :
         match field_key :

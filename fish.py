@@ -24,7 +24,6 @@ class Fish:
     reproduce()
         Returns a new Fish instance if the fish is of reproductive age.
     """
-
     def __init__(self, reproduction_age: int):
         self.time_since_last_reproduction = 0
         self.reproduction_threshold = reproduction_age

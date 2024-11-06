@@ -21,16 +21,21 @@ from watorpygame.PygameWrapper import PygameWrapper
 
 class WaTorDisplay:
     """
-    A class to manage the pygame interface 
-    and the user interaction.
+    A class to provide a simple interface to manage user interactions.
 
-    Properties
-    ----------
+    Private attributes 
+    ------------------
+    __state : DisplayState
+    __image_provider : UserImageProvider
+    __pygameWrapper : PygameWrapper
+
+    Public properties
+    -----------------
     state : DisplayState
         the actual state of all views
 
-    Methods
-    -------
+    Public methods
+    --------------
     update_config()
         Shows the configuration screen 
 
@@ -42,6 +47,13 @@ class WaTorDisplay:
 
     stop()
         Stop the display and Shows the 'Restart button'
+
+    Private attributes
+    --------------- 
+    
+
+    Private methods
+    ---------------
     
     """
     #__________________________________________________________________________
@@ -49,6 +61,7 @@ class WaTorDisplay:
     # region __init__
     #__________________________________________________________________________
     def __init__(self):
+        """ Inits WatorDisplay class """
         self.__state = DisplayState.CONF
         self.__image_provider = UserImageProvider()
         self.__pygameWrapper = PygameWrapper(self.__image_provider, self.__on_user_command)
@@ -60,13 +73,19 @@ class WaTorDisplay:
     # region __on_user_command
     #__________________________________________________________________________
     def __on_user_command(self, command: DisplayCommand):
-        """
-        changes the state of the display
-        depending on the command
-        udate the public variables 
-        
-        """
+        """State machine behavior
 
+            That method is called when the user perfoms an action (a button click)
+
+            changes the state of the display
+            depending on the command
+            udate the public variables 
+
+        Parameters
+        ----------
+        command : DisplayCommand
+            the command corresponding to the user's button click
+        """
         if self.__state == DisplayState.OUT :
             return # we are closed, we don't take commands anymore
 
@@ -173,14 +192,27 @@ class WaTorDisplay:
     #__________________________________________________________________________
     @property
     def state(self) -> DisplayState :
+        """Provide read-only access to the state of the current display
+        
+        Returns
+        ------- 
+        DisplayState 
+            the current state of the display
+        """
         return self.__state
 
     #__________________________________________________________________________
     #
     # region update_config
     #__________________________________________________________________________
-    def update_config(self, config_from_file: dict):
-        
+    def update_config(self, config_from_file: dict[ConfigField, bool|int|float]):
+        """Shows the configuration screen 
+
+        Parameters
+        ----------
+        config_from_file : dict[ConfigField, bool|int|float]
+            it should be the content of the config.ini file
+        """
         if self.__state != DisplayState.CONF :
             return 
 
@@ -199,7 +231,16 @@ class WaTorDisplay:
     #
     # region get_config
     #__________________________________________________________________________
-    def get_config(self):
+    def get_config(self) -> dict[ConfigField, bool|int|float]:
+        """Shows the play screen
+
+        displays a representation of the current iteration's world object on the screen
+
+        Returns
+        -------
+        dict[ConfigField, bool|int|float]
+            the world object calculated at each iteration by the main function
+        """
         return self.__config
 
     #__________________________________________________________________________
@@ -207,9 +248,14 @@ class WaTorDisplay:
     # region update_view
     #__________________________________________________________________________
     def update_view(self, world: World):
-        """
-        Call this method when you want to display a new world on screen
-        takes a world object which contains a list[list[Fish]]
+        """Shows the play screen
+
+        displays a representation of the current iteration's world object on the screen
+
+        Parameters
+        ----------
+        world: World
+            the world object calculated at each iteration by the main function
         """
 
         if self.__pygameWrapper.running == False :
@@ -243,16 +289,11 @@ class WaTorDisplay:
     # region stop
     #__________________________________________________________________________
     def stop(self) :
-        """
+        """ Force the display to show the 'Restart' Button 
+
         Call this method when there is no more world to compute
         (at the end of the 'While True')
         It will bring the view from the DisplayState.PLAY state
         to the DisplayState.STOP state, and show the 'Restart' button
         """
         self.__on_user_command(DisplayCommand.STOP)
-
-    
-
-if __name__ == "__main__":
-    #put unit tests here
-    pass

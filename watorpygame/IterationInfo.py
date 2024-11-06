@@ -7,6 +7,7 @@ class IterationInfo :
         self.megalodon_pop = 0
         self.allow_pacman = False
         self.pacman_score = 0
+        self.allow_storms = False
 
     def add_megalodons_info(self, megalodon_pop) :
         self.allow_megalodons = True
@@ -15,3 +16,7 @@ class IterationInfo :
     def add_pacman_info(self, pacman_score) :
         self.allow_pacman = True
         self.pacman_score = pacman_score
+
+    def add_storms_info(self, killed_by_storm) :
+        self.allow_storms = True
+        self.killed_by_storm = killed_by_storm

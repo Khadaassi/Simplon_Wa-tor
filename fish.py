@@ -31,13 +31,8 @@ class Fish:
         self.has_moved = False
         self.age = 0
 
-    def __str__(self) -> str:
-        return "FISH"
-
     def reproduce(self) -> bool:
         """
-        Returns a new Fish instance if the fish is of reproductive age.
-
         Returns
         -------
         Fish or None
@@ -49,6 +44,9 @@ class Fish:
             return True
         else:
             return False
+        
+    def __str__(self) -> str:
+        return "FISH"
 #__________________________________________________________________________
 #
 # region Shark
@@ -80,9 +78,6 @@ class Shark(Fish):
         self.fish_eaten = 0
         self.megalodon_evolution_threshold = evolution_threshold # The amount of fish a shark needs to eat to evolve into a megalodon
 
-    def __str__(self) -> str:
-        return "SHARK"
-
     def eat(self, energy: int) -> None:
         """
         Simulates the shark eating a fish.
@@ -95,6 +90,16 @@ class Shark(Fish):
     def energy_management(self, energy: int = 1):
         """
         Simulates the shark energy movement.
+
+        Parameters
+        ----------
+        energy : int
+            The amount of energy to subtract from the shark's energy. The default is 1.
+
+        Returns
+        -------
+        bool
+            True if the shark still has energy, otherwise False.
         """
         self.energy -= energy
         if self.energy == 0:
@@ -105,8 +110,17 @@ class Shark(Fish):
     def check_for_evolution(self) -> bool:
         """
         Checks if the shark has eaten enough fish to evolve into a megalodon.
+
+        Returns
+        -------
+        bool
+            True if the shark has eaten enough fish to evolve into a megalodon, otherwise False.
         """
         return self.fish_eaten >= self.megalodon_evolution_threshold
+    
+    def __str__(self) -> str:
+        return "SHARK"
+
 #______________________________________________________________________________
 #
 # region Megalodon 
@@ -114,6 +128,23 @@ class Shark(Fish):
 class Megalodon(Shark):
     """
     A class to represent a megalodon in a water ecosystem that inherites of Shark class.
+
+    Attributes
+    ----------
+    current_direction : str
+        The current direction of the megalodon's head.
+    tail_pos : tuple
+        The position of the megalodon's tail.
+    skip_first_tail_check : bool
+        A boolean indicating if the megalodon's tail should be checked for the first time.
+
+    Methods
+    -------
+    reproduce()
+        Returns False as megalodons do not reproduce.
+    get_visual()
+        Returns the visual representation of the megalodon.
+
     """
     # Megalodons have twice as much energy
     def __init__(self, reproduction_age: int, energy: int, evolution_threshold: int):
@@ -121,7 +152,7 @@ class Megalodon(Shark):
         self.energy *= 5
         self.max_energy *= 5
         self.current_direction = "NSWE"[randint(0, 3)] #The current direction of the head. North (N), South (S), West (W), East (E)
-        self.tail_pos = (0,0)
+        self.tail_pos = (-1, -1)
         self.skip_first_tail_check = True #When a Megalodon spawns, its tail doesn't occupy a space until its first move
 
     def reproduce(self) -> bool:
@@ -130,7 +161,10 @@ class Megalodon(Shark):
 
     def get_visual(self) -> str:
         """
-        Returns the visual representation of the megalodon.
+        Returns
+        -------
+        str
+            The visual representation of the megalodon.
         """
         if self.current_direction == "N" or self.current_direction== "D":
             return "^"
@@ -150,12 +184,45 @@ class Megalodon(Shark):
 class Megalodon_Tail(Megalodon):
     """
     A class to represent a megalodon's tail in a water ecosystem that inherites of Megalodon class.
+
+    Attributes
+    ----------
+    current_direction : str
+        The current direction of the megalodon's tail.
+    has_moved : bool
+        A boolean indicating if the megalodon's tail has moved during the current loop.
+    age : int
+        The age of the megalodon's tail.
+    
+    Methods
+    -------
+    get_visual()
+        Returns the visual representation of the megalodon's tail.
     """
     # Megalodons' tail has no specificities
-    def __init__(self, direction: str):
+    def __init__(self, direction: str, current_pos: tuple[int,int], world_size: int):
         self.current_direction = direction
         self.has_moved = True #Megalodon tails only follow the heads and never move on their own
-        self.age = 0
+        self.age = 0        
+        match direction:
+            case "N":
+                self.head_pos = (current_pos[0]-1, current_pos[1])
+            case "D":
+                self.head_pos = (world_size-1, current_pos[1])
+            case "S":
+                self.head_pos = (current_pos[0]+1, current_pos[1])
+            case "U":
+                self.head_pos = (0, current_pos[1])
+            case "W":
+                self.head_pos = (current_pos[0], current_pos[1]-1)
+            case "R":
+                self.head_pos = (current_pos[0], world_size-1)
+            case "E":
+                self.head_pos = (current_pos[0], current_pos[1]+1)
+            case "L":
+                self.head_pos = (current_pos[0], 0)
+            case _ :
+                 self.head_pos = (-1, -1)
     
     def get_visual(self) -> str:
         """

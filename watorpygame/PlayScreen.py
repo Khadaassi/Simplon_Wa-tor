@@ -8,42 +8,43 @@ from pygame.surface import Surface
 
 # Wa-Tor imports
 from watorpygame.DisplayState import DisplayState
+
+from watorpygame.WaTorColors import WaTorColors, ColorChoice
+
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider, Direction
 from watorpygame.UserImageInfo import UserImageInfo
+
+from watorpygame.IterationInfo import IterationInfo
+
 from watorpygame.UserLabel import UserLabel
 from watorpygame.UserButton import UserButton
 
-from watorpygame.IterationInfo import IterationInfo
+
+
 
 class WaTorPlayScreen :
     #__________________________________________________________________________
     #
     # region __init__
     #__________________________________________________________________________
-    def __init__(self, screen_background_color, image_provider: UserImageProvider ) :
+    def __init__(self, image_provider: UserImageProvider ) :
 
-        self.screen_background_color = screen_background_color
         self.image_provider = image_provider
        
         self.data = []
         self.data_height = 0
         self.data_width = 0
 
-        self.window_width = 0
-        self.window_height = 0
-        self.table_width = 0
-        self.table_height = 0
-        self.cell_width =0
+        self.cell_width = 0
         self.cell_height = 0
-
 
     #__________________________________________________________________________
     #
     # region set_data
     #__________________________________________________________________________
-    def set_data(self, data: list[list]):
+    def set_data(self, data: list[list[UserImageInfo]]):
         #______________________________________________________________________
         # about format informations :
         #    data_height corresponds to the number of lines in the matrix 
@@ -54,9 +55,9 @@ class WaTorPlayScreen :
 
     #__________________________________________________________________________
     #
-    # region set_info
+    # region set_iteration_info
     #__________________________________________________________________________
-    def set_info(self, iterationInfo : IterationInfo):
+    def set_iteration_info(self, iterationInfo : IterationInfo):
 
         self.iterationInfo = iterationInfo
         self.data_height = len(self.data)
@@ -68,27 +69,26 @@ class WaTorPlayScreen :
     #__________________________________________________________________________
     def initialize_controls(self, screen : pygame.Surface, border_length: int, buttons : list[UserButton]):
         """
-        Need the data dimensions to create the chessboard
+        Need the screen dimensions to create the chessboard
         """
-        if self.window_width != 0 : 
-            return 
         
         if len(self.data) == 0:
             return
 
-        self.window_width = screen.get_width() #TODO resolve bug
-        self.window_height = screen.get_height()
+        windows_rect = screen.get_rect()
+        window_width = windows_rect.width
+        window_height = windows_rect.height
 
         self.buttons = buttons
         button_height = buttons[0].button_rect.height
 
         #_______________________________________________________________________
         # Creation of the chessboard
-        self.table_width = self.window_width - 2 * border_length
-        self.table_height = self.window_height - button_height - 4 * border_length
+        table_width = window_width - 2 * border_length
+        table_height = window_height - button_height - 4 * border_length
 
-        self.cell_width = (self.table_width) // self.data_width
-        self.cell_height = (self.table_height) // self.data_height
+        self.cell_width = table_width // self.data_width
+        self.cell_height = table_height // self.data_height
 
         self.image_provider = UserImageProvider(self.cell_width, self.cell_height)
         
@@ -120,11 +120,16 @@ class WaTorPlayScreen :
     #__________________________________________________________________________
     def draw(self, screen : pygame.Surface, border_length : int) :
         
-        # fill the screen with a color to wipe away anything from last frame
-        screen.fill(self.screen_background_color)
+        colors = WaTorColors()
 
-        center_x = screen.get_rect().centerx
-        top_y = screen.get_rect().top
+        # fill the screen with a color to wipe away anything from last frame
+        screen.fill(colors.get(ColorChoice.SCREEN_BACKGROUND_COLOR))
+        window_rect = screen.get_rect()
+    
+        window_height = window_rect.height
+        center_x = window_rect.centerx
+        top_y = window_rect.top
+        button_height = self.buttons[0].button_rect.height
 
         # put the title
         label_writer = UserLabel()
@@ -150,8 +155,13 @@ class WaTorPlayScreen :
         if self.iterationInfo.allow_pacman :
             under_info += f", score de pacman : {self.iterationInfo.pacman_score}"
 
+        if self.iterationInfo.allow_storms :
+            under_info += ", tué{0} par tempête : {1}".format( 
+                "s" if self.iterationInfo.killed_by_storm >1 else "",
+                self.iterationInfo.killed_by_storm)
+
         label_writer.draw(screen, under_info,  border_length, 
-            self.window_height - int(1.5*border_length) - self.buttons[0].button_rect.height, 
+            window_height - int(1.5*border_length) - button_height, 
             30, 
             -1)
 
@@ -168,7 +178,7 @@ class WaTorPlayScreen :
                 #---------
                 #Water drawing logic
                 if image_key in [UserImageKey.WATER] :
-                    cell_color = (0, 0, 170)
+                    cell_color = colors.get(ColorChoice.CELL_EMPTY_WATER)
                     # UserImage.light_color if even_cell else UserImage.dark_color
                     pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_height] )
                     continue
@@ -242,7 +252,8 @@ class WaTorPlayScreen :
                     y_image = center_y - (fish_image.resized.get_height() // 2)  
                                 
                 
-                cell_color = fish_image.light_background_color if even_cell else fish_image.dark_background_color                
+                cell_color = fish_image.light_background_color
+                # if even_cell else fish_image.dark_background_color                
                 
                 pygame.draw.rect(screen, cell_color, cell_rect )   
                 

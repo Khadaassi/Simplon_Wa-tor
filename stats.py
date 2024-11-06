@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region smooth_curve
-#__________________________________________________________________________
+#______________________________________________________________________________
 def smooth_curve(x: list, y: list) -> tuple:
     """
     Smooths a curve using interpolation.
@@ -17,10 +18,10 @@ def smooth_curve(x: list, y: list) -> tuple:
     y_smooth = np.interp(x_new, x, y)
     return x_new, y_smooth
 
-#__________________________________________________________________________
+#______________________________________________________________________________
 #
 # region plot_population
-#__________________________________________________________________________
+#______________________________________________________________________________
 def plot_population(iterations: list, fish_population: list, shark_population: list, megalodon_population: list) -> None:
     """
     Plots the population of fish, sharks, and megalodons over time in real-time.
@@ -72,7 +73,28 @@ def plot_population(iterations: list, fish_population: list, shark_population: l
         axs[1].set_ylim(0, max(shark_population) * 1.1)
         axs[2].set_ylim(0, max(megalodon_population) * 1.1 if max(megalodon_population) > 0 else 1)
 
-
-        plt.pause(0.03)  
-    plt.savefig("wator_populations.png")
+        if len(iterations) <= 100:
+            plt.pause(0.03)
+    plt.savefig("images/wator_populations.png")
     plt.show()
+
+#______________________________________________________________________________
+#
+# region population_stats
+#______________________________________________________________________________
+def population_stats(fish_population: list, shark_population: list, megalodon_population: list, iterations: list, world) -> None:
+    """
+    Appends the population of fish, sharks, and megalodons over time.
+
+    Parameters
+    ----------
+    fish_population (list): List of fish population.
+    shark_population (list): List of shark population.
+    megalodon_population (list): List of megalodon population.
+    iterations (list): List of iterations.
+    world : The world object.
+    """
+    fish_population.append(world.fish_population)
+    shark_population.append(world.shark_population)
+    megalodon_population.append(world.megalodon_population)
+    iterations.append(world.world_age)

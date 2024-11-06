@@ -1,32 +1,36 @@
 
 # standard imports
 from typing import cast
-from enum import Enum
+from enum import Enum, StrEnum
 
 # pygame imports
 import pygame
 from pygame.surface import Surface
 
-# Wa-Tor imports
+# 'root' Wa-Tor imports
+import ConfigField as cf
+
+# 'wrapped in a folder' Wa-Tor imports
+import watorpygame.ConfigFieldUser as cfu 
 from watorpygame.DisplayState import DisplayState
 from watorpygame.DisplayCommand import DisplayCommand
 
 from watorpygame.WaTorColors import *
+
+from watorpygame.IterationInfo import IterationInfo
 
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageInfo import UserImageInfo
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider, Direction
 
-import ConfigField as cf
-import watorpygame.ConfigFieldUser as cfu 
-
 from watorpygame.UserTextBox import UserTextBox
 from watorpygame.UserButton import UserButton
-from watorpygame.PlayScreen import WaTorPlayScreen
 
 from watorpygame.ConfigScreen import WaTorConfigScreen
-from watorpygame.IterationInfo import IterationInfo
+from watorpygame.PlayScreen import WaTorPlayScreen
+
+
 
 class PygameWrapper:
 
@@ -35,205 +39,140 @@ class PygameWrapper:
     # region __init__
     #__________________________________________________________________________
     def __init__(self, image_provider : UserImageProvider, callback_function):
-        self.image_provider = image_provider
-        self.callback_function = callback_function
+        self.__image_provider = image_provider
+        self.__callback_function = callback_function
 
         #______________________________________________________________________
         # Default window dimensions 
-        self.window_width = 1000  # defaut value
-        self.window_height = 700  # defaut value
+        self.__window_width = 1100  # defaut value
+        self.__window_height = 700  # defaut value
 
         #______________________________________________________________________
         # Central definition of 
         # borders & buttons dimensions
-        self.border_length = 30
-        self.button_height = 50
-        self.button_width = 100
-        self.buttons =[]
-        self.textboxes = []
-        self.state = DisplayState.OUT
+        self.__border_length = 30
+        self.__button_height = 50
+        self.__button_width = 120
 
-        background_color = WaTorColors().get(ColorChoice.SCREEN_BACKGROUND_COLOR)
+        self.__buttons = []
+        self.__textboxes = []
 
-        self.config_screen = WaTorConfigScreen(background_color, self.image_provider)
-        self.play_screen = WaTorPlayScreen(background_color, self.image_provider)
+        self.__state = DisplayState.OUT # will be set somewhere else anyway
+        self.__data = {}
+
+        self.__config_screen = WaTorConfigScreen(self.__image_provider)
+        self.__play_screen = WaTorPlayScreen(self.__image_provider)
         
-        self.play_screen_need_initialization = True
-        self.config_screen_need_initialization = True
-        self.running = False
-        self.screen = None
-        self.clock = None
+        self.__running = False
+        self.__controls_need_initialization = True
+        self.__screen = None
+        self.__clock = None
+
         # self.max_time = 33 # value in milliseconds correspond to 3O Frame per second
         # self.current_time = 0
 
     #__________________________________________________________________________
     #
-    # region set_state
+    # region __initialize_screen
     #__________________________________________________________________________
-    def set_state(self, state : DisplayState) :
-        self.state = state
-
-    #__________________________________________________________________________
-    #
-    # region set_data
-    #__________________________________________________________________________
-    def set_data(self, data) :
-        if self.state == DisplayState.CONF :
-            self.data = cast(dict, data )
-            self.config_screen.set_data(self.data)
-        else :
-            self.data = cast(list[list[UserImageInfo]], data)
-            self.play_screen.set_data(self.data)
-
-    #__________________________________________________________________________
-    #
-    # region set_data
-    #__________________________________________________________________________
-    def set_info(self, iterationInfo : IterationInfo) :
-        self.play_screen.set_info(iterationInfo)
-    #__________________________________________________________________________
-    #
-    # region initialize_screen
-    #__________________________________________________________________________
-    def initialize_screen(self):
+    def __initialize_screen(self):
         # pygame setup
         pygame.init()
         pygame.display.set_caption("wa - tor + pygame = wapygame ")
 
         #______________________________________________________________________
         # start the window on screen
-        size = (self.window_width, self.window_height)
-        self.screen = pygame.display.set_mode(size)
+        size = (self.__window_width, self.__window_height)
+        self.__screen = pygame.display.set_mode(size)
 
         #______________________________________________________________________
         # The clock will be used used 
         # each time the tick(60) function will be called 
-        self.clock = pygame.time.Clock()
-        self.running = True
-        self.initialize_controls()
+        self.__clock = pygame.time.Clock()
+        self.__running = True
 
     #__________________________________________________________________________
     #
-    # region initialize_controls
+    # region __initialize_buttons
     #__________________________________________________________________________
-    def initialize_controls(self):
-        #______________________________________________________________________
-        # the buttons need a screen object to exist (because they are localized in screen) 
-        # the textboxes need a font object which does not exist before pygame.init()
-        self.initialize_buttons()
-        self.initialize_textboxes()
-
-        #______________________________________________________________________
-        # transfert to screens
-        match self.state :
-            case DisplayState.CONF :
-                if self.config_screen_need_initialization :
-                    self.config_screen.initialize_controls(
-                        self.screen,
-                        self.border_length,
-                        self.buttons,
-                        self.textboxes)
-                
-                    self.config_screen_need_initialization = False
-
-            case _ :
-                if self.play_screen_need_initialization :
-                    self.play_screen.initialize_controls(
-                            self.screen,
-                            self.border_length,
-                            self.buttons)
-                    
-                    self.play_screen_need_initialization = False
-    
-    #__________________________________________________________________________
-    #
-    # region initialize_buttons
-    #__________________________________________________________________________
-    def initialize_buttons(self) :
+    def __initialize_buttons(self, screen : pygame.Surface) :
         #______________________________________________________________________
         # Buttons need to be created after the creation of the screen
-        if len(self.buttons) != 0 :
-            self.disable_buttons()
 
-        self.buttons = []
-        match self.state :
+        self.__buttons = []
+        commands = { }
+        match self.__state :
             case DisplayState.CONF:
-                self.commands = {
-                    DisplayCommand.RESET : "Reset",
-                    DisplayCommand.GO : "Go" }
+                commands = {
+                    DisplayCommand.RESET : "Réinitialiser",
+                    DisplayCommand.GO : "Commencer" }
                 
-            case DisplayState.BETWEEN:
-                self.commands = { }
+            case DisplayState.BETWEEN: #only the call of UpdateView(world) make the state change
+                commands = { }
 
             case DisplayState.WAIT :
-                self.commands = {
-                    DisplayCommand.START: "Start" }
+                commands = {
+                    DisplayCommand.START: "Démarrer" }
             
             case DisplayState.PLAY :
-                self.commands = {
-                    #DisplayCommand.STEP : "Step", # not implemented feature
+                commands = {
                     DisplayCommand.PAUSE: "Pause", 
                     DisplayCommand.STOP: "Stop" }
             
             case DisplayState.PAUSE :
-                self.commands = {
-                    #DisplayCommand.STEP : "Step", # not implemented feature
-                    DisplayCommand.PAUSE: "Resume", 
+                commands = {
+                    DisplayCommand.PAUSE: "Reprendre", 
                     DisplayCommand.STOP: "Stop" }
 
             case DisplayState.STOP :
-                self.commands = {
-                    DisplayCommand.RESTART: "Restart", 
-                    DisplayCommand.EXIT: "Exit" }
+                commands = {
+                    DisplayCommand.RESTART: "Retour", 
+                    DisplayCommand.EXIT: "Quitter" }
             
             case _ :
-                self.commands = { }
+                commands = { }
             
-        count = len(self.commands)
+        count = len(commands)
         if count == 0 :
             return
         
-        for command_key, command_text in self.commands.items():
-            self.buttons.append(
-                UserButton( command_key, command_text, self.callback_function,
+        for command_key, command_text in commands.items():
+            self.__buttons.append(
+                UserButton( command_key, command_text, self.__callback_function,
                     pygame.Rect(
-                        self.window_width - count * (self.button_width + self.border_length),
-                        self.window_height - self.button_height - self.border_length,
-                        self.button_width,
-                        self.button_height)))
+                        self.__window_width - count * (self.__button_width + self.__border_length),
+                        self.__window_height - self.__button_height - self.__border_length,
+                        self.__button_width,
+                        self.__button_height)))
             count -= 1
 
     #__________________________________________________________________________
     #
-    # region initialize_textboxes
+    # region __initialize_textboxes
     #__________________________________________________________________________
-    def initialize_textboxes(self):
+    def __initialize_textboxes(self, screen : pygame.Surface) :
         
-        if len(self.textboxes) != 0 :
-            self.disable_textboxes()
-
-        if self.state != DisplayState.CONF :
+        self.__textboxes = []
+        config_fields = cast(dict[cf.ConfigField, bool|int|float] , self.__data)
+        if len(self.__data) == 0:
             return
-        
-        self.textboxes = []
-        config_fields = cast(dict, self.data)
 
         font = pygame.font.Font(None, 30)
 
         number_of_textboxes = len(config_fields)
         number_of_spaces = number_of_textboxes -1
-        available_height = self.window_height - 4 * self.border_length - self.button_height
+        available_height = self.__window_height - 4 * self.__border_length - self.__button_height
 
         textbox_width = 150
-        textbox_height = 0.80 * available_height / number_of_textboxes
+        textbox_height = 0.75 * available_height / number_of_textboxes
         
         total_space = available_height - textbox_height * number_of_textboxes
         single_space = float(total_space)/number_of_spaces
         
-        textbox_pos_x = self.window_width - self.border_length - textbox_width 
-        textbox_pos_y = 2 * self.border_length
+        textbox_pos_x = self.__window_width - self.__border_length - textbox_width 
+        textbox_pos_y = 2 * self.__border_length
 
-        field_user = cfu.ConfigFieldUser()
+        field_user = cfu.ConfigFieldTranslator()
         for field_key, field_value in config_fields.items() : 
             textbox = UserTextBox(field_key, 
                 textbox_pos_x, int(textbox_pos_y), 
@@ -241,96 +180,198 @@ class PygameWrapper:
                 font, 
                 str(field_value),
                 field_user.get_validation_function(field_key))
-            self.textboxes.append(textbox)
+            self.__textboxes.append(textbox)
             textbox_pos_y += textbox_height + single_space    
 
     #__________________________________________________________________________
     #
-    # region disable_buttons
+    # region __disable controls
     #__________________________________________________________________________
-    def disable_buttons(self) :
-        for button in self.buttons :
+    def __disable_controls(self) :
+        for button in self.__buttons :
             cast(UserButton, button).callback_function = None
 
-    #__________________________________________________________________________
-    #
-    # region disable_textboxes
-    #__________________________________________________________________________
-    def disable_textboxes(self) :
-        for textbox in self.textboxes :
+        self.__buttons = []
+        self.__play_screen.buttons = []
+        self.__config_screen.buttons = []
+
+        if len(self.__textboxes) ==0 :
+            self.__controls_need_initialization = True
+            return
+        
+        for textbox in self.__textboxes :
             cast(UserTextBox, textbox).callback_function = None
-        
+
+        self.__textboxes = []
+        self.__config_screen.textboxes = []
+
+        self.__controls_need_initialization = True
+
     #__________________________________________________________________________
     #
-    # region draw
+    # region __initialize_controls
     #__________________________________________________________________________
-    def draw(self, display_state : DisplayState):
-        
-        if not self.running:
-            self.initialize_screen()  # first time only, start screen
-            
-        # self.current_time = self.clock.tick() - self.current_time
-        # if self.current_time < 100 :
-        #     return 
-        
-                     
-        #__________________________________________________________________
-        # poll for events 
-        # pygame.QUIT event means the user clicked X to close your window
-        for event in pygame.event.get():
-
-            if event.type == pygame.QUIT:
-                self.running = False
-
-            for textbox in self.textboxes :
-                cast(UserTextBox, textbox).check_event(event)
-            
-            # Check for the mouse button down event
-            for button in self.buttons:
-                cast(UserButton, button).check_event(event)
-
-        center_x = self.screen.get_rect().centerx
-        top_y = self.screen.get_rect().top + 25
-
-        match self.state :
-            case DisplayState.CONF :  
-                self.config_screen.textboxes = self.textboxes
-                self.config_screen.buttons = self.buttons   
-                self.config_screen.draw(self.screen, self.border_length)
-
-            case DisplayState.BETWEEN :     
-                pass
-            
-            case _ :      
-                self.play_screen.buttons = self.buttons  
-                self.play_screen.draw(self.screen, self.border_length)
-            
+    def __initialize_controls(self, screen : pygame.Surface):
         #______________________________________________________________________
-        # Wait for the next tick of the Clock
+        # the buttons need a screen object to exist (because they are localized in screen) 
+        # the textboxes need a font object which does not exist before pygame.init()
 
-        self.clock.tick(60)  # limits FPS to 60
-            
-        # _____________________________________________________________________
-        # here stopped the old while true
+        if not self.__controls_need_initialization :
+            return
+        
+        if self.__state in [DisplayState.BETWEEN, DisplayState.OUT] : 
+            return
 
-        if not self.running:
-            self.callback_function(DisplayCommand.EXIT)
-            pygame.quit()
+        if len(self.__textboxes) != 0 :
+            self.__disable_controls()
+
+        self.__screen = screen
+        self.__initialize_buttons(self.__screen)
+        if len(self.__buttons) == 0 :
+            return
+
+        #______________________________________________________________________
+        # transfert to screens
+        match self.__state :
+            case DisplayState.CONF :  
+                self.__initialize_textboxes(self.__screen) 
+                if len(self.__textboxes) == 0 :
+                    return
+
+                self.__config_screen.initialize_controls(
+                    self.__buttons,
+                    self.__textboxes)
+            case _ :
+                self.__play_screen.initialize_controls(
+                        self.__screen,
+                        self.__border_length,
+                        self.__buttons)
+
+        # only when everythings is OK   
+        self.__controls_need_initialization = False
+
+    #__________________________________________________________________________
+    #
+    # region running
+    #__________________________________________________________________________
+    @property
+    def running(self) :
+        return self.__running
+    
+    #__________________________________________________________________________
+    #
+    # region stop_running
+    #__________________________________________________________________________
+    def stop_running(self) :
+        self.__running = False
+
+
+    #__________________________________________________________________________
+    #
+    # region set_state
+    #__________________________________________________________________________
+    def set_state(self, state : DisplayState) :
+        if state is not self.__state :
+            self.__disable_controls()
+        
+        self.__state = state
+
+    #__________________________________________________________________________
+    #
+    # region set_data
+    #__________________________________________________________________________
+    def set_data(self, data_from_watordisplay) :
+        if self.__state == DisplayState.CONF :
+            self.__data = cast(dict, data_from_watordisplay )
+            self.__config_screen.set_data(self.__data)
+        else :
+            self.__data = cast(list[list[UserImageInfo]], data_from_watordisplay)
+            self.__play_screen.set_data(self.__data)
+
+    #__________________________________________________________________________
+    #
+    # region set_iteration_info
+    #__________________________________________________________________________
+    def set_iteration_info(self, iterationInfo : IterationInfo) :
+        self.__play_screen.set_iteration_info(iterationInfo)
 
     #__________________________________________________________________________
     #
     # region reset_config
     #__________________________________________________________________________
     def reset_config(self):
-        self.config_screen.reset_config() 
+        self.__config_screen.reset_config() 
 
     #__________________________________________________________________________
     #
     # region get_config
     #__________________________________________________________________________
     def get_config(self) -> dict :
-        return self.config_screen.get_config() 
+        return self.__config_screen.get_config() 
+           
+    #__________________________________________________________________________
+    #
+    # region draw
+    #__________________________________________________________________________
+    def draw(self, display_state : DisplayState):
+        
+        if not self.__running:
+            self.__initialize_screen()  # first time only, start screen
+            
+        if self.__controls_need_initialization :
+            self.__initialize_controls(self.__screen) 
 
+        # self.current_time = self.clock.tick() - self.current_time
+        # if self.current_time < 100 :
+        #     return         
+                     
+
+        state_before_events = self.__state 
+
+        #__________________________________________________________________
+        # poll for events 
+        # pygame.QUIT event means the user clicked X to close your window
+        #
+        # HERE the DisplayState can change !!!!
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                self.__running = False
+
+            for textbox in self.__textboxes :
+                cast(UserTextBox, textbox).check_event(event)
+            
+            # Check for the mouse button down event
+            for button in self.__buttons:
+                cast(UserButton, button).check_event(event)
+
+        
+        if self.__state == state_before_events :
+            #______________________________________________________________________
+            # Call the draw method of the specific screen
+            match self.__state :
+                case DisplayState.CONF :   
+                    self.__config_screen.draw(self.__screen, self.__border_length)
+
+                case DisplayState.BETWEEN :     
+                    pass
+                
+                case _ :  
+                    self.__play_screen.draw(self.__screen, self.__border_length)
+                
+            #______________________________________________________________________
+            # Wait for the next tick of the Clock
+
+            self.__clock.tick(60)  # limits FPS to 60
+                
+        # _____________________________________________________________________
+        # here stopped the old while true
+
+        if not self.__running:
+            self.__callback_function(DisplayCommand.EXIT)
+            pygame.quit()
+
+   
         
 # if __name__ == "__main__":
 #     #put unit tests here

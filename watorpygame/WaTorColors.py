@@ -12,6 +12,7 @@ class ColorChoice(Enum) :
     FIELD_BACK_LABEL = 7
     ERROR_FRONT_LABEL = 8
     ERROR_BACK_LABEL = 9
+    CELL_EMPTY_WATER = 10
 
 
 class WaTorColors :
@@ -26,7 +27,8 @@ class WaTorColors :
             ColorChoice.FIELD_FRONT_LABEL : pygame.Color("black"),
             ColorChoice.FIELD_BACK_LABEL : pygame.Color((0, 0, 200)), 
             ColorChoice.ERROR_FRONT_LABEL : pygame.Color("red"),
-            ColorChoice.ERROR_BACK_LABEL : pygame.Color("black") }
+            ColorChoice.ERROR_BACK_LABEL : pygame.Color("black"), 
+            ColorChoice.CELL_EMPTY_WATER : pygame.Color(0, 0, 170)}
         
     def get(self, choice: ColorChoice) -> pygame.color.Color :
         return self.__colors[choice]

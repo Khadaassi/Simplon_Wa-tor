@@ -173,7 +173,7 @@ class WaTorPlayScreen :
                 #---------
                 #Water drawing logic
                 if image_key in [UserImageKey.WATER] :
-                    cell_color = (0, 0, 170)
+                    cell_color = colors.get(ColorChoice.CELL_EMPTY_WATER)
                     # UserImage.light_color if even_cell else UserImage.dark_color
                     pygame.draw.rect( screen, cell_color, [position_x, position_y, self.cell_width, self.cell_height] )
                     continue

@@ -129,10 +129,7 @@ class WaTorPlayScreen :
         window_height = window_rect.height
         center_x = window_rect.centerx
         top_y = window_rect.top
-        try :
-            button_height = self.buttons[0].button_rect.height
-        except :
-            truc = "debug" 
+        button_height = self.buttons[0].button_rect.height
 
         # put the title
         label_writer = UserLabel()

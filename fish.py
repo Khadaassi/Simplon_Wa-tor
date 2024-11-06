@@ -86,9 +86,9 @@ class Shark(Fish):
         if self.energy > self.max_energy:
             self.energy = self.max_energy
 
-    def energy_management(self, energy: int = 1):
+    def check_for_starvation(self, energy: int = 1):
         """
-        Simulates the shark energy movement.
+        Sharks lose energy each time they move. If they have no energy, they die from starvation.
 
         Parameters
         ----------
@@ -98,13 +98,13 @@ class Shark(Fish):
         Returns
         -------
         bool
-            True if the shark still has energy, otherwise False.
+            True if the shark no energy left, otherwise False.
         """
         self.energy -= energy
         if self.energy == 0:
-            return False
-        else:
             return True
+        else:
+            return False
         
     def check_for_evolution(self) -> bool:
         """
@@ -145,12 +145,12 @@ class Megalodon(Shark):
         Returns the visual representation of the megalodon.
 
     """
-    # Megalodons have twice as much energy
+   
     def __init__(self, reproduction_age: int, energy: int, evolution_threshold: int):
         super().__init__(reproduction_age, energy, evolution_threshold)
-        self.energy *= 5
+        self.energy *= 5  # Megalodons have 5 times as much energy as a normal shark
         self.max_energy *= 5
-        self.current_direction = "NSWE"[randint(0, 3)] #The current direction of the head. North (N), South (S), West (W), East (E)
+        self.current_direction = "NSWE"[randint(0, 3)] #Get a random direction for the head on spawn. North (N), South (S), West (W), East (E)
         self.tail_pos = (-1, -1)
         self.skip_first_tail_check = True #When a Megalodon spawns, its tail doesn't occupy a space until its first move
 
@@ -192,6 +192,8 @@ class Megalodon_Tail(Megalodon):
         A boolean indicating if the megalodon's tail has moved during the current loop.
     age : int
         The age of the megalodon's tail.
+    head_pos : tuple[int, int]
+        The coordinate of the head on the grid.
     
     Methods
     -------

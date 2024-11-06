@@ -88,6 +88,5 @@ def main():
         while display.state not in [DisplayState.CONF, DisplayState.OUT] :
             display.update_view(world)
       
-
 if __name__ == "__main__":
     main()

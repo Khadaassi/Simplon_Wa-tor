@@ -85,11 +85,6 @@ class WaTorDisplay:
             case DisplayCommand.START :
                 self.__state = DisplayState.PLAY
 
-            case DisplayCommand.STEP :
-                # not implemented feature
-                # self.__state = DisplayState.PAUSE
-                pass
-
             case DisplayCommand.PAUSE: 
                 if self.__state == DisplayState.PLAY: self.__state = DisplayState.PAUSE
                 elif self.__state == DisplayState.PAUSE: self.__state = DisplayState.PLAY

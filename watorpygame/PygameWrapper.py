@@ -116,13 +116,11 @@ class PygameWrapper:
             
             case DisplayState.PLAY :
                 commands = {
-                    #DisplayCommand.STEP : "Step", # not implemented feature
                     DisplayCommand.PAUSE: "Pause", 
                     DisplayCommand.STOP: "Stop" }
             
             case DisplayState.PAUSE :
                 commands = {
-                    #DisplayCommand.STEP : "Step", # not implemented feature
                     DisplayCommand.PAUSE: "Resume", 
                     DisplayCommand.STOP: "Stop" }
 

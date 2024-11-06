@@ -51,6 +51,7 @@ class WaTorDisplay:
         self.__state = DisplayState.CONF
         self.__image_provider = UserImageProvider()
         self.__pygameWrapper = PygameWrapper(self.__image_provider, self.__on_user_command)
+        self.__pygameWrapper.set_state(self.__state)
         self.__config = {}   
     
     #__________________________________________________________________________
@@ -77,6 +78,7 @@ class WaTorDisplay:
                 # DisplayState.BETWEEN is the state 
                 # between config screen (DisplayState.CONF) and play screen (DisplayState.WAIT)
                 # only the call of UpdateView(world) makes the state change
+                self.__config = self.__pygameWrapper.get_config()
                 self.__state = DisplayState.BETWEEN 
 
             case DisplayCommand.START :
@@ -102,7 +104,7 @@ class WaTorDisplay:
    
             case DisplayCommand.EXIT:
                 self.__state = DisplayState.OUT
-                self.__pygameWrapper.running = False
+                self.__pygameWrapper.stop_running()
                 return
 
             case _ :
@@ -112,6 +114,56 @@ class WaTorDisplay:
             return # we are closed i've told you
 
         self.__pygameWrapper.set_state(self.__state)
+
+
+    #__________________________________________________________________________
+    #
+    # region __create_data_for_view
+    #__________________________________________________________________________
+    def __create_data_for_view(self, world : World) -> tuple[list[list[UserImageInfo]], IterationInfo] :
+
+        width = world.size[0]
+        heigth = world.size[1]
+
+        data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
+        for y_index in range(heigth):
+            for x_index in range(width):
+                item = world.grid[y_index][x_index]
+                if not item:
+                    continue
+
+                if isinstance(item, Megalodon_Tail):
+                    image_info = UserImageInfo(UserImageKey.MEGA_TAIL)                   
+                    image_info.set_direction(item.current_direction)
+                    data[y_index][x_index] = image_info                    
+                    
+                elif isinstance(item, Megalodon):
+                    image_info = UserImageInfo(UserImageKey.MEGA_HEAD)
+                    image_info.set_direction(item.current_direction)
+                    data[y_index][x_index] = image_info
+                    
+                elif isinstance(item, Shark):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.SHARK )    
+                
+                elif isinstance(item, Pacman):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.PACMAN) 
+                                   
+                elif isinstance(item, Fish):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)
+
+        iteration_info = IterationInfo(
+            world.world_age,
+            world.fish_population,
+            world.shark_population)
+        
+        if world.enable_megalodons :
+            iteration_info.add_megalodons_info(world.megalodon_population)
+
+        if world.enable_pacman :
+            iteration_info.add_pacman_info(world.pacman_score)
+
+        return data, iteration_info
+ 
 
     #__________________________________________________________________________
     #
@@ -146,7 +198,6 @@ class WaTorDisplay:
     # region get_config
     #__________________________________________________________________________
     def get_config(self):
-        self.__config = self.__pygameWrapper.get_config()
         return self.__config
 
     #__________________________________________________________________________
@@ -198,54 +249,7 @@ class WaTorDisplay:
         """
         self.__on_user_command(DisplayCommand.STOP)
 
-    #__________________________________________________________________________
-    #
-    # region __create_data_for_view
-    #__________________________________________________________________________
-    def __create_data_for_view(self, world : World) -> tuple[list[list[UserImageInfo]], IterationInfo] :
-
-        width = world.size[0]
-        heigth = world.size[1]
-
-        data = [[UserImageInfo(UserImageKey.WATER) for x in range(width)] for y in range(heigth)]
-        for y_index in range(heigth):
-            for x_index in range(width):
-                item = world.grid[y_index][x_index]
-                if not item:
-                    continue
-
-                if isinstance(item, Megalodon_Tail):
-                    image_info = UserImageInfo(UserImageKey.MEGA_TAIL)                   
-                    image_info.set_direction(item.current_direction)
-                    data[y_index][x_index] = image_info                    
-                    
-                elif isinstance(item, Megalodon):
-                    image_info = UserImageInfo(UserImageKey.MEGA_HEAD)
-                    image_info.set_direction(item.current_direction)
-                    data[y_index][x_index] = image_info
-                    
-                elif isinstance(item, Shark):
-                    data[y_index][x_index] = UserImageInfo(UserImageKey.SHARK )    
-                
-                elif isinstance(item, Pacman):
-                    data[y_index][x_index] = UserImageInfo(UserImageKey.PACMAN) 
-                                   
-                elif isinstance(item, Fish):
-                    data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)
-
-        iteration_info = IterationInfo(
-            world.world_age,
-            world.fish_population,
-            world.shark_population)
-        
-        if world.enable_megalodons :
-            iteration_info.add_megalodons_info(world.megalodon_population)
-
-        if world.enable_pacman :
-            iteration_info.add_pacman_info(world.pacman_score)
-
-        return data, iteration_info
- 
+    
 
 if __name__ == "__main__":
     #put unit tests here

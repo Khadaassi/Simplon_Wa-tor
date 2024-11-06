@@ -1,6 +1,6 @@
 from ConfigField import ConfigField
 
-class ConfigFieldUser :
+class ConfigFieldTranslator :
     def __init__(self):
         pass
 

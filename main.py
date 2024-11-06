@@ -26,7 +26,9 @@ def main():
             display.update_config(config)
 
         config = display.get_config()
-        print(config)
+        for key, val in config.items() :
+            print(f"{key.value} {val}")
+            
         world = World( (config[ConfigField.FISH_POPULATION], config[ConfigField.SHARK_POPULATION]),
             config[ConfigField.REFRESH_LENGTH], 
             (config[ConfigField.WORLD_WIDTH], config[ConfigField.WORLD_HEIGTH]), 
@@ -51,7 +53,6 @@ def main():
         fish_ages = [] # List of dictionaries to store fish age pyramid
         shark_ages = []  # List of dictionaries to store shark age pyramid
         megalodon_ages = []  # List of dictionaries to store megalodon age pyramid
-
 
         counter = 0
 

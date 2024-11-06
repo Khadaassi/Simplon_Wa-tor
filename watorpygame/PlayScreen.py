@@ -8,23 +8,29 @@ from pygame.surface import Surface
 
 # Wa-Tor imports
 from watorpygame.DisplayState import DisplayState
+
+from watorpygame.WaTorColors import WaTorColors, ColorChoice
+
 from watorpygame.UserImage import UserImage
 from watorpygame.UserImageKey import UserImageKey
 from watorpygame.UserImageProvider import UserImageProvider, Direction
 from watorpygame.UserImageInfo import UserImageInfo
+
+from watorpygame.IterationInfo import IterationInfo
+
 from watorpygame.UserLabel import UserLabel
 from watorpygame.UserButton import UserButton
 
-from watorpygame.IterationInfo import IterationInfo
+
+
 
 class WaTorPlayScreen :
     #__________________________________________________________________________
     #
     # region __init__
     #__________________________________________________________________________
-    def __init__(self, screen_background_color, image_provider: UserImageProvider ) :
+    def __init__(self, image_provider: UserImageProvider ) :
 
-        self.screen_background_color = screen_background_color
         self.image_provider = image_provider
        
         self.data = []
@@ -38,7 +44,7 @@ class WaTorPlayScreen :
     #
     # region set_data
     #__________________________________________________________________________
-    def set_data(self, data: list[list]):
+    def set_data(self, data: list[list[UserImageInfo]]):
         #______________________________________________________________________
         # about format informations :
         #    data_height corresponds to the number of lines in the matrix 
@@ -114,8 +120,10 @@ class WaTorPlayScreen :
     #__________________________________________________________________________
     def draw(self, screen : pygame.Surface, border_length : int) :
         
+        colors = WaTorColors()
+
         # fill the screen with a color to wipe away anything from last frame
-        screen.fill(self.screen_background_color)
+        screen.fill(colors.get(ColorChoice.SCREEN_BACKGROUND_COLOR))
         window_rect = screen.get_rect()
     
         window_height = window_rect.height

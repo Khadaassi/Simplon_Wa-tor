@@ -85,7 +85,7 @@ def main():
         display.stop() # tells display there is no more world to show 
 
         # function to plot the population of fish and sharks
-        plot_population(iterations, fish_population, shark_population, megalodon_population)
+        # plot_population(iterations, fish_population, shark_population, megalodon_population)
        
         # keep the screen visible while user don't quit the pygame window (or click on 'Exit') 
         while display.state not in [DisplayState.CONF, DisplayState.OUT] :

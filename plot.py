@@ -74,5 +74,5 @@ def plot_population(iterations: list, fish_population: list, shark_population: l
 
 
         plt.pause(0.03)  
-    plt.savefig("wator_populations.png")
+    plt.savefig("images/wator_populations.png")
     plt.show()

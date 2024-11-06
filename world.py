@@ -23,7 +23,8 @@ class World:
         shark_energy_gain: int,
         allow_megalodons: bool = True,
         megalodon_evolution_threshold: int = 5,
-        allow_packman: bool = True
+        allow_packman: bool = True,
+        allow_storms: bool = True
         ) -> None:
         """
         [Args]
@@ -51,6 +52,7 @@ class World:
         self.enable_megalodons = allow_megalodons #if False, Megalodons generation will be disabled.
         self.megalodon_evolution_threshold = megalodon_evolution_threshold #The amount of Fish a shark needs to eat before evolving to a Megalodon
         self.enable_pacman = allow_packman 
+        self.enable_storms = allow_storms
       
         #Natural disasters block
         self.current_storms = []
@@ -144,9 +146,18 @@ class World:
         #Move everything
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
+                             
+                #Set shortcut check for special entities             
+                isMegalodon = isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
+                isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
+                isPacman = isinstance(self.grid[x][y], Pacman)
                 
-                current_item = self.grid[x][y]
-                
+                #If a Megalodon has moved at least once (age > 1) and doesn't have a tail, it means it died and needs to be removed.
+                if isMegalodon:
+                    if not isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Megalodon_Tail) and self.grid[x][y].age > 1:
+                        self.grid[x][y] = False
+                        continue
+                                
                 #skip water tiles
                 if self.grid[x][y] == False or isinstance(self.grid[x][y], Storm_Tile) :
                     continue
@@ -155,11 +166,8 @@ class World:
                 if self.grid[x][y].has_moved or isinstance(self.grid[x][y], Megalodon_Tail):
                     continue
                 
-                #Set parameters for next entity
-                self.next_move_will_eat = False
-                isMegalodon = isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
-                isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
-                isPacman = isinstance(self.grid[x][y], Pacman)
+                #Set parameters for next entity                
+                self.next_move_will_eat = False                
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
                 self.next_move_will_die = False    
@@ -196,22 +204,10 @@ class World:
                 if isMegalodon:
                     #Remove old tail. If newly evolved, skip this check.
                     if self.grid[x][y].skip_first_tail_check:
-                        self.grid[x][y].skip_first_tail_check = False
-                    
-                    #If a Pacman or a Storm Tile is at tail position, it means Megalodon was eaten or died from storm and needs to disapear.
+                        self.grid[x][y].skip_first_tail_check = False                   
                     else:
-                        if isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Pacman) or\
-                            isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Storm_Tile):
-                            self.grid[x][y] = False
-                            continue
-                        else:
-                            self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
-                    
-                    #DEBUG
-                    if isinstance(self.grid[x][y], bool):
-                        continue
-                    #DEBUG
-                    
+                        self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
+                                        
                     #Megalodons lose energy when moving.
                     if not self.grid[x][y].energy_management():
                         self.grid[x][y] = False
@@ -255,7 +251,7 @@ class World:
                 if isMegalodon:
                     #Move tail if the Megalodon didn't die
                     if not self.next_move_will_die:
-                        self.grid[x][y] = Megalodon_Tail(direction, x, y)                                      
+                        self.grid[x][y] = Megalodon_Tail(direction, (x, y), len(self.grid))                                      
                 elif will_reproduce:
                     if isShark:
                         self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)
@@ -265,7 +261,8 @@ class World:
                     self.grid[x][y] = False               
                         
         #Natural Disasters
-        self.manage_disasters()                
+        if self.enable_storms:
+            self.manage_disasters()                
                         
         #Reset fishes movement and count all statistical variables
         self.update_statistics()     
@@ -684,7 +681,10 @@ class World:
                     self.killed_by_storm += 1
                 #If a Megalodon's head is struck, remove its tail
                 if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon) and not isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
-                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False                    
+                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False   
+                #If a Megalodon's tail is struck, remove its head.
+                if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
+                    self.grid[self.grid[coordinates[0]][coordinates[1]].head_pos[0]][self.grid[coordinates[0]][coordinates[1]].head_pos[1]] = False                    
                 #Generate a storm tile
                 self.grid[coordinates[0]][coordinates[1]] = Storm_Tile()
             self.current_storms.append(new_storm) 

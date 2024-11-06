@@ -78,7 +78,7 @@ def main():
                 display.update_view(world)  # update screen with the next world
                 
                 #Console print
-                # console_print(world)
+                console_print(world)
                 
                 #Statistics appending
                 fish_population.append(world.fish_population)
@@ -96,6 +96,7 @@ def main():
         display.stop() # tells display there is no more world to show 
 
         #plot_population(iterations, fish_population, shark_population, megalodon_population)
+        # plot_population(iterations, fish_population, shark_population, megalodon_population)
         
         # print( world.fish_age_dict[0])
         # print( world.shark_age_dict[0])
@@ -104,7 +105,9 @@ def main():
         # keep the screen visible while user don't quit the pygame window (or click on 'Exit') 
         while display.state not in [DisplayState.CONF, DisplayState.OUT] :
             display.update_view(world)
+      
 
+    
 
 def console_print(world: World) -> None:
     print("Current iteration : ", world.world_age)
@@ -112,6 +115,7 @@ def console_print(world: World) -> None:
     print(
         f"Fish pop : {world.fish_population} ; Shark pop : {world.shark_population} ; Megalodon pop : {world.megalodon_population}; Pacman score : {world.pacman_score}"
         )
+    print(f"Killed by storms : {world.killed_by_storm}")
 
 if __name__ == "__main__":
     main()

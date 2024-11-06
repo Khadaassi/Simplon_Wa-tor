@@ -27,6 +27,7 @@ class UserImageProvider :
         self.__images[UserImageKey.PROJECT] = UserImage("images/Img-wator.png",  self.light_color, self.dark_color)
         self.__images[UserImageKey.FISH] = UserImage("images/Fish_image_1.png", self.light_color, self.dark_color)
         self.__images[UserImageKey.SHARK] = UserImage("images/Shark_image_1.png", self.light_color, self.dark_color)
+        self.__images[UserImageKey.STORM] = UserImage("images/storm.png", (120, 120, 255), self.dark_color)
         
         for item in self.__images.values():
             item.define_dimensions(self.__width, self.__height)

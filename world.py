@@ -3,6 +3,7 @@ from fish import Shark
 from fish import Megalodon
 from fish import Megalodon_Tail
 from pacman import Pacman
+from storm import Storm, Storm_Tile
 from random import randint
 
 #______________________________________________________________________________
@@ -52,9 +53,16 @@ class World:
         self.enable_pacman = allow_packman 
       
         
+        #Natural disasters block
+        self.current_storms = []
+        self.chance_for_storm_to_spawn = 25
+        self.max_storm_concurrent = int(world_size[0]*world_size[1]*0.1)
+        
         #Internal logic block
         self.next_move_will_eat = False
         self.next__move_will_eat_mega_head = False
+        self.next_move_will_die = False
+        self.next_move_toward_storm = False
         
         #Stats block
         self.world_age = 0 #Current iteration of the simulation
@@ -65,6 +73,7 @@ class World:
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
         self.pacman_score = 0 # temporary added 
+        self.killed_by_storm = 0
 
         #DEBUG block
         self.megalodon_starting_population = 0 #Force the presence of X megalodons on the starting world.
@@ -137,8 +146,10 @@ class World:
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
                 
+                current_item = self.grid[x][y]
+                
                 #skip water tiles
-                if self.grid[x][y] == False:
+                if self.grid[x][y] == False or isinstance(self.grid[x][y], Storm_Tile) :
                     continue
                 
                 #Skip fishes that have already moved or ar Megalodon tails
@@ -152,7 +163,8 @@ class World:
                 isPacman = isinstance(self.grid[x][y], Pacman)
                 self.grid[x][y].has_moved = True                
                 will_reproduce = self.grid[x][y].reproduce()   
-                will_die = False        
+                self.next_move_will_die = False    
+                self.next_move_toward_storm = False    
                 
                 #Get the availlable directions for current entity    
                 direction = self.get_shark_directions(x, y) if isShark else self.get_megalodons_directions(x, y) if isMegalodon else self.get_pacman_direction(x,y) if isPacman\
@@ -180,60 +192,70 @@ class World:
                 if isShark:
                     if not self.grid[x][y].energy_management():
                         self.grid[x][y] = False
-                        will_die = True
+                        self.next_move_will_die = True
                 
                 if isMegalodon:
                     #Remove old tail. If newly evolved, skip this check.
                     if self.grid[x][y].skip_first_tail_check:
                         self.grid[x][y].skip_first_tail_check = False
                     
+                    #If a Pacman or a Storm Tile is at tail position, it means Megalodon was eaten or died from storm and needs to disapear.
                     else:
-                        if isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Pacman):
+                        if isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Pacman) or\
+                            isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Storm_Tile):
                             self.grid[x][y] = False
                             continue
-                        self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
+                        else:
+                            self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
+                    
+                    #DEBUG
+                    if isinstance(self.grid[x][y], bool):
+                        continue
+                    #DEBUG
+                    
                     #Megalodons lose energy when moving.
                     if not self.grid[x][y].energy_management():
                         self.grid[x][y] = False
-                        will_die = True
+                        self.next_move_will_die = True
                     else:
                         #If they don't die, save current pos as new tail pos and set direction
                         self.grid[x][y].current_direction = direction
                         #Save new tail position
                         self.grid[x][y].tail_pos = (x, y)
-
                          
-                
-                #Move entity to new cell depending on direction                
-                #North/Up block
-                if direction == "N":                    
-                    self.grid[x-1][y] = self.grid[x][y] if not will_die else False               
-                if direction == "D":
-                    self.grid[len(self.grid)-1][y] = self.grid[x][y] if not will_die else False  
-                                    
-                #South/Down block
-                if direction == "S":
-                    self.grid[x+1][y] = self.grid[x][y] if not will_die else False                     
-                if direction == "U":
-                    self.grid[0][y] = self.grid[x][y] if not will_die else False  
-                    
-                #West/Right block             
-                if direction == "W":
-                    self.grid[x][y-1] = self.grid[x][y] if not will_die else False                      
-                if direction == "R":
-                    self.grid[x][len(self.grid[x])-1] = self.grid[x][y] if not will_die else False  
-                    
-                #East/Left block
-                if direction == "E":
-                    self.grid[x][y+1] = self.grid[x][y] if not will_die else False                      
-                if direction == "L":
-                    self.grid[x][0] = self.grid[x][y] if not will_die else False  
+                #If entity moves toward Storm, do nothing (Storm "killed" it)
+                if not self.next_move_toward_storm:
+               
+                    #Move entity to new cell depending on direction                
+                    #North/Up block
+                    if direction == "N":                    
+                        self.grid[x-1][y] = self.grid[x][y] if not self.next_move_will_die else False               
+                    if direction == "D":
+                        self.grid[len(self.grid)-1][y] = self.grid[x][y] if not self.next_move_will_die else False  
+                                        
+                    #South/Down block
+                    if direction == "S":
+                        self.grid[x+1][y] = self.grid[x][y] if not self.next_move_will_die else False                     
+                    if direction == "U":
+                        self.grid[0][y] = self.grid[x][y] if not self.next_move_will_die else False  
+                        
+                    #West/Right block             
+                    if direction == "W":
+                        self.grid[x][y-1] = self.grid[x][y] if not self.next_move_will_die else False                      
+                    if direction == "R":
+                        self.grid[x][len(self.grid[x])-1] = self.grid[x][y] if not self.next_move_will_die else False  
+                        
+                    #East/Left block
+                    if direction == "E":
+                        self.grid[x][y+1] = self.grid[x][y] if not self.next_move_will_die else False                      
+                    if direction == "L":
+                        self.grid[x][0] = self.grid[x][y] if not self.next_move_will_die else False  
                 
                 #Check for leaving tile behavior
                 #If reproducing, left a new entity of same type. Else, leaves water.
                 if isMegalodon:
                     #Move tail if the Megalodon didn't die
-                    if not will_die:
+                    if not self.next_move_will_die:
                         self.grid[x][y] = Megalodon_Tail(direction)                                      
                 elif will_reproduce:
                     if isShark:
@@ -242,6 +264,9 @@ class World:
                         self.grid[x][y] = Fish(self.fish_reproduction_time)
                 else:
                     self.grid[x][y] = False               
+                        
+        #Natural Disasters
+        self.manage_disasters()                
                         
         #Reset fishes movement and count all statistical variables
         self.update_statistics()     
@@ -281,6 +306,8 @@ class World:
                     line += f"[\033[33m\033[0m]"
                 elif isinstance(y,Fish):
                     line += f"[\033[32mO\033[0m]"
+                elif isinstance(y, Storm_Tile):
+                    line += f"[\033[41m \033[0m]"  
                 else:
                     line += f"[\033[34m~\033[0m]"                
             line += " |"
@@ -440,37 +467,57 @@ class World:
         outcomes = ""               
                      
         #Check for North availlable
-        if x == 0 and self.grid[len(self.grid)-1][y] == False:
+        if x == 0 and isinstance(self.grid[len(self.grid)-1][y],(bool, Storm_Tile)):
+            if isinstance(self.grid[len(self.grid)-1][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "D"            
         elif x == 0:
             pass
-        elif self.grid[x-1][y] == False:
+        elif isinstance(self.grid[x-1][y], (bool, Storm_Tile)):
+            if isinstance(self.grid[x-1][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "N"
             
         #Check for South availlable
-        if x == (len(self.grid) - 1) and self.grid[0][y] == False:
+        if x == (len(self.grid) - 1) and isinstance(self.grid[0][y],(bool, Storm_Tile)):
+            if isinstance(self.grid[0][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "U"    
         elif x == (len(self.grid) - 1):
             pass      
-        elif self.grid[x+1][y] == False:
+        elif isinstance(self.grid[x+1][y],(bool, Storm_Tile)):
+            if isinstance(self.grid[x+1][y], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "S"
             
         #Check for West availlable
-        if y == 0 and self.grid[x][len(self.grid[y])-1] == False:
+        if y == 0 and isinstance(self.grid[x][len(self.grid[y])-1],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][len(self.grid[y])-1], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "R"     
         elif y == 0:
             pass
-        elif self.grid[x][y-1] == False:
+        elif isinstance(self.grid[x][y-1],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][y-1], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "W"
             
-        #check for East availlabke
-        if y == (len(self.grid[x]) - 1) and self.grid[x][0] == False:
+        #check for East availlable
+        if y == (len(self.grid[x]) - 1) and isinstance(self.grid[x][0],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][0], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "L"  
         elif y == (len(self.grid[x]) - 1):
             pass
-        elif self.grid[x][y+1] == False:
+        elif isinstance(self.grid[x][y+1],(bool, Storm_Tile)):
+            if isinstance(self.grid[x][y+1], Storm_Tile):
+                self.next_move_will_die = True
             outcomes += "E"
-     
+
+        if self.next_move_will_die:
+            self.killed_by_storm += 1
+            self.next_move_toward_storm = True
+        
         return outcomes
 
 #______________________________________________________________________________
@@ -600,7 +647,7 @@ class World:
         #Count the populations and reset their movement
         for x in self.grid:
             for y in x: 
-                if y == False:
+                if isinstance(y, Storm_Tile) or y == False:
                     continue               
                 y.has_moved = False
                 y.age += 1
@@ -615,6 +662,38 @@ class World:
                     self.pacman_score += y.score
                 elif isinstance(y,Fish):
                     self.fish_population += 1      
-                    self.fish_age_dict[y.age] = self.fish_age_dict.get(y.age, 0) + 1                     
+                    self.fish_age_dict[y.age] = self.fish_age_dict.get(y.age, 0) + 1     
+    
+    def manage_disasters(self) -> None:
+        
+        #Storms
+        
+        #Update the list
+        for storm in self.current_storms:
+            if storm.check_for_ending():
+                for x, y in storm.coordinates:
+                    self.grid[x][y] = False
+                self.current_storms.remove(storm)
+        
+        #Check for new storm
+        if len(self.current_storms) < self.max_storm_concurrent and randint(1, 100) <= self.chance_for_storm_to_spawn:
+            new_storm = Storm()
+            new_storm.spawn_storm(self.size[1]-1, self.size[0]-1)
+            for coordinates in new_storm.coordinates:
+                if self.grid[coordinates[0]][coordinates[1]] != False:
+                    #If there was something on the storm spawn, kill it.
+                    self.killed_by_storm += 1
+                #If a Megalodon's head is struck, remove its tail
+                if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon) and not isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
+                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False                    
+                #Generate a storm tile
+                self.grid[coordinates[0]][coordinates[1]] = Storm_Tile()
+            self.current_storms.append(new_storm) 
+
+# if __name__ == "__main__":
+          
+            
+                
+                                
             
                     

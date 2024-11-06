@@ -5,6 +5,7 @@
 # 'root' Wa-Tor imports
 from world import World
 from fish import Fish, Shark, Megalodon, Megalodon_Tail
+from storm import Storm_Tile
 from pacman import Pacman
 from ConfigField import ConfigField
 
@@ -147,6 +148,9 @@ class WaTorDisplay:
                 
                 elif isinstance(item, Pacman):
                     data[y_index][x_index] = UserImageInfo(UserImageKey.PACMAN) 
+                
+                elif isinstance(item, Storm_Tile):
+                    data[y_index][x_index] = UserImageInfo(UserImageKey.STORM) 
                                    
                 elif isinstance(item, Fish):
                     data[y_index][x_index] = UserImageInfo(UserImageKey.FISH)

@@ -38,7 +38,7 @@ class Storm:
         #Spawn each storm tile based on a cyclone pattern. (Cross pattern into X pattern into cross pattern.....)
         x_offset = 0
         y_offset = 0
-        clockwork = 0 #Storm is spawned in a clockwork pattern (starting at 12)
+        clock = 0 #Storm is spawned in a clockwork pattern (starting at 12)
         diagonals = False #Check if next spawn needs to be diagonal or orthogonal
         
         #Add a storm tile while there is still storm to add
@@ -46,7 +46,7 @@ class Storm:
             for i in range(0, 4):
                 #First pattern is cross shaped (North, then East, then South, then West)
                 if not diagonals:
-                    match clockwork:
+                    match clock:
                         case 0:
                             self.coordinates.append((init_x-1-x_offset if init_x!= 0 else max_x-x_offset, init_y))
                         case 1:
@@ -55,9 +55,10 @@ class Storm:
                             self.coordinates.append((init_x+1+x_offset if init_x!= max_x else 0+x_offset, init_y))
                         case 3:
                             self.coordinates.append((init_x, init_y-1-y_offset if init_y != 0 else max_y+y_offset))
+                
                 #Second pattern is X shaped (Nort-East then South-East then South-West then North-West)
                 else:
-                    match clockwork:
+                    match clock:
                         case 0:
                             self.coordinates.append((init_x-1-x_offset if init_x!= 0 else max_x-x_offset, init_y+1+y_offset if init_y != max_y else 0+y_offset))
                         case 1:
@@ -68,7 +69,7 @@ class Storm:
                             self.coordinates.append((init_x-1-x_offset if init_x!= max_x else 0-x_offset, init_y-1-y_offset if init_y != 0 else max_y-y_offset))
                 
                 #Update the current pattern and check if there is no tile left to generate.
-                clockwork = clockwork + 1 if clockwork < 3 else 0
+                clock = clock + 1 if clock < 3 else 0
                 size -= 1
                 if size <= 0:
                     break

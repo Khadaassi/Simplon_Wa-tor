@@ -146,36 +146,41 @@ class World:
         #Move everything
         for x in range(0, len(self.grid)):
             for y in range(0, len(self.grid[x])):
+                  
+                #Get current grid entity for ease of reading  
+                entity = self.grid[x][y]  
                              
                 #Set shortcut check for special entities             
-                isMegalodon = isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
-                isShark = isinstance(self.grid[x][y], Shark) and not isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Megalodon_Tail)
-                isPacman = isinstance(self.grid[x][y], Pacman)
+                isMegalodon = isinstance(entity, Megalodon) and not isinstance(entity, Megalodon_Tail)
+                isShark = isinstance(entity, Shark) and not isinstance(entity, Megalodon) and not isinstance(entity, Megalodon_Tail)
+                isPacman = isinstance(entity, Pacman)
                 
                 #If a Megalodon has moved at least once (age > 1) and doesn't have a tail, it means it died and needs to be removed.
                 if isMegalodon:
-                    if not isinstance(self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]], Megalodon_Tail) and self.grid[x][y].age > 1:
+                    if not isinstance(self.grid[entity.tail_pos[0]][entity.tail_pos[1]], Megalodon_Tail) and entity.age > 1:
                         self.grid[x][y] = False
                         continue
                                 
                 #skip water tiles
-                if self.grid[x][y] == False or isinstance(self.grid[x][y], Storm_Tile) :
+                if entity == False or isinstance(entity, Storm_Tile) :
                     continue
                 
                 #Skip fishes that have already moved or ar Megalodon tails
-                if self.grid[x][y].has_moved or isinstance(self.grid[x][y], Megalodon_Tail):
+                if entity.has_moved or isinstance(entity, Megalodon_Tail):
                     continue
                 
                 #Set parameters for next entity                
                 self.next_move_will_eat = False                
-                self.grid[x][y].has_moved = True                
-                will_reproduce = self.grid[x][y].reproduce()   
+                entity.has_moved = True                
+                will_reproduce = entity.reproduce()   
                 self.next_move_will_die = False    
                 self.next_move_toward_storm = False    
                 
                 #Get the availlable directions for current entity    
-                direction = self.get_shark_directions(x, y) if isShark else self.get_megalodons_directions(x, y) if isMegalodon else self.get_pacman_direction(x,y) if isPacman\
-                    else self.get_fish_direction(x, y)
+                direction = self.get_shark_directions(x, y) if isShark\
+                    else self.get_megalodons_directions(x, y) if isMegalodon\
+                        else self.get_pacman_direction(x,y) if isPacman\
+                            else self.get_fish_direction(x, y)
                 
                 #If no legal movement, continue the loop
                 if direction == "":
@@ -187,41 +192,39 @@ class World:
                 #If Shark will eat a fish or Megalodons will eat a shark, it gains energy
                 if self.next_move_will_eat:
                         if isPacman:
-                            self.grid[x][y].eat()
+                            entity.eat()
                         else:
-                            self.grid[x][y].eat(self.shark_energy_gained_by_eating)    
+                            entity.eat(self.shark_energy_gained_by_eating)    
                             #If Megaladons can appear, check if current shark can evolve
                             if isShark and self.enable_megalodons:
-                                if self.grid[x][y].check_for_evolution() :
+                                if entity.check_for_evolution() :
                                     self.grid[x][y] = Megalodon(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)       
                 
-                #Sharks lose energy when moving.
+                #Sharks lose energy when moving. If they have no energy left, they die.
                 if isShark:
-                    if not self.grid[x][y].energy_management():
+                    if entity.check_for_starvation():
                         self.grid[x][y] = False
                         self.next_move_will_die = True
                 
                 if isMegalodon:
                     #Remove old tail. If newly evolved, skip this check.
-                    if self.grid[x][y].skip_first_tail_check:
-                        self.grid[x][y].skip_first_tail_check = False                   
+                    if entity.skip_first_tail_check:
+                        entity.skip_first_tail_check = False                   
                     else:
-                        self.grid[self.grid[x][y].tail_pos[0]][self.grid[x][y].tail_pos[1]] = False             
-                                  
-                    if isinstance(self.grid[x][y], bool):
-                        continue
-                          
-                    #Megalodons lose energy when moving.
-                    if not self.grid[x][y].energy_management():
+                        self.grid[entity.tail_pos[0]][entity.tail_pos[1]] = False             
+                                              
+                    #Megalodons lose energy when moving. If they have no energy left, they die.
+                    if entity.check_for_starvation():
                         self.grid[x][y] = False
                         self.next_move_will_die = True
                     else:
                         #If they don't die, save current pos as new tail pos and set direction
-                        self.grid[x][y].current_direction = direction
+                        entity.current_direction = direction
                         #Save new tail position
-                        self.grid[x][y].tail_pos = (x, y)
+                        entity.tail_pos = (x, y)
                          
-                #If entity moves toward Storm, do nothing (Storm "killed" it)
+                #If entity moves toward Storm, do nothing (Storm "killed" it).
+                #Else move toward chosen direction.
                 if not self.next_move_toward_storm:
                
                     #Move entity to new cell depending on direction                
@@ -251,10 +254,9 @@ class World:
                 
                 #Check for leaving tile behavior
                 #If reproducing, left a new entity of same type. Else, leaves water.
-                if isMegalodon:
-                    #Move tail if the Megalodon didn't die
-                    if not self.next_move_will_die:
-                        self.grid[x][y] = Megalodon_Tail(direction, (x, y), len(self.grid))                                      
+                if isMegalodon and not self.next_move_will_die:
+                    #Move tail if the Megalodon didn't die                    
+                    self.grid[x][y] = Megalodon_Tail(direction, (x, y), len(self.grid))                                
                 elif will_reproduce:
                     if isShark:
                         self.grid[x][y] = Shark(self.shark_reproduction_time, self.shark_energy, self.megalodon_evolution_threshold)
@@ -263,13 +265,17 @@ class World:
                 else:
                     self.grid[x][y] = False               
                         
-        #Natural Disasters
+        #Update storms status if Storms are enabled
         if self.enable_storms:
             self.manage_disasters()                
                         
         #Reset fishes movement and count all statistical variables
         self.update_statistics()     
           
+#______________________________________________________________________________
+#
+# region get_empty_grid_space
+#______________________________________________________________________________
         
     def get_empty_grid_space(self) -> int:
         """
@@ -320,6 +326,7 @@ class World:
         """
         Return all possible movement for the Megalodon based only on the presence of sharks in its move radius. 
         If no sharks exist in this radius, acts like a normal fish instead.
+        If a Megalodon is stuck inside a school of fish, will eat a fish instead.
         Possible directions are :
         N = North
         D = Down (from top edge to bottom edge)
@@ -381,9 +388,11 @@ class World:
             outcomes = self.get_shark_directions(x,y, True)
         
         return outcomes
-        
-        # #If no shark availlable, return normal fish behavior
-        # return self.get_fish_direction(x, y)
+    
+#______________________________________________________________________________
+#
+# region get_shark_directions
+#______________________________________________________________________________
     
     def get_shark_directions(self, x: int, y: int, bypass_fish_behavior: bool = False) -> str:
         """
@@ -446,6 +455,11 @@ class World:
             return self.get_fish_direction(x, y)
         else:
             return outcomes
+    
+#______________________________________________________________________________
+#
+# region get_fish_direction
+#______________________________________________________________________________   
     
     def get_fish_direction(self, x: int, y: int) -> str:
         """
@@ -525,7 +539,7 @@ class World:
 #______________________________________________________________________________
     def get_pacman_direction(self, x: int, y: int) -> str:
         """
-        Return all possible movement for Pacmank based on the presence of food in its move radius. 
+        Return all possible movement for Pacman based on the presence of food in its move radius. 
         If no food exist in this radius, acts like a normal fish instead.
         Possible directions are :
         N = North
@@ -592,7 +606,7 @@ class World:
         Check for only shark in tile.
         
         [Args]
-        x, y = current coordinate of shark
+        x, y = current coordinate of tile being checked
         """
         return isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
@@ -606,7 +620,7 @@ class World:
         Check for only fish in tile.
 
         [Args]
-        x, y = current coordinate of fish
+        x, y = current coordinate of tile being checked
         """
         return isinstance(self.grid[x][y], Fish) and not isinstance(self.grid[x][y], Shark) and not\
             isinstance(self.grid[x][y], Megalodon) and not isinstance(self.grid[x][y], Pacman)
@@ -620,7 +634,7 @@ class World:
         Check for food.
 
         [Args]
-        x, y = current coordinate of Pacman
+        x, y = current coordinate of tile being checked
         """
         return isinstance(self.grid[x][y], (Fish)) and not isinstance(self.grid[x][y], Pacman) and \
             (not isinstance(self.grid[x][y], Megalodon) or isinstance(self.grid[x][y], Megalodon_Tail))
@@ -631,7 +645,7 @@ class World:
 # _____________________________________________________________________________
     def update_statistics(self) -> None:
         
-        #Reset the stat variables
+        #Reset the stat variables to get snap shot of current world state
         self.fish_population = 0  
         self.shark_population = 0    
         self.megalodon_population = 0
@@ -639,10 +653,10 @@ class World:
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
         
-        #Increase world age
+        #Increase world age (= simulation iteration count)
         self.world_age += 1
         
-        #Count the populations and reset their movement
+        #Count the populations, increase their ages and reset their movement
         for x in self.grid:
             for y in x: 
                 if isinstance(y, Storm_Tile) or y == False:
@@ -653,18 +667,26 @@ class World:
                     if not isinstance(y, Megalodon_Tail):
                         self.megalodon_population += 1
                         self.megalodon_age_dict[y.age] = self.megalodon_age_dict.get(y.age, 0) + 1
+                
                 elif isinstance(y, Shark):                    
                     self.shark_population += 1
                     self.shark_age_dict[y.age] = self.shark_age_dict.get(y.age, 0) + 1
+                
                 elif isinstance(y, Pacman):                    
                     self.pacman_score = y.score
+                
                 elif isinstance(y,Fish):
                     self.fish_population += 1      
                     self.fish_age_dict[y.age] = self.fish_age_dict.get(y.age, 0) + 1     
-    
+#______________________________________________________________________________
+#
+# region manage_disasters
+#______________________________________________________________________________
     def manage_disasters(self) -> None:
         
-        #Storms
+        ###
+        #Storms block
+        ###
         
         #Update the list
         for storm in self.current_storms:
@@ -677,21 +699,29 @@ class World:
         if len(self.current_storms) < self.max_storm_concurrent and randint(1, 100) <= self.chance_for_storm_to_spawn:
             new_storm = Storm()
             new_storm.spawn_storm(self.size[1]-1, self.size[0]-1)
+            
             for coordinates in new_storm.coordinates:
-                if self.grid[coordinates[0]][coordinates[1]] != False:
-                    #If there was something on the storm spawn, kill it.
+                #Get entity at coordinate in variable for ease of read
+                entity = self.grid[coordinates[0]][coordinates[1]]
+                
+                #If there was something on the storm spawn, kill it.
+                if entity != False and not isinstance(entity, Storm_Tile):                   
                     self.killed_by_storm += 1
+                    
                 #If a Megalodon's head is struck, remove its tail
-                if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon) and not isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
-                    self.grid[self.grid[coordinates[0]][coordinates[1]].tail_pos[0]][self.grid[coordinates[0]][coordinates[1]].tail_pos[1]] = False   
+                if isinstance(entity, Megalodon) and not isinstance(entity, Megalodon_Tail):
+                    self.grid[entity.tail_pos[0]][entity.tail_pos[1]] = False   
+                    
                 #If a Megalodon's tail is struck, remove its head.
-                if isinstance(self.grid[coordinates[0]][coordinates[1]], Megalodon_Tail):
-                    self.grid[self.grid[coordinates[0]][coordinates[1]].head_pos[0]][self.grid[coordinates[0]][coordinates[1]].head_pos[1]] = False                    
+                if isinstance(entity, Megalodon_Tail):
+                    self.grid[entity.head_pos[0]][entity.head_pos[1]] = False   
+                                     
                 #Generate a storm tile
                 self.grid[coordinates[0]][coordinates[1]] = Storm_Tile()
+                    
             self.current_storms.append(new_storm) 
 
-# if __name__ == "__main__":
+
           
             
                 

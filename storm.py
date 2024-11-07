@@ -1,12 +1,36 @@
 from random import randint
 
+#______________________________________________________________________________
+#
+# region Storm
+#______________________________________________________________________________
 class Storm_Tile:
-    #This class is used to represent the storm on the grid.
+    """
+    This class is used to represent a storm tile. It is used to store the coordinates of the storm tile.
+    """
     def __init__(self) -> None:
         pass
 
 class Storm:
-        
+    """
+    This class is used to represent a storm. It is used to store the coordinates of the storm and the duration of the storm.
+
+    [Attributes]
+    duration : int : The duration of the storm.
+    coordinates : list : List of coordinates of the storm.
+    size : int : The size of the storm.
+    min_size : int : The minimum size of the storm.
+    max_size : int : The maximum size of the storm.
+    min_duration : int : The minimum duration of the storm.
+    max_duration : int : The maximum duration of the storm.
+
+    [Methods]
+    spawn_storm : 
+        This method is used to spawn a new storm. It will get the coordinates, duration and size of the storm.
+    check_for_ending : 
+        This method is used to check if the storm has ended. It will reduce the duration of the storm by 1.
+
+    """
     min_size = 3
     max_size = 9
     min_duration = 5
@@ -20,13 +44,13 @@ class Storm:
     
     def spawn_storm(self, max_x: int, max_y: int) -> None:
         """
-        The main function of storm. This will create a new storm, getting coordinates, duration and size.
+        The main function of storm. Get "eye of the storm", epicenter tile randomly. This will create a new storm, getting coordinates, duration and size.
         
-        [Args]\n
+        Parameters
+        ----------
         max_x : the max height of the grid. \n
         max_y : the max width of the grid.
         """
-        #Get "eye of the storm", epicenter tile randomly
         init_x = randint(0, max_x)
         init_y = randint(0, max_y)
         self.coordinates.append((init_x, init_y))
@@ -82,8 +106,10 @@ class Storm:
     def check_for_ending(self) -> bool:
         """
         Reduce duration by 1 and return True if Storm is ending.
+
+        Returns
+        -------
+        bool : True if storm has ended, False otherwise.
         """
         self.duration -= 1
         return self.duration <= 0
-
-        

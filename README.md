@@ -60,7 +60,6 @@ python main.py
 
 The simulation produces various visual outputs that depict interactions among fish, sharks, and megalodons. Below is an example of the simulation output:
 
-
 <p align="center">
   <img src="images/demo.gif" alt="Project Demo" width="600"/>
 </p>
@@ -75,6 +74,21 @@ The graph below shows the population trends of fish, sharks, and megalodons thro
 
 ## Application pygame
 
+The Pygame application serves as the interactive interface for the Wa-Tor simulation, transforming the underlying ecological model into an engaging visual experience.
+
+**Key Features**:
+
+- *Real-Time Visualization*: The application displays the aquatic ecosystem in motion, allowing users to see fish, sharks, megalodons, and pacman as they navigate through their environment. This real-time graphical representation helps users understand complex predator-prey dynamics.
+- *User Interaction*: Users can interact with the simulation by adjusting parameters such as the population densities of different species or introducing new elements into the ecosystem. This interactivity allows for experimentation with different scenarios, enhancing the learning experience.
+- *Graphical Representation*: Utilizing Pygame's capabilities, the application presents vibrant, animated graphics that depict the behavior and movements of each species. The visual output is complemented by statistical data shown in real-time, helping users grasp trends and changes within the ecosystem.
+- *Customizable Interface*: The Pygame interface includes user-friendly controls and buttons that enable easy navigation through the simulation. Users can start, pause, or reset the simulation, making it accessible for both educational purposes and casual exploration.
+- *Engaging Experience*: The visually appealing graphics and interactive features of the Pygame application make learning about ecological systems more enjoyable. Users are immersed in the simulation, fostering a deeper understanding of ecological interactions and the importance of biodiversity.
+
+Through this application, users can appreciate the intricacies of the Wa-Tor model while gaining insights into ecological principles and the impact of various factors on marine life.
+
+<p align="center">
+  <img src="images/demo_pygame.gif" alt="Pygame" width="600"/>
+</p>
 
 ## Evaluation Criteria
 

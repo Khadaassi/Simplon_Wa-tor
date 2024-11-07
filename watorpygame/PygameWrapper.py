@@ -33,6 +33,12 @@ from watorpygame.PlayScreen import WaTorPlayScreen
 
 
 class PygameWrapper:
+    """Wraps all references to pygame and protects the rest of 
+    the application from cross dependencies. \n
+    Manages the clock of pygame ( every 1/60 th second ).\n
+    Manages the buttons, the clicks on buttons and the pygame events of the display
+
+    """
 
     #__________________________________________________________________________
     #
@@ -256,6 +262,9 @@ class PygameWrapper:
     #__________________________________________________________________________
     @property
     def running(self) :
+        """Returns True if the display appears on screeen 
+        (if there is a window)
+        """
         return self.__running
     
     #__________________________________________________________________________
@@ -263,6 +272,8 @@ class PygameWrapper:
     # region stop_running
     #__________________________________________________________________________
     def stop_running(self) :
+        """Ask PygameWrapper to stop the display (quit the screen)
+        """
         self.__running = False
 
 
@@ -271,6 +282,9 @@ class PygameWrapper:
     # region set_state
     #__________________________________________________________________________
     def set_state(self, state : DisplayState) :
+        """Update state information to the screen.\n
+        Disable all the buttons linked to the previous state 
+        """
         if state is not self.__state :
             self.__disable_controls()
         
@@ -281,6 +295,9 @@ class PygameWrapper:
     # region set_data
     #__________________________________________________________________________
     def set_data(self, data_from_watordisplay) :
+        """Dispatch the data to the correct screen.\n
+        Configuration screen main screen (PlayScreen) depending on the state (DisplayState)
+        """
         if self.__state == DisplayState.CONF :
             self.__data = cast(dict, data_from_watordisplay )
             self.__config_screen.set_data(self.__data)
@@ -293,6 +310,9 @@ class PygameWrapper:
     # region set_iteration_info
     #__________________________________________________________________________
     def set_iteration_info(self, iterationInfo : IterationInfo) :
+        """ Transmit general information about the current iteration
+        to the main screen (PlayScreen)
+        """
         self.__play_screen.set_iteration_info(iterationInfo)
 
     #__________________________________________________________________________
@@ -300,6 +320,8 @@ class PygameWrapper:
     # region reset_config
     #__________________________________________________________________________
     def reset_config(self):
+        """Force the configuration to show the initial configuration
+        """
         self.__config_screen.reset_config() 
 
     #__________________________________________________________________________
@@ -307,6 +329,9 @@ class PygameWrapper:
     # region get_config
     #__________________________________________________________________________
     def get_config(self) -> dict :
+        """Returns the current configuration (shown on screen)
+        if it has been validated
+        """
         return self.__config_screen.get_config() 
            
     #__________________________________________________________________________
@@ -314,6 +339,8 @@ class PygameWrapper:
     # region draw
     #__________________________________________________________________________
     def draw(self, display_state : DisplayState):
+        """Draws the screen and manage the pygrame events 
+        """
         
         if not self.__running:
             self.__initialize_screen()  # first time only, start screen

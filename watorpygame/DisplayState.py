@@ -2,6 +2,8 @@
 from enum import Enum
 
 class DisplayState(Enum):
+    """Unique reference for the states of the display
+    """
     CONF = 0
     BETWEEN = 1
     WAIT = 2

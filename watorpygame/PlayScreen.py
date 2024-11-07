@@ -25,6 +25,10 @@ from watorpygame.UserButton import UserButton
 
 
 class WaTorPlayScreen :
+    """Displays the main screen of the app,
+    draws table and image images
+    """
+    
     #__________________________________________________________________________
     #
     # region __init__

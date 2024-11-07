@@ -11,7 +11,21 @@ from random import randint
 # region World
 #______________________________________________________________________________
 class World:
-    
+    """
+    The World class is the main class of the simulation. It holds the grid, the entities and the logic of the simulation.
+
+    Attributes
+    ----------
+    s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
+    chro_len = the length of a chronos for this world
+    world_size = a tuple of int defining the world dimension as follow [width, height]
+    fish_repro_time = the amount of chronos a fish needs to reproduce
+    shark_repro_time = the amount of chronos a shark needs to reproduce
+    shark_energy = starting energy of a newly created shark (also its maximum, if needed)
+    shark_energy_gain = amount of energy a shark gains when eating a fish
+    allow_megalodons = if False, sharks will never evolve to Megalodons
+
+    """
     def __init__(
         self, 
         s_pop: tuple[int, int], 
@@ -26,17 +40,7 @@ class World:
         allow_packman: bool = True,
         allow_storms: bool = True
         ) -> None:
-        """
-        [Args]
-        s_pop = a tuple of int containing the starting population of fishes and sharks, respectively
-        chro_len = the length of a chronos for this world
-        world_size = a tuple of int defining the world dimension as follow [width, height]
-        fish_repro_time = the amount of chronos a fish needs to reproduce
-        shark_repro_time = the amount of chronos a shark needs to reproduce
-        shark_energy = starting energy of a newly created shark (also its maximum, if needed)
-        shark_energy_gain = amount of energy a shark gains when eating a fish
-        allow_megalodons = if False, sharks will never evolve to Megalodons
-        """
+      
         
         #World parameters block
         self.starting_population = s_pop #The initial ratio of fish to shark. starting_population[0] = fishes, starting_population[1] = sharks
@@ -73,7 +77,7 @@ class World:
         self.fish_age_dict = {}
         self.shark_age_dict = {}
         self.megalodon_age_dict = {}
-        self.pacman_score = 0 # temporary added 
+        self.pacman_score = 0
         self.killed_by_storm = 0
 
         #DEBUG block

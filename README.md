@@ -173,7 +173,3 @@ Khadija Aassi
 <a href="https://github.com/Khadaassi" target="_blank">
     <img loading="lazy" src="images/github-mark.png" width="30" height="30" style="vertical-align: middle; float: middle; margin-left: 40px;" alt="GitHub Logo">
 </a>
-
-
-## Acknowledgment
-

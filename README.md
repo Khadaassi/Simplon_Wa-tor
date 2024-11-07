@@ -99,7 +99,7 @@ The Pygame application serves as the interactive interface for the Wa-Tor simula
 Through this application, users can appreciate the intricacies of the Wa-Tor model while gaining insights into ecological principles and the impact of various factors on marine life.
 
 <p align="center">
-  <img src="images/demo_pygame.gif" alt="Pygame" width="600"/>
+  <img src="images/Demo_pygame.gif" alt="Pygame" width="600"/>
 </p>
 
 ## Evaluation Criteria

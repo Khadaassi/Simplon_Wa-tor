@@ -73,13 +73,13 @@ class WaTorDisplay:
     # region __on_user_command
     #__________________________________________________________________________
     def __on_user_command(self, command: DisplayCommand):
-        """State machine behavior
+        """Changes the state of the display
 
-            That method is called when the user perfoms an action (a button click)
+            This method is called when the user perfoms an action (a button click)
 
-            changes the state of the display
-            depending on the command
-            udate the public variables 
+            it changes the state of the display depending on which command
+            has been requested by the user.
+            it update the variables and start the new state  
 
         Parameters
         ----------
@@ -136,7 +136,8 @@ class WaTorDisplay:
     # region __create_data_for_view
     #__________________________________________________________________________
     def __create_data_for_view(self, world : World) -> tuple[list[list[UserImageInfo]], IterationInfo] :
-
+        """Prepare the informations shown on the main screen
+        """
         width = world.size[0]
         heigth = world.size[1]
 
@@ -234,12 +235,13 @@ class WaTorDisplay:
     def get_config(self) -> dict[ConfigField, bool|int|float]:
         """Shows the play screen
 
-        displays a representation of the current iteration's world object on the screen
+        displays a the configuration screen
 
         Returns
         -------
         dict[ConfigField, bool|int|float]
-            the world object calculated at each iteration by the main function
+            a list of parameters of the application
+            it should contains 14 different fields
         """
         return self.__config
 

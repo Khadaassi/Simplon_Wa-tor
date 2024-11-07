@@ -2,6 +2,8 @@
 from enum import Enum
 
 class DisplayCommand(Enum):
+    """Unique reference for the commands of the display
+    """
     RESET = 0   # stay in DisplayState.CONF
     GO = 1      # from DisplayState.CONF to DisplayState.BETWEEN ( before DisplayState.WAIT ) 
     START = 2   # from DisplayState.WAIT to DisplayState.PLAY 

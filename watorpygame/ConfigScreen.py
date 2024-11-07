@@ -21,7 +21,9 @@ from watorpygame.UserTextBox import UserTextBox
 
 
 class WaTorConfigScreen :
-
+    """Displays the configuration screen of the app,
+    draws field labels and manage textboxes
+    """
     #__________________________________________________________________________
     #
     # region __init__
